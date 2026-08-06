@@ -943,7 +943,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/fireba
 import { getAuth, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword,
          sendPasswordResetEmail, onAuthStateChanged, updatePassword,
          EmailAuthProvider, reauthenticateWithCredential,
-         GoogleAuthProvider, signInWithPopup, linkWithPopup, deleteUser }
+         GoogleAuthProvider, signInWithPopup, linkWithPopup, deleteUser, getAdditionalUserInfo }
   from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
 import { getFirestore, collection, doc, getDoc, getDocs, setDoc, deleteDoc, writeBatch }
   from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
@@ -970,7 +970,13 @@ window.fb = {
   signOut: () => signOut(auth),
   resetPass: (e) => sendPasswordResetEmail(auth, e),
   googleProvider: new GoogleAuthProvider(),
-  signInGoogle: function() { return signInWithPopup(auth, this.googleProvider); },
+  signInGoogle: async function() {
+    const cred = await signInWithPopup(auth, this.googleProvider);
+    const info = getAdditionalUserInfo(cred);
+    cred._esNueva = !!(info && info.isNewUser);
+    return cred;
+  },
+  borrarSesionActual: () => deleteUser(auth.currentUser),
   linkGoogle: function() { return linkWithPopup(auth.currentUser, this.googleProvider); },
   cambiarPass: async (actual, nueva) => {
     const u = auth.currentUser;
@@ -1230,12 +1236,14 @@ async function olvidePass() {
   }
 }
 
-async function entrarConPerfil(uid, email, err) {
+async function entrarConPerfil(uid, email, err, esGoogle) {
   let perfil = null;
   try { perfil = await window.fb.getDoc('usuarios', uid); } catch (e) { perfil = null; }
   if (!perfil) {
     await window.fb.signOut();
-    err.textContent = 'Esta cuenta de Google no está registrada en el portal. Pide a un administrador que te agregue, o inicia sesión con tu correo y contraseña y vincula Google desde tu perfil.';
+    err.textContent = esGoogle
+      ? 'Esta cuenta de Google no está registrada en el portal. Pide a un administrador que te agregue, o inicia sesión con tu correo y contraseña y vincula Google desde tu perfil.'
+      : 'Tu cuenta existe pero no está registrada en el portal. Contacta a coordinación.';
     err.style.display = 'block';
     return false;
   }
@@ -1259,7 +1267,11 @@ async function loginGoogle() {
   btn.disabled = true;
   try {
     const cred = await window.fb.signInGoogle();
-    await entrarConPerfil(cred.user.uid, cred.user.email, err);
+    const ok = await entrarConPerfil(cred.user.uid, cred.user.email, err, true);
+    if (!ok && cred._esNueva) {
+      // Cuenta de Google recién creada y sin ficha: la limpiamos para no dejar huérfanos
+      try { await window.fb.borrarSesionActual(); } catch (e2) {}
+    }
   } catch (e) {
     const c = e && e.code ? e.code : '';
     if (c.includes('popup-closed-by-user') || c.includes('cancelled-popup-request')) {
