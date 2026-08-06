@@ -55,6 +55,16 @@ img, svg, table { max-width: 100%; }
   font-family: 'DM Sans', sans-serif; transition: all 0.2s; margin-top: 8px;
 }
 .btn-login:hover { background: var(--sky-light); transform: translateY(-1px); }
+.login-divider { display: flex; align-items: center; gap: 12px; margin: 20px 0 16px; }
+.login-divider::before, .login-divider::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.15); }
+.login-divider span { font-size: 11px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.5px; }
+.btn-google {
+  width: 100%; padding: 12px; background: #fff; color: #1f2937; border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 10px; font-size: 14.5px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif;
+  display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.2s;
+}
+.btn-google:hover { background: #f3f4f6; }
+.btn-google svg { width: 18px; height: 18px; }
 
 /* ── APP ── */
 #app { display: none; min-height: 100vh; }
@@ -368,6 +378,11 @@ tbody tr:hover td { background: var(--off); }
     <div style="text-align:center;margin-top:16px;">
       <span onclick="olvidePass()" style="color:rgba(255,255,255,0.55);font-size:13px;cursor:pointer;text-decoration:underline;">Olvidé mi contraseña</span>
     </div>
+    <div class="login-divider"><span>o</span></div>
+    <button class="btn-google" id="btn-google" onclick="loginGoogle()">
+      <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.99.66-2.25 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A11 11 0 0 0 12 23z"/><path fill="#FBBC05" d="M5.84 14.09A6.6 6.6 0 0 1 5.5 12c0-.73.13-1.43.34-2.09V7.07H2.18A11 11 0 0 0 1 12c0 1.77.43 3.45 1.18 4.93z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1a11 11 0 0 0-9.82 6.07l3.66 2.84C6.71 7.31 9.14 5.38 12 5.38z"/></svg>
+      Continuar con Google
+    </button>
   </div>
 </div>
 
@@ -403,6 +418,7 @@ tbody tr:hover td { background: var(--off); }
     <div class="sidebar-footer">
       <button class="btn-backup" id="btn-backup" onclick="exportData()" style="display:none;">⬇ Respaldar datos</button>
       <button class="btn-backup" onclick="abrirCambioPass()">🔑 Cambiar contraseña</button>
+      <button class="btn-backup" onclick="vincularGoogle()">🔗 Vincular con Google</button>
       <a href="/privacidad.html" target="_blank" style="display:block;text-align:center;font-size:11px;color:rgba(255,255,255,0.35);text-decoration:none;padding-top:4px;">Política de privacidad</a>
       <button class="btn-logout" onclick="doLogout()">Cerrar sesión</button>
     </div>
@@ -606,6 +622,7 @@ tbody tr:hover td { background: var(--off); }
         <div class="card-head">
           <div class="card-title">Miembros</div>
           <button class="btn btn-navy" onclick="abrirNuevoMiembro()">+ Agregar miembro</button>
+          <button class="btn btn-ghost" onclick="abrirReparar()">🩹 Reparar cuenta</button>
         </div>
         <table>
           <thead><tr><th>Nombre</th><th>Correo</th><th>Rol</th><th>Acceso</th><th></th></tr></thead>
@@ -817,10 +834,10 @@ tbody tr:hover td { background: var(--off); }
 
 <div class="modal-bg" id="modal-miembro">
   <div class="modal">
-    <div class="modal-title">Agregar miembro del equipo</div>
+    <div class="modal-title" id="modal-miembro-title">Agregar miembro del equipo</div>
     <div class="field"><label>Nombre completo</label><input type="text" id="eq-nombre" placeholder="Ej: Daniel Valdez"></div>
     <div class="field"><label>Correo (con este inicia sesión)</label><input type="email" id="eq-correo" placeholder="correo@ejemplo.com"></div>
-    <div class="field"><label>Contraseña inicial (mínimo 6 caracteres)</label><input type="text" id="eq-pass" placeholder="Ej: electi2026"></div>
+    <div class="field" id="eq-pass-field"><label>Contraseña inicial (mínimo 6 caracteres)</label><input type="text" id="eq-pass" placeholder="Ej: electi2026"></div>
     <div class="field"><label>Rol</label>
       <select id="eq-rol">
         <option value="profesor">Profesor — solo académico</option>
@@ -828,9 +845,43 @@ tbody tr:hover td { background: var(--off); }
       </select>
     </div>
     <div class="field"><label>Cargo visible (opcional)</label><input type="text" id="eq-label" placeholder="Ej: Fundador y Presidente"></div>
+    <input type="hidden" id="eq-edit" value="">
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeModal('modal-miembro')">Cancelar</button>
       <button class="btn btn-navy" onclick="addMiembro()">Crear cuenta</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="modal-reparar">
+  <div class="modal">
+    <div class="modal-title">🩹 Reparar cuenta</div>
+    <p style="font-size:13px;color:var(--gray);line-height:1.6;margin-bottom:16px;">
+      Usa esto cuando una cuenta puede iniciar sesión (existe en Firebase) pero el portal dice "no tienes permisos" — significa que le falta el perfil. Ingresa su correo y su contraseña actual para recuperar el acceso y crearle el perfil correcto.
+    </p>
+    <div class="field"><label>Correo de la cuenta a reparar</label><input type="email" id="rp-correo" placeholder="correo@ejemplo.com"></div>
+    <div class="field"><label>Contraseña actual de esa cuenta</label><input type="text" id="rp-pass" placeholder="La contraseña con la que intentó entrar"></div>
+    <div class="field"><label>Nombre completo</label><input type="text" id="rp-nombre" placeholder="Nombre de la persona"></div>
+    <div class="field"><label>Rol</label>
+      <select id="rp-rol" onchange="toggleReparaAlumno()">
+        <option value="profesor">Profesor</option>
+        <option value="admin">Administrador</option>
+        <option value="alumno">Alumno</option>
+      </select>
+    </div>
+    <div id="rp-alumno-extra" style="display:none;">
+      <div class="field"><label>Sede</label>
+        <select id="rp-sede"><option value="UIO">Quito (UIO)</option><option value="GYE">Guayaquil (GYE)</option></select>
+      </div>
+      <div class="field"><label>Beca</label>
+        <select id="rp-beca">
+          <option value="0">Sin beca</option><option value="25">25%</option><option value="40">40%</option><option value="50">50%</option><option value="100">100%</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modal-reparar')">Cancelar</button>
+      <button class="btn btn-navy" onclick="repararCuenta()">Reparar y dar acceso</button>
     </div>
   </div>
 </div>
@@ -891,7 +942,8 @@ tbody tr:hover td { background: var(--off); }
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword,
          sendPasswordResetEmail, onAuthStateChanged, updatePassword,
-         EmailAuthProvider, reauthenticateWithCredential }
+         EmailAuthProvider, reauthenticateWithCredential,
+         GoogleAuthProvider, signInWithPopup, linkWithPopup, deleteUser }
   from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
 import { getFirestore, collection, doc, getDoc, getDocs, setDoc, deleteDoc, writeBatch }
   from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
@@ -917,6 +969,9 @@ window.fb = {
   signIn: (e, p) => signInWithEmailAndPassword(auth, e, p),
   signOut: () => signOut(auth),
   resetPass: (e) => sendPasswordResetEmail(auth, e),
+  googleProvider: new GoogleAuthProvider(),
+  signInGoogle: function() { return signInWithPopup(auth, this.googleProvider); },
+  linkGoogle: function() { return linkWithPopup(auth.currentUser, this.googleProvider); },
   cambiarPass: async (actual, nueva) => {
     const u = auth.currentUser;
     const cred = EmailAuthProvider.credential(u.email, actual);
@@ -925,6 +980,14 @@ window.fb = {
   },
   crearUsuarioAuth: async (email, pass) => {
     const cred = await createUserWithEmailAndPassword(authSec, email, pass);
+    return cred.user.uid;
+  },
+  confirmarUsuarioAuth: () => signOut(authSec),
+  cancelarUsuarioAuth: async () => {
+    if (authSec.currentUser) { try { await deleteUser(authSec.currentUser); } catch (e) { try { await signOut(authSec); } catch(e2){} } }
+  },
+  repararCuenta: async (email, pass) => {
+    const cred = await signInWithEmailAndPassword(authSec, email, pass);
     const uid = cred.user.uid;
     await signOut(authSec);
     return uid;
@@ -1138,40 +1201,7 @@ async function doLogin() {
   btn.textContent = 'Ingresando...'; btn.disabled = true;
   try {
     const cred = await window.fb.signIn(email, pass);
-    const uid = cred.user.uid;
-
-    let perfil = null;
-    try { perfil = await window.fb.getDoc('usuarios', uid); } catch (e) { perfil = null; }
-
-    // Arranque inicial: si el portal está vacío, el primero en entrar queda como administrador
-    if (!perfil) {
-      let vacio = false;
-      try { vacio = (await window.fb.getDocs('usuarios')).length === 0; } catch (e) { vacio = false; }
-      if (vacio) {
-        perfil = { rol: 'admin', name: email.split('@')[0], email: email, label: 'Administrador',
-                   initials: email.slice(0, 2).toUpperCase() };
-        await window.fb.setDoc('usuarios', uid, perfil);
-        toast('✓ Cuenta de administrador creada');
-      }
-    }
-
-    if (!perfil) {
-      await window.fb.signOut();
-      err.textContent = 'Tu cuenta existe pero no está registrada en el portal. Contacta a coordinación.';
-      err.style.display = 'block';
-      return;
-    }
-
-    if (perfil.rol === 'alumno') await cargarDatosAlumno(uid);
-    else await cargarDatos();
-    if (perfil.rol === 'alumno' && perfil.suspendido) {
-      await window.fb.signOut();
-      err.textContent = '⛔ Tu acceso está suspendido por valores pendientes. Comunícate con la coordinación de ELECTI.';
-      err.style.display = 'block';
-      return;
-    }
-    state.user = Object.assign({}, perfil, { username: uid, role: perfil.rol, email: email });
-    launchApp();
+    await entrarConPerfil(cred.user.uid, email, err);
   } catch (e) {
     const c = e && e.code ? e.code : '';
     err.textContent = (c.includes('invalid-credential') || c.includes('wrong-password') || c.includes('user-not-found'))
@@ -1197,6 +1227,69 @@ async function olvidePass() {
   } catch (e) {
     err.textContent = 'No se pudo enviar el correo. Verifica la dirección.';
     err.style.display = 'block';
+  }
+}
+
+async function entrarConPerfil(uid, email, err) {
+  let perfil = null;
+  try { perfil = await window.fb.getDoc('usuarios', uid); } catch (e) { perfil = null; }
+  if (!perfil) {
+    await window.fb.signOut();
+    err.textContent = 'Esta cuenta de Google no está registrada en el portal. Pide a un administrador que te agregue, o inicia sesión con tu correo y contraseña y vincula Google desde tu perfil.';
+    err.style.display = 'block';
+    return false;
+  }
+  if (perfil.rol === 'alumno' && perfil.suspendido) {
+    await window.fb.signOut();
+    err.textContent = '⛔ Tu acceso está suspendido por valores pendientes. Comunícate con la coordinación de ELECTI.';
+    err.style.display = 'block';
+    return false;
+  }
+  state.user = Object.assign({}, perfil, { username: uid, role: perfil.rol, email: email });
+  if (perfil.rol === 'alumno') await cargarDatosAlumno(uid);
+  else await cargarDatos();
+  launchApp();
+  return true;
+}
+
+async function loginGoogle() {
+  const err = document.getElementById('login-err');
+  const btn = document.getElementById('btn-google');
+  err.style.display = 'none';
+  btn.disabled = true;
+  try {
+    const cred = await window.fb.signInGoogle();
+    await entrarConPerfil(cred.user.uid, cred.user.email, err);
+  } catch (e) {
+    const c = e && e.code ? e.code : '';
+    if (c.includes('popup-closed-by-user') || c.includes('cancelled-popup-request')) {
+      // el usuario cerró la ventana, no mostrar error
+    } else if (c.includes('account-exists-with-different-credential')) {
+      err.textContent = 'Ese correo ya tiene una cuenta con contraseña. Inicia sesión con tu contraseña y luego vincula Google desde tu perfil.';
+      err.style.display = 'block';
+    } else if (c.includes('popup-blocked')) {
+      err.textContent = 'Tu navegador bloqueó la ventana de Google. Permite ventanas emergentes e intenta de nuevo.';
+      err.style.display = 'block';
+    } else if (c.includes('unauthorized-domain')) {
+      err.textContent = 'Este sitio aún no está autorizado para Google. Contacta a coordinación.';
+      err.style.display = 'block';
+    } else {
+      err.textContent = 'No se pudo iniciar sesión con Google. Intenta de nuevo.';
+      err.style.display = 'block';
+    }
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+async function vincularGoogle() {
+  try {
+    await window.fb.linkGoogle();
+    toast('✓ Tu cuenta de Google quedó vinculada — ya puedes usarla para entrar');
+  } catch (e) {
+    const c = e && e.code ? e.code : '';
+    if (c.includes('popup-closed-by-user')) return;
+    toast(c.includes('credential-already-in-use') ? 'Esa cuenta de Google ya está vinculada a otro usuario' : 'No se pudo vincular. Intenta de nuevo.');
   }
 }
 document.getElementById('login-pass').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
@@ -1960,22 +2053,26 @@ async function addAlumno() {
     if (pass.length < 6) { toast('La contraseña debe tener al menos 6 caracteres'); return; }
     if (state.alumnos.find(a => (a.email || '').toLowerCase() === email)) { toast('Ese correo ya está registrado'); return; }
     toast('Creando cuenta...');
+    let uidCreado = null;
     try {
-      const uid = await window.fb.crearUsuarioAuth(email, pass);
-      const nuevo = Object.assign({ username: uid, email: email, rol: 'alumno' }, datos);
+      uidCreado = await window.fb.crearUsuarioAuth(email, pass);
+      const nuevo = Object.assign({ username: uidCreado, email: email, rol: 'alumno' }, datos);
+      await window.fb.setDoc('usuarios', uidCreado, limpiarAlumno(nuevo));
+      await window.fb.confirmarUsuarioAuth();
+      _escrito['usuarios/' + uidCreado] = JSON.stringify(limpiarAlumno(nuevo));
       state.alumnos.push(nuevo);
-      await guardarDoc('usuarios', uid, limpiarAlumno(nuevo));
       closeModal('modal-alumno');
       renderAlumnos();
       toast('✓ Alumno creado — ya puede iniciar sesión');
     } catch (e) {
+      if (uidCreado) await window.fb.cancelarUsuarioAuth();
       const c = e && e.code ? e.code : '';
       if (c.includes('email-already-in-use')) {
         document.getElementById('aviso-correo').textContent = email;
         document.getElementById('aviso-borrado').querySelector('.modal-title').textContent = 'Ese correo ya tiene una cuenta';
         document.getElementById('aviso-borrado').style.display = 'flex';
       } else {
-        toast(c.includes('invalid-email') ? 'Correo inválido' : 'No se pudo crear la cuenta');
+        toast(c.includes('invalid-email') ? 'Correo inválido' : 'No se pudo crear la cuenta — no quedó nada a medias, intenta de nuevo');
       }
     }
   }
@@ -2069,6 +2166,7 @@ function renderEquipo() {
     <td><span class="badge ${m.rol === 'admin' ? 'badge-navy' : 'badge-green'}">${m.rol === 'admin' ? 'Administrador' : 'Profesor'}</span></td>
     <td style="font-size:12px;color:var(--gray);">${m.rol === 'admin' ? 'Todo el portal' : 'Solo académico'}</td>
     <td style="white-space:nowrap;">
+      <button class="btn btn-ghost" style="margin-right:6px;font-size:12px;" onclick="editMiembro('${m.username}')">Editar</button>
       <button class="btn btn-ghost" style="margin-right:6px;font-size:12px;" onclick="resetMiembro('${m.email}')">Restablecer clave</button>
       ${m.username === state.user.username ? '' : `<button class="btn btn-red" style="font-size:12px;" onclick="quitarMiembro('${m.username}')">${delPendEq === m.username ? '¿Confirmar?' : 'Quitar'}</button>`}
     </td>
@@ -2076,32 +2174,71 @@ function renderEquipo() {
 }
 
 function abrirNuevoMiembro() {
+  document.getElementById('eq-edit').value = '';
+  document.getElementById('modal-miembro-title').textContent = 'Agregar miembro del equipo';
+  document.getElementById('eq-pass-field').style.display = '';
+  document.getElementById('eq-correo').disabled = false;
   ['eq-nombre','eq-correo','eq-pass','eq-label'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('eq-rol').value = 'profesor';
   openModal('modal-miembro');
 }
 
+function editMiembro(uid) {
+  const m = state.equipo.find(x => x.username === uid);
+  if (!m) return;
+  document.getElementById('eq-edit').value = uid;
+  document.getElementById('modal-miembro-title').textContent = 'Editar miembro del equipo';
+  document.getElementById('eq-pass-field').style.display = 'none';
+  document.getElementById('eq-correo').disabled = true;
+  document.getElementById('eq-nombre').value = m.name || '';
+  document.getElementById('eq-correo').value = m.email || '';
+  document.getElementById('eq-rol').value = m.rol || 'profesor';
+  document.getElementById('eq-label').value = m.label || '';
+  openModal('modal-miembro');
+}
+
 async function addMiembro() {
+  const editUid = document.getElementById('eq-edit').value;
   const name = document.getElementById('eq-nombre').value.trim();
   const email = document.getElementById('eq-correo').value.trim().toLowerCase();
   const pass = document.getElementById('eq-pass').value.trim();
   const rol = document.getElementById('eq-rol').value;
   const label = document.getElementById('eq-label').value.trim();
+
+  if (editUid) {
+    if (!name) { toast('El nombre es obligatorio'); return; }
+    const m = state.equipo.find(x => x.username === editUid);
+    if (!m) return;
+    const perfilEdit = { name, email: m.email, rol, label: label || (rol === 'admin' ? 'Administrador' : 'Profesor'),
+                         initials: name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() };
+    try {
+      await window.fb.setDoc('usuarios', editUid, perfilEdit);
+      Object.assign(m, perfilEdit);
+      closeModal('modal-miembro');
+      renderEquipo();
+      toast('✓ Miembro actualizado');
+    } catch (e) { toast('No se pudo guardar el cambio'); }
+    return;
+  }
+
   if (!name || !email || !pass) { toast('Completa nombre, correo y contraseña'); return; }
   if (pass.length < 6) { toast('La contraseña debe tener al menos 6 caracteres'); return; }
   toast('Creando cuenta...');
+  let uidCreado = null;
   try {
-    const uid = await window.fb.crearUsuarioAuth(email, pass);
+    uidCreado = await window.fb.crearUsuarioAuth(email, pass);
     const perfil = { name, email, rol, label: label || (rol === 'admin' ? 'Administrador' : 'Profesor'),
                      initials: name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() };
-    await window.fb.setDoc('usuarios', uid, perfil);
-    state.equipo.push(Object.assign({ username: uid }, perfil));
+    await window.fb.setDoc('usuarios', uidCreado, perfil);
+    await window.fb.confirmarUsuarioAuth();
+    state.equipo.push(Object.assign({ username: uidCreado }, perfil));
     closeModal('modal-miembro');
     renderEquipo();
     toast('✓ Cuenta creada — ya puede iniciar sesión');
   } catch (e) {
+    if (uidCreado) await window.fb.cancelarUsuarioAuth();
     const c = e && e.code ? e.code : '';
-    toast(c.includes('email-already-in-use') ? 'Ese correo ya tiene cuenta' : 'No se pudo crear la cuenta');
+    toast(c.includes('email-already-in-use') ? 'Ese correo ya tiene cuenta' : 'No se pudo crear la cuenta — no quedó nada a medias, intenta de nuevo');
   }
 }
 
@@ -2123,6 +2260,48 @@ async function quitarMiembro(uid) {
   delPendEq = null;
   renderEquipo();
   toast('Miembro retirado del portal');
+}
+
+// ─── REPARAR CUENTA ROTA ───
+function abrirReparar() {
+  ['rp-correo','rp-pass','rp-nombre'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('rp-rol').value = 'profesor';
+  document.getElementById('rp-alumno-extra').style.display = 'none';
+  openModal('modal-reparar');
+}
+
+function toggleReparaAlumno() {
+  document.getElementById('rp-alumno-extra').style.display = document.getElementById('rp-rol').value === 'alumno' ? '' : 'none';
+}
+
+async function repararCuenta() {
+  const email = document.getElementById('rp-correo').value.trim().toLowerCase();
+  const pass = document.getElementById('rp-pass').value;
+  const name = document.getElementById('rp-nombre').value.trim();
+  const rol = document.getElementById('rp-rol').value;
+  if (!email || !pass || !name) { toast('Completa correo, contraseña y nombre'); return; }
+  toast('Verificando cuenta...');
+  try {
+    const uid = await window.fb.repararCuenta(email, pass);
+    const initials = name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase();
+    let perfil;
+    if (rol === 'alumno') {
+      perfil = { name, email, rol: 'alumno', sede: document.getElementById('rp-sede').value,
+                 beca: parseInt(document.getElementById('rp-beca').value), plan: 'mensual', matricula: 'normal', initials };
+    } else {
+      perfil = { name, email, rol, label: rol === 'admin' ? 'Administrador' : 'Profesor', initials };
+    }
+    await window.fb.setDoc('usuarios', uid, perfil);
+    if (rol === 'alumno') { state.alumnos.push(Object.assign({ username: uid }, perfil)); renderAlumnos(); }
+    else { state.equipo.push(Object.assign({ username: uid }, perfil)); renderEquipo(); }
+    closeModal('modal-reparar');
+    toast('✓ Cuenta reparada — ya puede iniciar sesión normal');
+  } catch (e) {
+    const c = e && e.code ? e.code : '';
+    toast(c.includes('wrong-password') || c.includes('invalid-credential') ? 'La contraseña no coincide con esa cuenta'
+        : c.includes('user-not-found') ? 'No existe ninguna cuenta de acceso con ese correo — créala normal desde Agregar'
+        : 'No se pudo verificar. Intenta de nuevo.');
+  }
 }
 
 // ─── CONFIGURACIÓN ───
@@ -2323,6 +2502,7 @@ async function procesarImport(rows) {
     let uid;
     try { uid = await window.fb.crearUsuarioAuth(email, pass.length >= 6 ? pass : 'electi2026'); }
     catch (e) { err++; continue; }
+    let filaOk = true;
     const nuevo = {
       name: nombre,
       username: uid,
@@ -2343,9 +2523,16 @@ async function procesarImport(rows) {
       acuerdoUrl: getCol(row, ['acuerdo']) || getCol(row, ['drive']) || getCol(row, ['url']),
       initials: nombre.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase(),
     };
-    state.alumnos.push(nuevo);
-    await guardarDoc('usuarios', uid, limpiarAlumno(nuevo));
-    ok++;
+    try {
+      await window.fb.setDoc('usuarios', uid, limpiarAlumno(nuevo));
+      await window.fb.confirmarUsuarioAuth();
+      _escrito['usuarios/' + uid] = JSON.stringify(limpiarAlumno(nuevo));
+      state.alumnos.push(nuevo);
+      ok++;
+    } catch (e2) {
+      await window.fb.cancelarUsuarioAuth();
+      err++;
+    }
   }
   renderAlumnos();
   toast('Importación: ' + ok + ' creados · ' + dup + ' ya existían · ' + sin + ' filas sin nombre o correo' + (err ? ' · ' + err + ' con error' : ''));
