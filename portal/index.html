@@ -387,6 +387,92 @@ tbody tr:hover td { background: var(--off); }
 }
 .al-hero-avatar img { width: 100%; height: 100%; object-fit: cover; }
 
+/* Filtros de tabla */
+.filtros { display: flex; gap: 7px; flex-wrap: wrap; align-items: center; }
+.chip-filtro {
+  font-size: 12px; font-weight: 600; padding: 6px 13px; border-radius: 100px; cursor: pointer;
+  background: var(--off); border: 1px solid var(--border); color: var(--gray);
+  font-family: 'DM Sans', sans-serif; transition: all 0.15s;
+}
+.chip-filtro:hover { border-color: var(--sky-light); color: var(--text); }
+.chip-filtro.on { background: var(--navy); border-color: var(--navy); color: #fff; }
+.buscador {
+  position: relative; display: inline-flex; align-items: center;
+}
+.buscador svg { position: absolute; left: 11px; width: 14px; height: 14px; stroke: var(--gray); fill: none; stroke-width: 2.2; pointer-events: none; }
+.buscador input {
+  padding: 8px 14px 8px 32px; border: 1px solid var(--border); border-radius: 9px;
+  font-size: 13px; font-family: 'DM Sans', sans-serif; outline: none; width: 210px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.buscador input:focus { border-color: var(--sky); box-shadow: 0 0 0 3px rgba(66,165,245,0.13); }
+
+/* ══════ FICHA CRM (panel lateral) ══════ */
+.ficha-backdrop {
+  position: fixed; inset: 0; background: rgba(8,26,74,0.55); backdrop-filter: blur(3px);
+  z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.25s;
+}
+.ficha-backdrop.open { opacity: 1; pointer-events: auto; }
+.ficha-panel {
+  position: fixed; top: 0; right: 0; bottom: 0; width: 560px; max-width: 100%;
+  background: var(--off); z-index: 201; overflow-y: auto;
+  transform: translateX(100%); transition: transform 0.32s cubic-bezier(0.32,0.72,0,1);
+  box-shadow: -12px 0 40px rgba(8,26,74,0.18);
+}
+.ficha-panel.open { transform: translateX(0); }
+
+.ficha-head {
+  background: linear-gradient(135deg, var(--navy-dark), var(--navy) 60%, #14479e);
+  padding: 24px 26px 22px; color: #fff; position: relative;
+}
+.ficha-close {
+  position: absolute; top: 18px; right: 18px; width: 32px; height: 32px; border-radius: 9px;
+  background: rgba(255,255,255,0.14); border: none; cursor: pointer; color: #fff;
+  font-size: 17px; line-height: 1; display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s;
+}
+.ficha-close:hover { background: rgba(255,255,255,0.26); }
+.ficha-id { display: flex; align-items: center; gap: 15px; margin-bottom: 16px; }
+.ficha-avatar {
+  width: 66px; height: 66px; border-radius: 50%; overflow: hidden; flex-shrink: 0;
+  background: rgba(255,255,255,0.15); border: 2.5px solid rgba(255,255,255,0.35);
+  display: flex; align-items: center; justify-content: center; font-size: 21px; font-weight: 800;
+}
+.ficha-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.ficha-nombre { font-size: 21px; font-weight: 800; letter-spacing: -0.5px; line-height: 1.15; margin-bottom: 5px; }
+.ficha-sub { font-size: 12.5px; color: rgba(255,255,255,0.6); }
+.ficha-chips { display: flex; gap: 7px; flex-wrap: wrap; }
+
+.ficha-body { padding: 20px 26px 40px; }
+.ficha-sec { margin-bottom: 22px; }
+.ficha-sec-tit {
+  font-size: 10.5px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;
+  color: var(--gray); margin-bottom: 10px; display: flex; align-items: center; gap: 7px;
+}
+.ficha-card { background: var(--white); border: 1px solid var(--border); border-radius: 14px; padding: 18px 20px; }
+
+.ficha-kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.ficha-kpi { background: var(--white); border: 1px solid var(--border); border-radius: 13px; padding: 14px; text-align: center; }
+.ficha-kpi-val { font-size: 22px; font-weight: 800; letter-spacing: -0.8px; line-height: 1; margin-bottom: 4px; }
+.ficha-kpi-lbl { font-size: 10.5px; font-weight: 600; color: var(--gray); letter-spacing: 0.2px; }
+
+.ficha-datos { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 18px; }
+.ficha-dato-lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--gray); margin-bottom: 2px; }
+.ficha-dato-val { font-size: 13.5px; color: var(--text); font-weight: 500; overflow-wrap: anywhere; }
+
+.ficha-acciones { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+
+@media (max-width: 640px) {
+  .ficha-panel { width: 100%; }
+  .ficha-datos { grid-template-columns: 1fr; }
+  .ficha-kpis { grid-template-columns: repeat(3, 1fr); gap: 7px; }
+  .ficha-kpi { padding: 11px 6px; }
+  .ficha-kpi-val { font-size: 18px; }
+  .ficha-kpi-lbl { font-size: 9.5px; }
+  .ficha-body { padding: 18px 18px 40px; }
+  .ficha-head { padding: 20px 20px 18px; }
+}
+
 /* Acciones rápidas */
 .qa-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 20px; }
 .qa-btn {
@@ -749,8 +835,9 @@ tbody tr:hover td { background: var(--off); }
         <input type="date" id="att-date">
         <select id="att-sede">
           <option value="ALL">Todas las sedes</option>
-          <option value="UIO">Solo UIO</option>
-          <option value="GYE">Solo GYE</option>
+          <option value="UIO">Solo Quito</option>
+          <option value="GYE">Solo Guayaquil</option>
+          <option value="SDO">Solo Santo Domingo</option>
         </select>
         <button class="btn btn-navy" onclick="loadAttendance()">Cargar sesión</button>
         <button class="btn btn-sky" onclick="saveAttendance()">Guardar asistencia</button>
@@ -806,8 +893,9 @@ tbody tr:hover td { background: var(--off); }
           <div class="card-title">Control de cobros</div>
           <select id="pagos-sede" onchange="renderPagos()" style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;font-family:'DM Sans',sans-serif;">
             <option value="ALL">Todas las sedes</option>
-            <option value="UIO">Solo UIO</option>
-            <option value="GYE">Solo GYE</option>
+            <option value="UIO">Solo Quito</option>
+            <option value="GYE">Solo Guayaquil</option>
+            <option value="SDO">Solo Santo Domingo</option>
           </select>
           <button class="btn btn-ghost" onclick="exportFinancieroExcel()">⬇ Excel financiero</button>
           <div class="pay-legend">
@@ -834,12 +922,22 @@ tbody tr:hover td { background: var(--off); }
     <!-- MULTAS -->
     <div class="page" id="page-multas">
       <div class="page-title">Multas y fondo de convivencia</div>
-      <div class="page-sub">$2 por cada 10 min de atraso o fracción. Lo recaudado va al fondo interno de convivencia y actividades del grupo.</div>
+      <div class="page-sub">Las multas no son una sanción económica: son la herramienta con la que ELECTI construye cultura de puntualidad. $2 por cada 10 min de atraso o fracción, y todo lo recaudado vuelve al grupo como fondo de convivencia.</div>
       <div class="stats-row" style="grid-template-columns:repeat(3,1fr);">
         <div class="stat-card"><div class="stat-card-label">Fondo de convivencia (cobrado)</div><div class="stat-card-val green" id="mu-fondo">$0</div></div>
         <div class="stat-card"><div class="stat-card-label">Multas por cobrar</div><div class="stat-card-val yellow" id="mu-pend">$0</div></div>
         <div class="stat-card"><div class="stat-card-label">Multas registradas</div><div class="stat-card-val" id="mu-count">0</div></div>
       </div>
+      <div class="card" style="border-left:3px solid var(--sky);">
+        <div class="card-title" style="margin-bottom:8px;">⏱ Por qué existen las multas</div>
+        <p style="font-size:13px;color:var(--gray);line-height:1.7;">
+          En el mundo real, llegar tarde tiene consecuencias: una reunión perdida, un cliente molesto, un equipo esperando.
+          ELECTI replica esa lógica en pequeño para que el hábito se forme antes de que el costo sea alto.
+          <b style="color:var(--text);">El dinero nunca sale del grupo</b> — se acumula en el fondo de convivencia y se usa
+          en salidas, comidas y celebraciones de la misma generación. Quien llega puntual, disfruta de lo que pagaron los demás.
+        </p>
+      </div>
+
       <div class="card">
         <div class="card-head">
           <div class="card-title">Registro de multas</div>
@@ -861,8 +959,10 @@ tbody tr:hover td { background: var(--off); }
         <div class="card-head">
           <div class="card-title">Alumnos <span id="alumno-count" style="font-size:13px;font-weight:500;color:var(--gray);"></span></div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-            <input type="text" id="search-lista" placeholder="Buscar alumno..." onkeyup="renderAlumnos()"
-              style="padding:8px 14px;border:1px solid var(--border);border-radius:8px;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;width:190px;">
+            <div class="buscador">
+              <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+              <input type="text" id="search-lista" placeholder="Buscar alumno..." onkeyup="renderAlumnos()">
+            </div>
             <button class="btn btn-ghost" onclick="document.getElementById('import-file').click()">⬆ Importar</button>
             <button class="btn btn-ghost" onclick="plantillaImport()" title="Descarga la plantilla Excel con las columnas correctas">Plantilla</button>
             <input type="file" id="import-file" accept=".xlsx,.xls,.csv" style="display:none;" onchange="importarAlumnos(this)">
@@ -870,6 +970,7 @@ tbody tr:hover td { background: var(--off); }
             <button class="btn btn-navy" onclick="abrirNuevoAlumno()">+ Agregar alumno</button>
           </div>
         </div>
+        <div class="filtros" id="filtros-alumnos" style="margin-bottom:16px;"></div>
         <table>
           <thead><tr><th>Nombre</th><th>Correo</th><th>Colegio / Universidad</th><th>Sede</th><th>Beca</th><th>Plan</th><th></th></tr></thead>
           <tbody id="alumnos-table"></tbody>
@@ -881,13 +982,10 @@ tbody tr:hover td { background: var(--off); }
     <div class="page" id="page-materiales">
       <div class="page-title">Materiales</div>
       <div class="page-sub">Recursos del programa por fase</div>
-      <div class="card">
-        <div class="card-head">
-          <div class="card-title">Recursos disponibles</div>
-          <button class="btn btn-navy" onclick="openModal('modal-material')">+ Subir material</button>
-        </div>
-        <div class="materials-grid" id="materials-grid-admin"></div>
+      <div style="display:flex;justify-content:flex-end;margin-bottom:16px;">
+        <button class="btn btn-navy" onclick="openModal('modal-material')">+ Subir material</button>
       </div>
+      <div id="materials-grid-admin"></div>
     </div>
 
     <!-- ANUNCIOS ADMIN -->
@@ -1118,6 +1216,7 @@ tbody tr:hover td { background: var(--off); }
       <select id="m-sede">
         <option value="UIO">Quito (UIO)</option>
         <option value="GYE">Guayaquil (GYE)</option>
+        <option value="SDO">Santo Domingo (SDO)</option>
       </select>
     </div>
     <div class="field"><label>Teléfono del alumno</label><input type="text" id="m-tel" placeholder="Ej: 0991234567"></div>
@@ -1132,8 +1231,8 @@ tbody tr:hover td { background: var(--off); }
     <input type="hidden" id="m-edit" value="">
     <div class="field"><label>Beca</label>
       <select id="m-beca">
+        <option value="25" selected>Beca estándar 25% — cuota $30</option>
         <option value="0">Sin beca — cuota $40</option>
-        <option value="25">Beca consejo 25% — cuota $30</option>
         <option value="40">Beca de acceso 40% — cuota $24</option>
         <option value="50">Beca parcial 50% — cuota $20</option>
         <option value="100">Beca completa 100% — sin costo</option>
@@ -1212,6 +1311,11 @@ tbody tr:hover td { background: var(--off); }
   <iframe id="acuerdo-frame" style="flex:1;width:100%;border:none;border-radius:12px;background:#fff;"></iframe>
 </div>
 
+<div class="ficha-backdrop" id="ficha-backdrop" onclick="cerrarFicha()"></div>
+<div class="ficha-panel" id="ficha-panel">
+  <div id="ficha-contenido"></div>
+</div>
+
 <div class="modal-bg" id="modal-miembro">
   <div class="modal">
     <div class="modal-title" id="modal-miembro-title">Agregar miembro del equipo</div>
@@ -1263,7 +1367,7 @@ tbody tr:hover td { background: var(--off); }
     </div>
     <div id="rp-alumno-extra" style="display:none;">
       <div class="field"><label>Sede</label>
-        <select id="rp-sede"><option value="UIO">Quito (UIO)</option><option value="GYE">Guayaquil (GYE)</option></select>
+        <select id="rp-sede"><option value="UIO">Quito (UIO)</option><option value="GYE">Guayaquil (GYE)</option><option value="SDO">Santo Domingo (SDO)</option></select>
       </div>
       <div class="field"><label>Beca</label>
         <select id="rp-beca">
@@ -2041,10 +2145,12 @@ function renderDashboard() {
 
   const uio = state.alumnos.filter(function(a){ return (a.sede || 'UIO') === 'UIO'; }).length;
   const gye = state.alumnos.filter(function(a){ return a.sede === 'GYE'; }).length;
+  const sdo = state.alumnos.filter(function(a){ return a.sede === 'SDO'; }).length;
   const chips = ['<span class="al-chip">' + cfg.cicloNombre + '</span>',
                  '<span class="al-chip">👥 ' + state.alumnos.length + ' alumnos</span>'];
   if (uio) chips.push('<span class="al-chip">UIO ' + uio + '</span>');
   if (gye) chips.push('<span class="al-chip">GYE ' + gye + '</span>');
+  if (sdo) chips.push('<span class="al-chip">SDO ' + sdo + '</span>');
   chips.push('<span class="al-chip accent">' + (esAdmin ? 'Administrador' : 'Profesor') + '</span>');
   document.getElementById('dash-chips').innerHTML = chips.join('');
 
@@ -2097,7 +2203,8 @@ function renderDashboard() {
 
   let metricas = [];
   metricas.push({ ico:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/>',
-    cls:'ico-blue', lbl:'Alumnos', val:state.alumnos.length, sub: uio + ' UIO · ' + gye + ' GYE' });
+    cls:'ico-blue', lbl:'Alumnos', val:state.alumnos.length,
+    sub: uio + ' UIO · ' + gye + ' GYE' + (sdo ? ' · ' + sdo + ' SDO' : '') });
   metricas.push({ ico:'<path d="M20 6L9 17l-5-5"/>', cls:'ico-green', lbl:'Asistencia',
     val: asistProm !== null ? asistProm + '%' : '—', sub: sesiones + (sesiones === 1 ? ' sesión registrada' : ' sesiones registradas') });
 
@@ -2393,36 +2500,58 @@ function togglePago(username, key) {
   renderPagos();
 }
 
+let filtroAlumnos = 'todos';
+function setFiltroAlumnos(f) { filtroAlumnos = f; renderAlumnos(); }
+
 function renderAlumnos() {
-  document.getElementById('alumno-count').textContent = `— ${state.alumnos.length} registrados`;
   const tbody = document.getElementById('alumnos-table');
   const q = (document.getElementById('search-lista') ? document.getElementById('search-lista').value : '').toLowerCase().trim();
-  const lista = state.alumnos.filter(a => !q || (a.name + ' ' + a.username + ' ' + (a.colegio||'')).toLowerCase().includes(q));
+
+  // Conteos para los filtros
+  const cuenta = { todos: state.alumnos.length, UIO: 0, GYE: 0, SDO: 0, mora: 0, riesgo: 0, beca: 0 };
+  state.alumnos.forEach(function(a){
+    var sd = a.sede || 'UIO';
+    if (sd === 'GYE') cuenta.GYE++; else if (sd === 'SDO') cuenta.SDO++; else cuenta.UIO++;
+    if (resumenPago(a).mora) cuenta.mora++;
+    const s = getAlumnoStats(a.username);
+    if (s.total > 0 && s.faltas >= 2) cuenta.riesgo++;
+    if (a.beca > 0) cuenta.beca++;
+  });
+  const defs = [
+    { k:'todos', lbl:'Todos', n:cuenta.todos },
+    { k:'UIO', lbl:'Quito', n:cuenta.UIO },
+    { k:'GYE', lbl:'Guayaquil', n:cuenta.GYE },
+    { k:'SDO', lbl:'Santo Domingo', n:cuenta.SDO },
+    { k:'beca', lbl:'Con beca', n:cuenta.beca },
+    { k:'mora', lbl:'En mora', n:cuenta.mora },
+    { k:'riesgo', lbl:'En riesgo', n:cuenta.riesgo },
+  ];
+  const cf = document.getElementById('filtros-alumnos');
+  if (cf) cf.innerHTML = defs.map(function(d){
+    return '<button class="chip-filtro' + (filtroAlumnos === d.k ? ' on' : '') + '" onclick="setFiltroAlumnos(\'' + d.k + '\')">' + d.lbl + ' · ' + d.n + '</button>';
+  }).join('');
+
+  let lista = state.alumnos.filter(a => !q || (a.name + ' ' + (a.email||'') + ' ' + (a.colegio||'')).toLowerCase().includes(q));
+  if (filtroAlumnos === 'UIO') lista = lista.filter(function(a){ return (a.sede || 'UIO') === 'UIO'; });
+  else if (filtroAlumnos === 'GYE') lista = lista.filter(function(a){ return a.sede === 'GYE'; });
+  else if (filtroAlumnos === 'SDO') lista = lista.filter(function(a){ return a.sede === 'SDO'; });
+  else if (filtroAlumnos === 'beca') lista = lista.filter(function(a){ return a.beca > 0; });
+  else if (filtroAlumnos === 'mora') lista = lista.filter(function(a){ return resumenPago(a).mora; });
+  else if (filtroAlumnos === 'riesgo') lista = lista.filter(function(a){ const s = getAlumnoStats(a.username); return s.total > 0 && s.faltas >= 2; });
+
+  document.getElementById('alumno-count').textContent = '— ' + lista.length + ' de ' + state.alumnos.length;
   if (state.alumnos.length === 0) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--gray);padding:32px;">Agrega el primer alumno con el botón de arriba.</td></tr>'; return; }
-  if (lista.length === 0) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--gray);padding:32px;">Sin resultados para la búsqueda.</td></tr>'; return; }
+  if (lista.length === 0) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--gray);padding:32px;">Sin resultados con estos filtros.</td></tr>'; return; }
   tbody.innerHTML = lista.map(a => `<tr>
-    <td><div class="tbl-nombre">${avatarHTML(a)}<div><strong>${a.name}</strong>${a.suspendido ? ' <span class="badge badge-red" style="font-size:10px;">Suspendido</span>' : ''}<br><span class="link-more" onclick="toggleDetalle('${a.username}')" id="lm-${a.username}">▸ Ver ficha completa</span></div></div></td>
+    <td><div class="tbl-nombre">${avatarHTML(a)}<div><strong>${a.name}</strong>${a.suspendido ? ' <span class="badge badge-red" style="font-size:10px;">Suspendido</span>' : ''}<br><span class="link-more" onclick="abrirFicha('${a.username}')">Ver ficha completa →</span></div></div></td>
     <td style="font-family:'DM Mono',monospace;font-size:12px;">${a.email || '—'}</td>
     <td>${a.colegio || '—'}</td>
-    <td><span class="badge ${(a.sede||'UIO')==='GYE'?'badge-yellow':'badge-navy'}">${a.sede||'UIO'}</span></td>
+    <td><span class="badge ${(a.sede||'UIO')==='GYE'?'badge-yellow':(a.sede==='SDO'?'badge-green':'badge-navy')}">${a.sede||'UIO'}</span></td>
     <td>${a.beca > 0 ? `<span class="badge badge-navy">${a.beca}%</span>` : '<span style="color:var(--gray);">—</span>'}</td>
     <td style="font-size:13px;">${a.plan === 'unico' ? 'Pago único' : 'Mensual'}</td>
     <td style="white-space:nowrap;"><button class="btn btn-sky" style="margin-right:6px;font-size:12px;" onclick="generarAcuerdo('${a.username}')">📄 Acuerdo</button><button class="btn btn-ghost" style="margin-right:6px;" onclick="editAlumno('${a.username}')">Editar</button><button class="btn btn-ghost" style="margin-right:6px;" title="${a.suspendido ? 'Reactivar acceso' : 'Suspender acceso'}" onclick="toggleSuspension('${a.username}')">${a.suspendido ? '▶' : '⛔'}</button><button class="btn btn-red" onclick="deleteAlumno('${a.username}')">${delPend === a.username ? '¿Confirmar?' : 'Eliminar'}</button></td>
   </tr>
-  <tr class="al-detail" id="det-${a.username}" style="display:none;"><td colspan="7">
-    <div class="al-detail-grid">
-      <div class="fd-item"><span class="fd-label">Foto</span><span class="fd-value">${avatarHTML(a, 'fd-foto')}</span></div>
-      <div class="fd-item"><span class="fd-label">Cédula alumno</span><span class="fd-value">${a.cedula || '—'}</span></div>
-      <div class="fd-item"><span class="fd-label">Teléfono alumno</span><span class="fd-value">${a.telefono || '—'}</span></div>
-      <div class="fd-item"><span class="fd-label">Correo alumno</span><span class="fd-value">${a.correo || '—'}</span></div>
-      <div class="fd-item"><span class="fd-label">Representante</span><span class="fd-value">${a.repNombre || '—'}</span></div>
-      <div class="fd-item"><span class="fd-label">Cédula representante</span><span class="fd-value">${a.repCedula || '—'}</span></div>
-      <div class="fd-item"><span class="fd-label">Tel. representante</span><span class="fd-value">${a.repTel || '—'}</span></div>
-      <div class="fd-item"><span class="fd-label">Correo representante</span><span class="fd-value">${a.repCorreo || '—'}</span></div>
-      <div class="fd-item"><span class="fd-label">Matrícula</span><span class="fd-value">${a.matricula === 'exenta' ? 'Exenta (antes del 1 jun)' : '$15 regular'}</span></div>
-      <div class="fd-item"><span class="fd-label">Acuerdo firmado</span><span class="fd-value">${a.acuerdoUrl ? `<a href="${a.acuerdoUrl}" target="_blank" style="color:var(--blue);font-weight:600;">Ver en Drive →</a> <span class="link-more" onclick="editAlumno('${a.username}')" style="margin-left:8px;">cambiar</span>` : `<span class="badge badge-yellow" style="cursor:pointer;" title="Clic para pegar el link de Drive" onclick="editAlumno('${a.username}')">Pendiente — clic para agregar link</span>`}</span></div>
-    </div>
-  </td></tr>`).join('');
+`).join('');
 }
 
 function toggleSidebar() {
@@ -2444,20 +2573,15 @@ function toggleDetalle(u) {
 
 function renderMateriales(mode) {
   const grid = document.getElementById(`materials-grid-${mode}`);
-  if (mode === 'alumno') { renderMaterialesAlumno(grid); return; }
-  if (state.materiales.length === 0) { grid.innerHTML = '<div class="empty" style="grid-column:1/-1;"><p>No hay materiales subidos aún.</p></div>'; return; }
-  grid.innerHTML = state.materiales.map((m, i) => `<div class="material-card">
-    <div class="material-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-    <div class="material-info">
-      <h5>${m.titulo}</h5><span>${m.fase} · ${m.tipo}</span><br>
-      <a class="material-link" href="${m.url}" target="_blank">Abrir recurso →</a>
-      ${mode==='admin' ? `<br><button class="btn btn-red" style="margin-top:8px;font-size:11px;padding:4px 10px;" onclick="deleteMaterial(${i})">Eliminar</button>` : ''}
-    </div></div>`).join('');
+  renderMaterialesAlumno(grid, mode === 'admin');
 }
 
-function renderMaterialesAlumno(cont) {
+function renderMaterialesAlumno(cont, conBorrar) {
   if (!state.materiales.length) {
-    cont.innerHTML = '<div class="card"><div class="empty"><p>Todavía no hay materiales publicados. Aparecerán aquí en cuanto tu equipo docente los suba.</p></div></div>';
+    cont.innerHTML = '<div class="card"><div class="empty"><p>' +
+      (conBorrar ? 'Aún no has subido materiales. Usa el botón de arriba para agregar el primero.'
+                 : 'Todavía no hay materiales publicados. Aparecerán aquí en cuanto tu equipo docente los suba.') +
+      '</p></div></div>';
     return;
   }
   const iconos = { 'PDF': ['📄','mat-pdf'], 'Presentación': ['📊','mat-pres'], 'Video': ['🎬','mat-video'], 'Enlace': ['🔗','mat-link'] };
@@ -2474,11 +2598,18 @@ function renderMaterialesAlumno(cont) {
       '<div class="mat-fase-count">' + items.length + (items.length === 1 ? ' recurso' : ' recursos') + '</div></div></div>' +
       '<div class="mat-grid">' + items.map(function(m) {
         const ic = iconos[m.tipo] || ['📁','mat-link'];
-        return '<a class="mat-card" href="' + m.url + '" target="_blank" rel="noopener">' +
-          '<div class="mat-ico ' + ic[1] + '">' + ic[0] + '</div>' +
+        const idx = state.materiales.indexOf(m);
+        const cuerpo = '<div class="mat-ico ' + ic[1] + '">' + ic[0] + '</div>' +
           '<div class="mat-body"><div class="mat-title">' + m.titulo + '</div>' +
           '<div class="mat-meta">' + m.tipo + '</div>' +
-          '<span class="mat-open">Abrir recurso →</span></div></a>';
+          '<span class="mat-open">Abrir recurso →</span></div>';
+        if (conBorrar) {
+          const qq = String.fromCharCode(39);
+          return '<div class="mat-card" style="position:relative;cursor:pointer;" onclick="window.open(' + qq + m.url + qq + ',' + qq + '_blank' + qq + ')">' + cuerpo +
+            '<button class="btn btn-red" style="position:absolute;top:10px;right:10px;font-size:10.5px;padding:3px 9px;" ' +
+            'onclick="event.preventDefault();event.stopPropagation();deleteMaterial(' + idx + ')">Eliminar</button></div>';
+        }
+        return '<a class="mat-card" href="' + m.url + '" target="_blank" rel="noopener">' + cuerpo + '</a>';
       }).join('') + '</div></div>';
   }).join('');
 }
@@ -2686,7 +2817,8 @@ function renderAlumnoHome() {
   }
   const misMultas = multasDe(me.username);
   if (misMultas.length > 0) {
-    pagosHTML += '<div style="margin-top:16px;font-size:10.5px;font-weight:700;text-transform:uppercase;color:var(--gray);letter-spacing:0.7px;">Multas por atraso</div>';
+    pagosHTML += '<div style="margin-top:16px;font-size:10.5px;font-weight:700;text-transform:uppercase;color:var(--gray);letter-spacing:0.7px;">Multas por atraso</div>' +
+      '<div style="font-size:11.5px;color:var(--gray);line-height:1.55;margin-bottom:4px;">Van al fondo de convivencia de tu generación.</div>';
     misMultas.forEach(function(m) {
       pagosHTML += '<div class="al-cuota-row"><span style="font-size:12.5px;">' + m.motivo + '<br><span style="color:var(--gray);font-size:11px;">' + formatDate(m.fecha) + '</span></span>' +
         (m.pagada ? '<span class="badge badge-green">Pagada $' + m.monto + '</span>' : '<span class="badge badge-red">Pendiente $' + m.monto + '</span>') + '</div>';
@@ -3344,7 +3476,8 @@ async function procesarImport(rows) {
       rol: 'alumno',
       cedula: getCol(row, ['cedula'], ['repres']) || getCol(row, ['documento'], ['repres']),
       colegio: getCol(row, ['colegio']) || getCol(row, ['universidad']) || getCol(row, ['institucion']),
-      sede: (sedeRaw.includes('gye') || sedeRaw.includes('guayaquil')) ? 'GYE' : 'UIO',
+      sede: (sedeRaw.includes('gye') || sedeRaw.includes('guayaquil')) ? 'GYE'
+          : (sedeRaw.includes('sdo') || sedeRaw.includes('santodomingo') || sedeRaw.includes('santo')) ? 'SDO' : 'UIO',
       beca: parseInt(getCol(row, ['beca'])) || 0,
       plan: planRaw.includes('unic') ? 'unico' : 'mensual',
       matricula: matRaw.includes('exent') ? 'exenta' : 'normal',
@@ -3374,7 +3507,7 @@ async function procesarImport(rows) {
 
 function plantillaImport() {
   const data = [
-    ['Nombre', 'Correo (obligatorio)', 'Contraseña', 'Cédula', 'Colegio', 'Sede (UIO/GYE)', 'Beca %', 'Plan (mensual/unico)', 'Matrícula (normal/exenta)', 'Teléfono', 'Nombre representante', 'Cédula representante', 'Teléfono representante', 'Correo representante', 'URL acuerdo firmado'],
+    ['Nombre', 'Correo (obligatorio)', 'Contraseña', 'Cédula', 'Colegio', 'Sede (UIO/GYE/SDO)', 'Beca %', 'Plan (mensual/unico)', 'Matrícula (normal/exenta)', 'Teléfono', 'Nombre representante', 'Cédula representante', 'Teléfono representante', 'Correo representante', 'URL acuerdo firmado'],
     ['Ana García', 'ana@mail.com', 'electi2026', '1712345678', 'Colegio San Gabriel', 'UIO', '25', 'mensual', 'normal', '0991234567', 'María Pérez', '1798765432', '0998765432', 'maria@mail.com', ''],
   ];
   descargarLibro([{ name: 'Plantilla', data }], 'plantilla-alumnos-electi.xlsx');
@@ -3652,6 +3785,146 @@ async function cambiarPasswordUsuario() {
         : c.includes('too-many-requests') ? 'Demasiados intentos. Espera unos minutos.'
         : 'No se pudo cambiar. Intenta de nuevo.');
   }
+}
+
+// ─── FICHA CRM DEL ALUMNO ───
+function abrirFicha(uid) {
+  const a = state.alumnos.find(function(x){ return x.username === uid; });
+  if (!a) return;
+  const esAdmin = state.user.role === 'admin';
+  const st = getAlumnoStats(uid);
+  const ini = a.initials || (a.name || '?').split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase();
+
+  // Encabezado
+  const chips = [];
+  chips.push('<span class="al-chip">' + (a.sede || 'UIO') + '</span>');
+  if (a.beca > 0) chips.push('<span class="al-chip accent">Beca ' + a.beca + '%</span>');
+  chips.push('<span class="al-chip">' + (a.plan === 'unico' ? 'Pago único' : 'Mensual') + '</span>');
+  if (a.suspendido) chips.push('<span class="al-chip" style="background:rgba(239,68,68,0.25);border-color:rgba(239,68,68,0.4);">⛔ Suspendido</span>');
+
+  let h = '<div class="ficha-head">' +
+    '<button class="ficha-close" onclick="cerrarFicha()">✕</button>' +
+    '<div class="ficha-id">' +
+      '<div class="ficha-avatar">' + (a.fotoUrl ? '<img src="' + a.fotoUrl + '" alt="">' : ini) + '</div>' +
+      '<div><div class="ficha-nombre">' + a.name + '</div>' +
+      '<div class="ficha-sub">' + (a.colegio || 'Sin institución registrada') + '</div></div>' +
+    '</div>' +
+    '<div class="ficha-chips">' + chips.join('') + '</div>' +
+  '</div>';
+
+  h += '<div class="ficha-body">';
+
+  // KPIs
+  const colorFaltas = st.faltas > 2 ? 'var(--red)' : st.faltas === 2 ? 'var(--yellow)' : 'var(--green)';
+  h += '<div class="ficha-sec"><div class="ficha-kpis">' +
+    '<div class="ficha-kpi"><div class="ficha-kpi-val" style="color:var(--green);">' + st.P + '</div><div class="ficha-kpi-lbl">Presentes</div></div>' +
+    '<div class="ficha-kpi"><div class="ficha-kpi-val" style="color:' + colorFaltas + ';">' + faltasTxt(st.faltas) + '</div><div class="ficha-kpi-lbl">Faltas / 2</div></div>' +
+    '<div class="ficha-kpi"><div class="ficha-kpi-val">' + (st.pct !== null ? st.pct + '%' : '—') + '</div><div class="ficha-kpi-lbl">Asistencia</div></div>' +
+  '</div></div>';
+
+  // Progreso de faltas
+  const barra = Math.min(100, (st.faltas / 2) * 100);
+  h += '<div class="ficha-sec"><div class="ficha-sec-tit">📋 Progreso de faltas</div><div class="ficha-card">' +
+    '<div class="progress-wrap" style="height:9px;margin-bottom:12px;"><div class="progress-bar ' + (st.faltas > 2 ? 'low' : '') + '" style="width:' + barra + '%"></div></div>' +
+    '<div class="al-cuota-row"><span>Injustificadas <span style="color:var(--gray);font-size:11.5px;">(1 c/u)</span></span><span style="font-weight:700;color:var(--red);">' + st.FI + '</span></div>' +
+    '<div class="al-cuota-row"><span>Justificadas <span style="color:var(--gray);font-size:11.5px;">(½ c/u)</span></span><span style="font-weight:700;color:var(--blue);">' + st.FJ + '</span></div>' +
+    '<div class="al-cuota-row"><span>Tardanzas</span><span style="font-weight:700;color:var(--yellow);">' + st.T + '</span></div>' +
+  '</div></div>';
+
+  // Pagos (solo admin)
+  if (esAdmin) {
+    const r = resumenPago(a);
+    const p = getPagos(a);
+    const mu = multasResumen(uid);
+    const pagPct = r.total > 0 ? Math.round((r.pagado / r.total) * 100) : 100;
+    h += '<div class="ficha-sec"><div class="ficha-sec-tit">💳 Estado de cuenta</div><div class="ficha-card">';
+    if (r.total === 0) {
+      h += '<div style="text-align:center;padding:6px 0;"><span class="badge badge-navy">Beca completa 100%</span></div>';
+    } else {
+      h += '<div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:8px;">' +
+        '<span style="font-size:24px;font-weight:800;letter-spacing:-0.8px;">$' + r.pagado + '</span>' +
+        '<span style="font-size:13px;color:var(--gray);">de $' + r.total + ' · ' + pagPct + '%</span></div>' +
+        '<div class="progress-wrap" style="height:9px;margin-bottom:14px;"><div class="progress-bar" style="width:' + pagPct + '%"></div></div>';
+      if (a.plan === 'unico') {
+        h += '<div class="al-cuota-row"><span>Pago único</span>' + (r.unicoPagado ? '<span class="badge badge-green">Pagado</span>' : (r.mora ? '<span class="badge badge-red">En mora</span>' : '<span class="badge badge-yellow">Pendiente</span>')) + '</div>';
+      } else {
+        if (r.mat > 0) h += '<div class="al-cuota-row"><span>Matrícula $' + r.mat + '</span>' + (p.mat ? '<span class="badge badge-green">Pagada</span>' : '<span class="badge badge-yellow">Pendiente</span>') + '</div>';
+        getMeses().forEach(function(m){
+          const stm = estadoMes(a, m);
+          if (stm === 'exento') return;
+          h += '<div class="al-cuota-row"><span>Cuota ' + m.label + ' <span style="color:var(--gray);font-size:11.5px;">$' + r.cuota + '</span></span>' +
+            (stm === 'paid' ? '<span class="badge badge-green">Pagada</span>' : stm === 'overdue' ? '<span class="badge badge-red">En mora</span>' : '<span class="badge badge-gray">Pendiente</span>') + '</div>';
+        });
+      }
+      if (mu.pend > 0) h += '<div class="al-cuota-row" style="font-weight:700;"><span>Multas pendientes</span><span class="badge badge-red">$' + mu.pend + '</span></div>';
+    }
+    h += '</div></div>';
+  }
+
+  // Historial de asistencia
+  const registros = [];
+  Object.keys(state.asistencia).forEach(function(k){
+    const ses = state.asistencia[k];
+    if (ses[uid]) { const pt = k.split('_'); registros.push({ tipo: pt[0], fecha: pt[1], status: ses[uid] }); }
+  });
+  registros.sort(function(x,y){ return y.fecha.localeCompare(x.fecha); });
+  h += '<div class="ficha-sec"><div class="ficha-sec-tit">🗓 Historial de asistencia</div><div class="ficha-card">';
+  if (registros.length === 0) {
+    h += '<div class="empty" style="padding:18px 0;"><p>Sin sesiones registradas.</p></div>';
+  } else {
+    h += '<div class="al-timeline">' + registros.slice(0, 10).map(function(x){
+      const e = estadoAtt(x.status);
+      const dot = e.badge === 'badge-green' ? 'dot-green' : e.badge === 'badge-yellow' ? 'dot-yellow' : e.badge === 'badge-navy' ? 'dot-blue' : 'dot-red';
+      return '<div class="al-tl-item"><div class="al-tl-dot ' + dot + '"></div>' +
+        '<div class="al-tl-top"><span class="al-tl-title">' + (x.tipo === 'martes' ? 'Sesión virtual' : 'Sesión presencial') + '</span>' +
+        '<span class="badge ' + e.badge + '">' + e.label + '</span></div>' +
+        '<div class="al-tl-date">' + formatDate(x.fecha) + '</div></div>';
+    }).join('') + '</div>';
+    if (registros.length > 10) h += '<div style="font-size:12px;color:var(--gray);text-align:center;padding-top:10px;">Mostrando las 10 más recientes de ' + registros.length + '</div>';
+  }
+  h += '</div></div>';
+
+  // Datos de contacto (solo admin: incluye cédulas)
+  h += '<div class="ficha-sec"><div class="ficha-sec-tit">👤 Datos de contacto</div><div class="ficha-card"><div class="ficha-datos">';
+  function dato(lbl, val) {
+    return '<div><div class="ficha-dato-lbl">' + lbl + '</div><div class="ficha-dato-val">' + (val || '—') + '</div></div>';
+  }
+  h += dato('Correo', a.email);
+  h += dato('Teléfono', a.telefono);
+  if (esAdmin) h += dato('Cédula', a.cedula);
+  h += dato('Institución', a.colegio);
+  h += dato('Representante', a.repNombre);
+  h += dato('Tel. representante', a.repTel);
+  h += dato('Correo representante', a.repCorreo);
+  if (esAdmin) h += dato('Cédula representante', a.repCedula);
+  h += dato('Matrícula', a.matricula === 'exenta' ? 'Exenta' : '$' + getConfig().matricula);
+  h += dato('Acuerdo firmado', a.acuerdoUrl
+    ? '<a href="' + a.acuerdoUrl + '" target="_blank" style="color:var(--blue);font-weight:600;">Ver en Drive →</a>'
+    : '<span class="badge badge-yellow">Pendiente</span>');
+  h += '</div></div></div>';
+
+  // Acciones
+  if (esAdmin) {
+    const q = String.fromCharCode(39);
+    h += '<div class="ficha-sec"><div class="ficha-sec-tit">⚙ Acciones</div><div class="ficha-acciones">' +
+      '<button class="btn btn-sky" onclick="cerrarFicha();generarAcuerdo(' + q + uid + q + ')">📄 Generar acuerdo</button>' +
+      '<button class="btn btn-ghost" onclick="cerrarFicha();editAlumno(' + q + uid + q + ')">Editar datos</button>' +
+      '<button class="btn btn-ghost" onclick="toggleSuspension(' + q + uid + q + ');cerrarFicha()">' + (a.suspendido ? '▶ Reactivar acceso' : '⛔ Suspender acceso') + '</button>' +
+      '</div></div>';
+  }
+
+  h += '</div>';
+
+  document.getElementById('ficha-contenido').innerHTML = h;
+  document.getElementById('ficha-backdrop').classList.add('open');
+  document.getElementById('ficha-panel').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function cerrarFicha() {
+  document.getElementById('ficha-backdrop').classList.remove('open');
+  document.getElementById('ficha-panel').classList.remove('open');
+  document.body.style.overflow = '';
 }
 
 // ─── FOTO PROPIA DEL ALUMNO ───

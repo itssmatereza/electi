@@ -406,6 +406,51 @@ nav.scrolled{border-bottom-color:var(--line);box-shadow:0 1px 20px rgba(8,21,58,
 .exp-txt p{color:rgba(255,255,255,.6);font-size:13.5px;line-height:1.55;max-width:400px}
 .exp-emoji{position:absolute;top:22px;right:24px;font-size:26px;opacity:.32;z-index:1}
 
+/* ══ DESPUÉS / RUTA ALUMNI ══ */
+.after{background:#fff;overflow:hidden}
+.af-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:clamp(44px,5vw,64px)}
+.af{
+  border-radius:var(--r-lg);padding:34px 30px;position:relative;overflow:hidden;
+  background:var(--paper);border:1px solid var(--line);
+  transition:transform .32s cubic-bezier(.34,1.3,.64,1),box-shadow .32s,border-color .32s;
+}
+.af:hover{transform:translateY(-5px);box-shadow:var(--shadow-m);border-color:var(--line-2)}
+.af-ico{
+  width:50px;height:50px;border-radius:14px;display:flex;align-items:center;justify-content:center;
+  font-size:22px;margin-bottom:20px;background:#fff;border:1px solid var(--line);
+}
+.af h3{font-size:20px;margin-bottom:10px;font-weight:800}
+.af p{font-size:14.5px;color:var(--muted);line-height:1.68}
+.af-proof{
+  display:inline-flex;align-items:center;gap:7px;margin-top:16px;
+  font-size:12px;font-weight:700;color:var(--green);background:#F0FDF4;
+  border:1px solid #BBF7D0;padding:6px 13px;border-radius:100px;
+}
+.af-hero{
+  background:linear-gradient(140deg,var(--navy-deep) 0%,var(--navy) 54%,#144099 100%);
+  border-radius:var(--r-xl);padding:clamp(38px,5.5vw,64px);position:relative;overflow:hidden;
+}
+.af-hero::before{
+  content:'';position:absolute;top:-120px;right:-90px;width:420px;height:420px;border-radius:50%;
+  background:radial-gradient(circle,rgba(66,165,245,.3),transparent 68%);pointer-events:none;
+}
+.af-hero-in{position:relative;z-index:1;display:grid;grid-template-columns:1.15fr .85fr;gap:clamp(32px,5vw,64px);align-items:center}
+.af-hero h3{color:#fff;font-size:clamp(26px,3.6vw,40px);font-weight:900;letter-spacing:-.04em;line-height:1.1;margin-bottom:18px}
+.af-hero h3 .grad{background:linear-gradient(105deg,var(--sky),var(--sky-l));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.af-hero p{font-size:15.5px;color:rgba(255,255,255,.62);line-height:1.75;margin-bottom:14px}
+.af-steps{display:flex;flex-direction:column;gap:12px}
+.af-step{
+  display:flex;gap:14px;align-items:center;padding:16px 18px;border-radius:15px;
+  background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.1);
+}
+.af-step-n{
+  width:34px;height:34px;border-radius:10px;flex-shrink:0;
+  background:rgba(66,165,245,.15);border:1px solid rgba(66,165,245,.3);
+  display:flex;align-items:center;justify-content:center;color:var(--sky);font-weight:800;font-size:13px;
+}
+.af-step strong{display:block;color:#fff;font-size:14.5px;font-weight:700;line-height:1.3}
+.af-step span{font-size:12.5px;color:rgba(255,255,255,.5)}
+
 /* ══ EQUIPO ══ */
 .team{background:var(--paper)}
 .team-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
@@ -631,6 +676,8 @@ footer{background:#040d24;padding:60px 0 34px}
   .sk-grid{grid-template-columns:1fr 1fr}
   .team-grid{grid-template-columns:1fr}
   .tt-grid{grid-template-columns:1fr}
+  .af-grid{grid-template-columns:1fr}
+  .af-hero-in{grid-template-columns:1fr;gap:36px}
   .pr-grid{grid-template-columns:1fr 1fr}
   .sol-split,.pt-split,.ue-split{grid-template-columns:1fr;gap:44px}
   .exp-grid{grid-template-columns:repeat(2,1fr);grid-auto-rows:158px}
@@ -687,6 +734,10 @@ footer{background:#040d24;padding:60px 0 34px}
 
   .tm{padding:32px 24px 28px}
   .tm-ava{width:116px;height:116px}
+  .af-grid{grid-template-columns:1fr;gap:12px}
+  .af{padding:28px 24px;border-radius:var(--r)}
+  .af-hero{padding:32px 24px;border-radius:var(--r-lg)}
+  .af-hero-in{grid-template-columns:1fr;gap:30px}
 
   .tt{padding:26px 22px;border-radius:var(--r)}
   .pt-feat{padding:14px 15px}
@@ -728,11 +779,10 @@ footer{background:#040d24;padding:60px 0 34px}
     </span>
   </a>
   <ul class="nav-links">
-    <li><a onclick="irSeccion('programa')">El programa</a></li>
-    <li><a onclick="irSeccion('proceso')">Cómo funciona</a></li>
-    <li><a onclick="irSeccion('equipo')">Docentes</a></li>
+    <li><a onclick="irSeccion('programa')">Qué es</a></li>
+    <li><a onclick="irSeccion('resultados')">Resultados</a></li>
     <li><a onclick="irSeccion('becas')">Becas</a></li>
-    <li><a onclick="irUE()">Unión Estudiantil</a></li>
+    <li><a onclick="irSeccion('faq')">Preguntas</a></li>
     <li><a href="/portal" class="nav-portal">Portal alumnos</a></li>
     <li><a href="https://forms.gle/SdaHtjDcyFuYEa3T7" target="_blank" rel="noopener" class="nav-cta">Postular</a></li>
   </ul>
@@ -742,11 +792,12 @@ footer{background:#040d24;padding:60px 0 34px}
 </nav>
 
 <div class="mob-menu" id="mobMenu">
-  <a onclick="irSeccion('programa')">El programa</a>
-  <a onclick="irSeccion('proceso')">Cómo funciona</a>
-  <a onclick="irSeccion('equipo')">Docentes</a>
+  <a onclick="irSeccion('programa')">Qué es ELECTI</a>
+  <a onclick="irSeccion('resultados')">Resultados</a>
   <a onclick="irSeccion('becas')">Becas</a>
   <a onclick="irSeccion('faq')">Preguntas frecuentes</a>
+  <a onclick="irSeccion('proceso')">Cómo funciona</a>
+  <a onclick="irSeccion('equipo')">Docentes</a>
   <a onclick="irUE()">Unión Estudiantil</a>
   <a href="/portal" class="mob-portal">🔐 Portal de alumnos</a>
   <a href="https://forms.gle/SdaHtjDcyFuYEa3T7" target="_blank" rel="noopener" class="mob-cta">Postular ahora →</a>
@@ -761,13 +812,13 @@ footer{background:#040d24;padding:60px 0 34px}
     <div class="orb orb-1"></div>
     <div class="orb orb-2"></div>
     <div class="wrap hero-inner">
-      <div class="pill rv"><span class="pill-dot"></span> Convocatoria abierta · Cupos limitados</div>
+      <div class="pill rv"><span class="pill-dot"></span> Convocatoria abierta · Quito · Guayaquil · Santo Domingo</div>
       <h1 class="h-display rv rv-d1">
         No aprendas sobre<br>liderazgo.<br><span class="grad">Ejecuta.</span>
       </h1>
       <p class="hero-sub rv rv-d2">
         Seis meses. Un proyecto real lanzado dentro de la red estudiantil más grande del Ecuador.
-        <b>Certificado avalado por la UMET.</b>
+        La experiencia que te abre <b>becas universitarias, prácticas y liderazgo real</b>.
       </p>
       <div class="hero-btns rv rv-d3">
         <a href="https://forms.gle/SdaHtjDcyFuYEa3T7" target="_blank" rel="noopener" class="btn btn-primary btn-lg">
@@ -903,7 +954,7 @@ footer{background:#040d24;padding:60px 0 34px}
             </div>
             <div class="sol-item rv rv-d5">
               <span class="sol-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
-              <div><strong>Una red que sigue después</strong><span>Alumni con becas universitarias del 70% y 100%, y prácticas desde segundo semestre.</span></div>
+              <div><strong>Una red que sigue después</strong><span>Becas universitarias, prácticas desde segundo semestre, y la posibilidad de dirigir la red de consejos de Unión Estudiantil.</span></div>
             </div>
           </div>
         </div>
@@ -1005,7 +1056,7 @@ footer{background:#040d24;padding:60px 0 34px}
         <div class="imp rv"><div class="imp-n" data-count="5" data-suffix="+">0</div><div class="imp-l">Años formando<br>líderes</div></div>
         <div class="imp rv rv-d1"><div class="imp-n" data-count="150" data-prefix="+">0</div><div class="imp-l">Colegios en<br>la red</div></div>
         <div class="imp rv rv-d2"><div class="imp-n" data-count="100" data-suffix="%">0</div><div class="imp-l">Proyectos<br>lanzados</div></div>
-        <div class="imp rv rv-d3"><div class="imp-n" data-count="4" data-suffix="">0</div><div class="imp-l">Tipos de beca<br>disponibles</div></div>
+        <div class="imp rv rv-d3"><div class="imp-n" data-count="3" data-suffix="">0</div><div class="imp-l">Ciudades<br>este año</div></div>
       </div>
     </div>
   </section>
@@ -1044,7 +1095,7 @@ footer{background:#040d24;padding:60px 0 34px}
         </div>
         <div class="exp-cell exp-f rv rv-d3">
           <span class="exp-emoji">🌎</span>
-          <div class="exp-txt"><span class="exp-k">Dos sedes</span><h4>Quito y Guayaquil</h4><p>Una sola comunidad, dos ciudades</p></div>
+          <div class="exp-txt"><span class="exp-k">Tres ciudades</span><h4>Quito · Guayaquil · Santo Domingo</h4><p>Una sola comunidad, expandiéndose por el país</p></div>
         </div>
       </div>
     </div>
@@ -1078,6 +1129,55 @@ footer{background:#040d24;padding:60px 0 34px}
           <span class="tm-role">Director Ejecutivo · ELECTI</span>
           <p class="tm-bio">Exalumno del Tecnológico de Monterrey y estudiante de Finanzas en la UEES. Responsable de la estrategia, operación y expansión del programa, con foco en convertir ideas en iniciativas sostenibles.</p>
           <div class="tm-tags"><span class="tm-tag">Estrategia</span><span class="tm-tag">Operaciones</span><span class="tm-tag">Expansión</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ DESPUÉS DE ELECTI ══ -->
+  <section class="pad after" id="resultados">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow rv">Después del programa</p>
+        <h2 class="h-section rv rv-d1">ELECTI termina.<br>La ventaja, no.</h2>
+        <p class="lead rv rv-d2">Lo que construyes en seis meses te sigue abriendo puertas años después.</p>
+      </div>
+
+      <div class="af-grid">
+        <div class="af rv">
+          <div class="af-ico">🎓</div>
+          <h3>Becas universitarias</h3>
+          <p>Las universidades premian a quien llega con experiencia real, no solo con notas. Un proyecto ejecutado y liderazgo comprobable pesan en cualquier proceso de admisión.</p>
+          <span class="af-proof">✓ Alumni con becas del 70% y 100%</span>
+        </div>
+        <div class="af rv rv-d1">
+          <div class="af-ico">🚀</div>
+          <h3>Destacas desde el primer semestre</h3>
+          <p>Mientras tus compañeros descubren cómo funciona un equipo, tú ya dirigiste uno. Esa ventaja se nota en trabajos grupales, en prácticas y en las primeras oportunidades.</p>
+          <span class="af-proof">✓ Prácticas en 2.º semestre</span>
+        </div>
+        <div class="af rv rv-d2">
+          <div class="af-ico">🗳</div>
+          <h3>Lideras tu consejo estudiantil</h3>
+          <p>Vuelves a tu colegio con herramientas que nadie más tiene: cómo planificar una campaña, gestionar un presupuesto y ejecutar propuestas que sí se cumplen.</p>
+          <span class="af-proof">✓ Formación de consejos desde 2016</span>
+        </div>
+      </div>
+
+      <div class="af-hero rv rv-d3">
+        <div class="af-hero-in">
+          <div>
+            <p class="eyebrow on-dark">La oportunidad real</p>
+            <h3>Los mejores de cada generación<br><span class="grad">se quedan a dirigir la red.</span></h3>
+            <p>Cada año, los alumni más destacados pasan a liderar la red de consejos estudiantiles de Unión Estudiantil: más de 150 colegios en todo el país.</p>
+            <p>No es un reconocimiento simbólico. Es <b style="color:#fff">responsabilidad real, experiencia verificable en tu hoja de vida y una posición de liderazgo</b> a una edad en la que casi nadie la tiene.</p>
+          </div>
+          <div class="af-steps">
+            <div class="af-step"><div class="af-step-n">1</div><div><strong>Te gradúas</strong><span>Con tu proyecto ejecutado</span></div></div>
+            <div class="af-step"><div class="af-step-n">2</div><div><strong>Destacas</strong><span>Desempeño, liderazgo y compromiso</span></div></div>
+            <div class="af-step"><div class="af-step-n">3</div><div><strong>Diriges</strong><span>Un frente de la red de consejos</span></div></div>
+            <div class="af-step"><div class="af-step-n">4</div><div><strong>Construyes carrera</strong><span>Experiencia real desde los 17</span></div></div>
+          </div>
         </div>
       </div>
     </div>
@@ -1248,15 +1348,23 @@ footer{background:#040d24;padding:60px 0 34px}
         </div>
         <div class="fq rv rv-d1">
           <button class="fq-q" onclick="toggleFaq(this)">¿Cómo aplico a una beca?<span class="fq-ic"></span></button>
-          <div class="fq-a"><div class="fq-a-in">En el mismo formulario de postulación. No necesitas un trámite aparte: durante la entrevista conversamos tu caso y definimos qué tipo de beca aplica. Tenemos becas del 100%, 50%, 40% y 25%.</div></div>
+          <div class="fq-a"><div class="fq-a-in">En el mismo formulario de postulación, sin trámite aparte. Durante la entrevista conversamos tu caso y definimos qué beca aplica según tu perfil y tu situación. Tenemos becas del 100%, 50%, 40% y 25%. <b>Toda beca se renueva cada mes</b> cumpliendo asistencia y compromiso con el programa.</div></div>
         </div>
         <div class="fq rv rv-d2">
-          <button class="fq-q" onclick="toggleFaq(this)">¿Qué pasa si vivo en Guayaquil?<span class="fq-ic"></span></button>
-          <div class="fq-a"><div class="fq-a-in">Tenemos sede en Quito y Guayaquil. Las sesiones virtuales de los martes son compartidas entre ambas ciudades, y las presenciales se coordinan según tu sede. Indícalo en tu postulación.</div></div>
+          <button class="fq-q" onclick="toggleFaq(this)">¿En qué ciudades está ELECTI?<span class="fq-ic"></span></button>
+          <div class="fq-a"><div class="fq-a-in">Este año operamos en <b>Quito, Guayaquil y Santo Domingo</b>. Las sesiones virtuales de los martes son compartidas entre las tres ciudades — así conoces gente de todo el país — y las presenciales se coordinan según tu sede. Indica tu ciudad al postular.</div></div>
         </div>
         <div class="fq rv rv-d2">
           <button class="fq-q" onclick="toggleFaq(this)">¿El certificado tiene validez real?<span class="fq-ic"></span></button>
           <div class="fq-a"><div class="fq-a-in">Sí. La certificación está avalada por el ecosistema Unión Estudiantil en alianza con la <b>Universidad Metropolitana del Ecuador (UMET)</b>. Se entrega a quienes cumplen asistencia, ejecutan su proyecto y mantienen su cuenta al día.</div></div>
+        </div>
+        <div class="fq rv rv-d3">
+          <button class="fq-q" onclick="toggleFaq(this)">¿Es cierto que hay multas por llegar tarde?<span class="fq-ic"></span></button>
+          <div class="fq-a"><div class="fq-a-in">Sí, y es una de las cosas que más nos agradecen después. Son <b>$2 por cada 10 minutos de atraso</b>, y todo lo recaudado va a un fondo de convivencia que se gasta en la propia generación: salidas, comidas, celebraciones. No es un castigo económico — es la forma en que se construye un hábito que en el mundo real vale muchísimo más de $2.</div></div>
+        </div>
+        <div class="fq rv rv-d3">
+          <button class="fq-q" onclick="toggleFaq(this)">¿Qué pasa después de graduarme?<span class="fq-ic"></span></button>
+          <div class="fq-a"><div class="fq-a-in">Sigues siendo parte de la red. Los alumni más destacados de cada generación pasan a <b>dirigir frentes de la red de consejos estudiantiles de Unión Estudiantil</b>, que llega a más de 150 colegios. Es experiencia real y verificable para tu hoja de vida, a una edad en la que casi nadie la tiene.</div></div>
         </div>
         <div class="fq rv rv-d3">
           <button class="fq-q" onclick="toggleFaq(this)">¿Qué pasa si no me seleccionan?<span class="fq-ic"></span></button>
@@ -1354,6 +1462,7 @@ footer{background:#040d24;padding:60px 0 34px}
         <div class="ft-col">
           <h5>Programa</h5>
           <a onclick="irSeccion('programa')">Qué es ELECTI</a>
+          <a onclick="irSeccion('resultados')">Resultados</a>
           <a onclick="irSeccion('proceso')">Cómo funciona</a>
           <a onclick="irSeccion('equipo')">Docentes</a>
           <a onclick="irSeccion('becas')">Becas</a>
