@@ -140,7 +140,7 @@ nav.scrolled{border-bottom-color:var(--line);box-shadow:0 1px 20px rgba(8,21,58,
 
 /* ══ HERO ══ */
 .hero{
-  min-height:100svh;display:flex;align-items:center;padding:118px 0 70px;
+  min-height:100svh;display:flex;align-items:center;padding:118px 0 70px;overflow:hidden;
   background:
     radial-gradient(1100px 620px at 50% -8%,#16409c 0%,transparent 62%),
     radial-gradient(760px 520px at 88% 12%,rgba(66,165,245,.24) 0%,transparent 64%),
@@ -764,7 +764,12 @@ nav.scrolled{border-bottom-color:var(--line);box-shadow:0 1px 20px rgba(8,21,58,
 .pr-money{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
 .pr-amt{font-size:clamp(38px,5vw,54px);font-weight:900;color:var(--ink);letter-spacing:-.045em;line-height:1}
 .pr-per{font-size:15px;color:var(--muted);font-weight:500}
-.pr-sub{font-size:14px;color:var(--muted);margin-top:8px}
+.pr-sub{font-size:14px;color:var(--muted);margin-top:10px}
+.pr-sub b{color:var(--ink);font-weight:800}
+.pr-mas{font-size:26px;font-weight:400;color:var(--line-2);margin:0 2px}
+.pr-mat{display:inline-flex;flex-direction:column;line-height:1.2;font-size:15px;color:var(--ink-2)}
+.pr-mat b{font-size:24px;font-weight:900;color:var(--ink);letter-spacing:-.03em}
+.pr-mat small{font-size:12px;color:var(--muted);margin-top:2px}
 .pr-cmp{
   margin-top:14px;display:inline-flex;align-items:center;gap:8px;font-size:13px;
   color:var(--blue);background:#EEF3FC;padding:8px 15px;border-radius:100px;font-weight:600;
@@ -979,6 +984,185 @@ footer{background:#040d24;padding:60px 0 34px}
   .imp-grid{grid-template-columns:1fr}
   .allies-row{gap:22px}
 }
+
+/* ══════════════════════════════════════════════════════════
+   ELECTI INSTITUCIONES · línea B2B
+   Todo el CSS de esta sección usa el prefijo .inst-
+   Para revertir: eliminar este bloque, la página #pg-instituciones,
+   el bloque #inst-puente del inicio y las entradas de navegación.
+   ══════════════════════════════════════════════════════════ */
+.nav-colegios{position:relative}
+.nav-colegios::after{content:'';position:absolute;right:2px;top:9px;width:6px;height:6px;
+  border-radius:50%;background:var(--sky)}
+
+.inst-hero{background:var(--paper);border-bottom:1px solid var(--line);
+  padding:clamp(64px,7vw,104px) 0 clamp(56px,6vw,86px)}
+.inst-hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:clamp(40px,5vw,80px);align-items:center}
+.inst-kicker{display:inline-flex;align-items:center;gap:11px;font-size:12.5px;font-weight:800;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--blue);
+  border:1px solid var(--line-2);background:#fff;padding:9px 18px;border-radius:100px}
+.inst-h1{font-size:clamp(32px,3.5vw,48px);font-weight:800;letter-spacing:-.04em;line-height:1.06;
+  color:var(--ink);margin:26px 0 22px}
+.inst-sub{font-size:clamp(17px,1.5vw,20px);line-height:1.62;color:var(--ink-2);max-width:620px}
+.inst-acciones{display:flex;flex-wrap:wrap;gap:14px;margin-top:34px}
+.inst-nota-h{margin-top:26px;font-size:14.5px;line-height:1.6;color:var(--muted);max-width:520px}
+.inst-nota-h b{color:var(--ink);font-weight:700}
+.inst-hero-card{background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);
+  padding:clamp(28px,3vw,40px);box-shadow:var(--shadow-m)}
+.inst-hc-t{font-size:12px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--muted);padding-bottom:18px;border-bottom:1px solid var(--line)}
+.inst-hc-fila{display:flex;justify-content:space-between;align-items:baseline;
+  padding:17px 0;border-bottom:1px solid var(--line)}
+.inst-hc-fila:last-child{border-bottom:none;padding-bottom:0}
+.inst-hc-k{font-size:15px;color:var(--ink-2)}
+.inst-hc-k small{display:block;font-size:12.5px;color:var(--muted);margin-top:4px}
+.inst-hc-v{font-size:19px;font-weight:800;color:var(--ink);letter-spacing:-.02em}
+.inst-hc-fila.destaca .inst-hc-k{color:var(--ink);font-weight:600}
+.inst-hc-fila.destaca .inst-hc-v{color:var(--blue);font-size:26px}
+
+.inst-sec{padding:clamp(58px,6.5vw,96px) 0}
+.inst-sec.papel{background:var(--paper)}
+.inst-sec.marino{background:linear-gradient(160deg,var(--navy-deep),var(--navy));color:#fff}
+.inst-head{max-width:760px;margin-bottom:clamp(36px,4vw,56px)}
+.inst-eyebrow{font-size:12px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--blue)}
+.inst-sec.marino .inst-eyebrow{color:var(--sky-l)}
+.inst-h2{font-size:clamp(27px,3vw,40px);font-weight:800;letter-spacing:-.035em;line-height:1.12;
+  color:var(--ink);margin:16px 0 18px}
+.inst-sec.marino .inst-h2{color:#fff}
+.inst-lead{font-size:clamp(16px,1.4vw,18.5px);line-height:1.68;color:var(--ink-2)}
+.inst-sec.marino .inst-lead{color:rgba(255,255,255,.72)}
+
+/* modelo de impacto */
+.inst-flujo{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;position:relative}
+.inst-paso{background:#fff;border:1px solid var(--line);border-radius:var(--r);
+  padding:30px 26px 28px;position:relative}
+.inst-sec.papel .inst-paso{background:#fff}
+.inst-paso-n{font-size:12px;font-weight:800;letter-spacing:.14em;color:var(--sky);margin-bottom:16px}
+.inst-paso h3{font-size:20px;font-weight:800;letter-spacing:-.02em;color:var(--ink);margin-bottom:11px}
+.inst-paso p{font-size:15px;line-height:1.6;color:var(--muted)}
+.inst-paso::after{content:'';position:absolute;right:-14px;top:50%;width:10px;height:10px;
+  border-top:2px solid var(--line-2);border-right:2px solid var(--line-2);
+  transform:translateY(-50%) rotate(45deg);z-index:1}
+.inst-paso:last-child::after{display:none}
+
+/* competencias */
+.inst-comp{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);
+  border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.inst-comp div{background:#fff;padding:28px 26px}
+.inst-comp b{display:block;font-size:17.5px;font-weight:800;letter-spacing:-.02em;color:var(--ink)}
+.inst-comp span{display:block;font-size:14.5px;line-height:1.55;color:var(--muted);margin-top:8px}
+
+/* candidatos */
+.inst-lista{display:grid;grid-template-columns:repeat(2,1fr);gap:0 44px}
+.inst-lista div{display:flex;align-items:flex-start;gap:15px;padding:17px 0;border-bottom:1px solid var(--line)}
+.inst-lista span{width:7px;height:7px;border-radius:50%;background:var(--sky);margin-top:9px;flex-shrink:0}
+.inst-lista p{font-size:16.5px;color:var(--ink);font-weight:600}
+
+/* valores */
+.inst-valores{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.inst-val{border:1px solid rgba(144,202,249,.26);border-radius:var(--r);padding:30px 28px;
+  background:rgba(255,255,255,.04)}
+.inst-val.on{background:#fff;border-color:#fff}
+.inst-val-k{font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--sky-l)}
+.inst-val.on .inst-val-k{color:var(--blue)}
+.inst-val-n{font-size:clamp(32px,3.4vw,44px);font-weight:800;letter-spacing:-.04em;color:#fff;margin:14px 0 6px}
+.inst-val-n span{font-size:18px;font-weight:600;letter-spacing:0;color:rgba(255,255,255,.5)}
+.inst-val.on .inst-val-n span{color:var(--muted)}
+.inst-val-d{font-size:14px;color:var(--sky-l);font-weight:600;margin-bottom:12px;
+  padding-bottom:12px;border-bottom:1px solid rgba(144,202,249,.2)}
+.inst-val-d b{font-weight:800;color:#fff}
+.inst-val.on .inst-val-d{color:var(--blue);border-bottom-color:var(--line)}
+.inst-val.on .inst-val-d b{color:var(--ink)}
+.inst-val.on .inst-val-n{color:var(--ink)}
+.inst-val p{font-size:14.5px;line-height:1.6;color:rgba(255,255,255,.62)}
+.inst-val.on p{color:var(--ink-2)}
+
+/* modalidades */
+.inst-mods{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;align-items:start}
+.inst-mod{background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);
+  padding:34px 30px 30px;display:flex;flex-direction:column;height:100%}
+.inst-mod.destacada{border-color:var(--navy);box-shadow:var(--shadow-m)}
+.inst-mod-top{padding-bottom:22px;border-bottom:1px solid var(--line);margin-bottom:22px}
+.inst-mod-k{font-size:11.5px;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)}
+.inst-mod h3{font-size:22px;font-weight:800;letter-spacing:-.025em;color:var(--ink);margin:12px 0 8px;line-height:1.2}
+.inst-mod-v{font-size:15px;color:var(--ink-2);font-weight:600}
+.inst-mod ul{list-style:none;flex:1}
+.inst-mod li{display:flex;gap:12px;align-items:flex-start;padding:9px 0;font-size:15px;
+  line-height:1.5;color:var(--ink-2)}
+.inst-mod li svg{width:16px;height:16px;flex-shrink:0;margin-top:3px;color:var(--blue)}
+.inst-mod .btn{margin-top:26px;width:100%;justify-content:center}
+
+/* patrocinio */
+.inst-patro{display:grid;grid-template-columns:1fr 1fr;gap:clamp(32px,4vw,60px);align-items:center}
+.inst-opcion{padding:20px 0;border-bottom:1px solid var(--line)}
+.inst-opcion:last-child{border-bottom:none}
+.inst-opcion b{display:block;font-size:17px;font-weight:800;color:var(--ink);letter-spacing:-.02em}
+.inst-opcion span{display:block;font-size:15px;line-height:1.55;color:var(--muted);margin-top:6px}
+.inst-split{background:var(--paper);border:1px solid var(--line);border-radius:var(--r-lg);padding:clamp(28px,3vw,38px)}
+.inst-split-t{font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:22px}
+.inst-barra{display:flex;height:56px;border-radius:12px;overflow:hidden;margin-bottom:16px}
+.inst-barra div{display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;color:#fff}
+.inst-barra .b1{width:50%;background:var(--navy)}
+.inst-barra .b2{width:50%;background:var(--sky);color:#06214A}
+.inst-split-pie{font-size:13.5px;line-height:1.6;color:var(--muted)}
+
+/* BI */
+.inst-bi{display:grid;grid-template-columns:.92fr 1.08fr;gap:clamp(32px,4vw,64px);align-items:start}
+.inst-bi-tags{display:flex;flex-wrap:wrap;gap:9px;margin-top:26px}
+.inst-bi-tags span{border:1px solid var(--line-2);background:#fff;border-radius:100px;
+  padding:9px 17px;font-size:14px;font-weight:600;color:var(--ink-2)}
+.inst-aclara{margin-top:30px;border-left:3px solid var(--line-2);padding:4px 0 4px 20px;
+  font-size:13.5px;line-height:1.65;color:var(--muted)}
+
+/* red */
+.inst-red{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:8px}
+.inst-red div{border:1px solid rgba(144,202,249,.24);border-radius:var(--r);padding:26px 24px}
+.inst-red b{display:block;font-size:17px;font-weight:800;color:#fff;margin-bottom:9px;letter-spacing:-.02em}
+.inst-red p{font-size:14.5px;line-height:1.58;color:rgba(255,255,255,.6)}
+
+/* formulario */
+.inst-form-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:clamp(36px,4vw,68px);align-items:start}
+.inst-form{background:#fff;border:1px solid var(--line);border-radius:var(--r-lg);
+  padding:clamp(28px,3vw,40px);box-shadow:var(--shadow-m)}
+.inst-campos{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.inst-campo{display:flex;flex-direction:column}
+.inst-campo.ancho{grid-column:1 / -1}
+.inst-campo label{font-size:13px;font-weight:700;color:var(--ink-2);margin-bottom:7px}
+.inst-campo input,.inst-campo select,.inst-campo textarea{
+  font-family:inherit;font-size:15.5px;color:var(--ink);background:#fff;
+  border:1.5px solid var(--line-2);border-radius:var(--r-sm);padding:13px 14px;width:100%}
+.inst-campo textarea{resize:vertical;min-height:96px}
+.inst-campo input:focus,.inst-campo select:focus,.inst-campo textarea:focus{
+  outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(21,101,192,.12)}
+.inst-form .btn{width:100%;justify-content:center;margin-top:22px}
+.inst-form-nota{font-size:12.5px;line-height:1.6;color:var(--muted);margin-top:16px;text-align:center}
+.inst-aviso-envio{display:none;margin-top:16px;padding:14px 16px;border-radius:var(--r-sm);
+  font-size:14.5px;line-height:1.5}
+.inst-aviso-envio.ok{display:block;background:#EFF9F1;border:1px solid #BFE5C8;color:#166534}
+.inst-aviso-envio.err{display:block;background:#FEF3F2;border:1px solid #FBD5D0;color:#B42318}
+
+@media (max-width:860px){
+  #inst-puente .inst-hero-card{grid-template-columns:1fr!important;padding:26px 22px}
+  #inst-puente .btn{white-space:normal;text-align:center;font-size:15.5px;padding-left:20px;padding-right:20px}
+  #inst-puente .inst-kicker{font-size:11px;letter-spacing:.11em;padding:8px 14px}
+}
+@media (max-width:1024px){
+  .inst-hero-grid,.inst-patro,.inst-bi,.inst-form-grid{grid-template-columns:1fr}
+  .inst-flujo,.inst-mods,.inst-valores,.inst-red{grid-template-columns:1fr 1fr}
+  .inst-comp{grid-template-columns:1fr 1fr}
+  .inst-paso::after{display:none}
+}
+@media (max-width:768px){
+  .inst-flujo,.inst-mods,.inst-valores,.inst-red,.inst-comp,.inst-lista{grid-template-columns:minmax(0,1fr)}
+  .inst-mod,.inst-paso,.inst-val,.inst-red div{min-width:0}
+  .btn{white-space:normal;text-align:center}
+  .inst-campos{grid-template-columns:1fr}
+  .inst-acciones{flex-direction:column;align-items:stretch}
+  .inst-acciones .btn{width:100%;justify-content:center}
+}
+
 /* ════════ METODOLOGÍA POR SEDE ════════ */
 .met-tabs{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;margin-bottom:clamp(30px,4vw,44px)}
 .met-tab{
@@ -1120,6 +1304,7 @@ footer{background:#040d24;padding:60px 0 34px}
       </div>
     </li>
     <li><a onclick="ir('becas')">Becas</a></li>
+    <li><a class="nav-colegios" onclick="ir('instituciones')">Para colegios</a></li>
     <li><a onclick="ir('ue')">Institución</a></li>
     <li><a onclick="ir('preguntas')">Preguntas</a></li>
     <li><a href="/portal" class="nav-portal">Portal alumnos</a></li>
@@ -1158,6 +1343,7 @@ footer{background:#040d24;padding:60px 0 34px}
   </div>
   <a onclick="ir('becas')">Becas</a>
   <a onclick="ir('preguntas')">Preguntas frecuentes</a>
+  <a onclick="ir('instituciones')">Para colegios · ELECTI Instituciones</a>
   <a onclick="ir('ue')">Institucional · Unión Estudiantil</a>
   <a href="https://instagram.com/electi.ec" target="_blank" rel="noopener">Instagram · @electi.ec</a>
   <a href="/portal" class="mob-portal">🔐 Portal de alumnos</a>
@@ -1176,7 +1362,7 @@ footer{background:#040d24;padding:60px 0 34px}
     <div class="orb orb-1"></div>
     <div class="orb orb-2"></div>
     <div class="wrap hero-inner">
-      <div class="pill rv"><span class="pill-dot"></span> Convocatoria abierta · 4 sedes en Ecuador</div>
+      <div class="pill rv"><span class="pill-dot"></span> Convocatoria 2027 abierta · 4 sedes en Ecuador</div>
       <h1 class="h-display rv rv-d1">
         No aprendas sobre<br>liderazgo.<br><span class="grad">Ejecuta.</span>
       </h1>
@@ -1191,7 +1377,7 @@ footer{background:#040d24;padding:60px 0 34px}
         </a>
         <a class="btn btn-ghost-d btn-lg" onclick="irSeccion('programa')">Ver el programa</a>
       </div>
-      <p class="hero-note rv rv-d4">Postular toma 5 minutos · Becas disponibles hasta del 100%</p>
+      <p class="hero-note rv rv-d4">Costa inicia en octubre · Sierra en noviembre de 2026<br>Postular toma 5 minutos · Becas disponibles hasta del 100%</p>
 
       <div class="mockup-stage rv rv-d5">
         <div class="mockup">
@@ -1347,7 +1533,7 @@ footer{background:#040d24;padding:60px 0 34px}
       <div class="sec-head">
         <p class="eyebrow rv">Metodología</p>
         <h2 class="h-section rv rv-d1">Cuatro sedes.<br>Un mismo estándar.</h2>
-        <p class="lead rv rv-d2">El contenido, los docentes y la exigencia son idénticos en todo el país. Lo único que cambia es el formato de las clases. Elige tu ciudad para ver cómo se cursa.</p>
+        <p class="lead rv rv-d2">El contenido, los docentes y la exigencia son idénticos en todo el país. Lo que cambia es el formato de las clases y el calendario: la Costa inicia en octubre y la Sierra en noviembre. Elige tu ciudad para ver cómo se cursa.</p>
       </div>
 
       <div class="rv rv-d2">
@@ -1371,14 +1557,14 @@ footer{background:#040d24;padding:60px 0 34px}
             <div>
               <span class="mod-badge mod-hib">Modalidad híbrida</span>
               <h3 class="met-h">Quito combina virtualidad entre semana y campus universitario el sábado.</h3>
-              <p class="met-p">Es la sede fundacional y la única con presencialidad semanal. La sesión del martes se dicta por Zoom junto a las demás ciudades; el sábado la generación se reúne en la Universidad Metropolitana del Ecuador.</p>
+              <p class="met-p">Es la sede fundacional y la única con presencialidad semanal. La sesión del miércoles se dicta por Zoom junto a Cuenca, la otra sede de la Sierra; el sábado la generación se reúne en la Universidad Metropolitana del Ecuador.</p>
               <div class="horario">
               <div class="hr-row">
                 <div class="hr-ic">💻</div>
                 <div class="hr-tx">
-                  <div class="hr-d">Martes</div>
+                  <div class="hr-d">Miércoles</div>
                   <div class="hr-h">18:00 – 20:00</div>
-                  <div class="hr-s">Virtual por Zoom</div>
+                  <div class="hr-s">Virtual por Zoom · compartida con Cuenca</div>
                 </div>
               </div>
               <div class="hr-row destaca">
@@ -1398,7 +1584,8 @@ footer{background:#040d24;padding:60px 0 34px}
               <div class="sp-in">
                 <div class="sp-lbl">Sede UIO</div>
                 <h3 class="sp-titulo">Quito</h3>
-              <div class="sp-dato"><div class="sp-k">Modalidad</div><div class="sp-v">Híbrida<small>Virtual entre semana + presencial cada sábado</small></div></div>
+              <div class="sp-dato"><div class="sp-k">Bloque</div><div class="sp-v">Sierra<small>Inicio: noviembre de 2026</small></div></div>
+              <div class="sp-dato"><div class="sp-k">Modalidad</div><div class="sp-v">Híbrida<small>Miércoles virtual + sábado presencial</small></div></div>
               <div class="sp-dato"><div class="sp-k">Presencialidad</div><div class="sp-v">Semanal<small>Todos los sábados durante el ciclo</small></div></div>
               <div class="sp-dato"><div class="sp-k">Sede física</div><div class="sp-v">Universidad Metropolitana del Ecuador<small>UMET · Quito</small></div></div>
               <div class="sp-dato"><div class="sp-k">Certificación</div><div class="sp-v">Avalada por Unión Estudiantil y la UMET</div></div>
@@ -1411,14 +1598,14 @@ footer{background:#040d24;padding:60px 0 34px}
             <div>
               <span class="mod-badge mod-vir">100% virtual + encuentro mensual</span>
               <h3 class="met-h">Guayaquil cursa el programa en línea, con un encuentro presencial cada mes.</h3>
-              <p class="met-p">Dos sesiones en vivo por semana en lugar de una, para sostener el mismo ritmo de trabajo que la sede presencial. Una vez al mes, la generación se reúne cara a cara en la ciudad.</p>
+              <p class="met-p">Dos sesiones en vivo por semana en lugar de una, para sostener el mismo ritmo de trabajo que la sede presencial. Guayaquil pertenece al bloque Costa, que inicia en octubre de 2026. Una vez al mes, la generación se reúne cara a cara en la ciudad.</p>
               <div class="horario">
               <div class="hr-row">
                 <div class="hr-ic">💻</div>
                 <div class="hr-tx">
                   <div class="hr-d">Martes</div>
                   <div class="hr-h">18:00 – 20:00</div>
-                  <div class="hr-s">Virtual por Zoom · compartida con las cuatro sedes</div>
+                  <div class="hr-s">Virtual por Zoom · compartida con la Costa</div>
                 </div>
               </div>
               <div class="hr-row">
@@ -1446,6 +1633,7 @@ footer{background:#040d24;padding:60px 0 34px}
               <div class="sp-in">
                 <div class="sp-lbl">Sede GYE</div>
                 <h3 class="sp-titulo">Guayaquil</h3>
+              <div class="sp-dato"><div class="sp-k">Bloque</div><div class="sp-v">Costa<small>Inicio: octubre de 2026</small></div></div>
               <div class="sp-dato"><div class="sp-k">Modalidad</div><div class="sp-v">100% virtual<small>Con encuentro presencial mensual</small></div></div>
               <div class="sp-dato"><div class="sp-k">Sesiones semanales</div><div class="sp-v">Dos<small>Martes y jueves, ambas en vivo por Zoom</small></div></div>
               <div class="sp-dato"><div class="sp-k">Presencialidad</div><div class="sp-v">Una vez al mes<small>Sábado, en Guayaquil</small></div></div>
@@ -1459,20 +1647,20 @@ footer{background:#040d24;padding:60px 0 34px}
             <div>
               <span class="mod-badge mod-vir">100% virtual + encuentro mensual</span>
               <h3 class="met-h">Cuenca cursa el programa en línea, con un encuentro presencial cada mes.</h3>
-              <p class="met-p">Dos sesiones en vivo por semana en lugar de una, para sostener el mismo ritmo de trabajo que la sede presencial. Una vez al mes, la generación se reúne cara a cara en la ciudad.</p>
+              <p class="met-p">Dos sesiones en vivo por semana en lugar de una, para sostener el mismo ritmo de trabajo que la sede presencial. Cuenca pertenece al bloque Sierra, que inicia en noviembre de 2026. Una vez al mes, la generación se reúne cara a cara en la ciudad.</p>
               <div class="horario">
               <div class="hr-row">
                 <div class="hr-ic">💻</div>
                 <div class="hr-tx">
-                  <div class="hr-d">Martes</div>
+                  <div class="hr-d">Miércoles</div>
                   <div class="hr-h">18:00 – 20:00</div>
-                  <div class="hr-s">Virtual por Zoom · compartida con las cuatro sedes</div>
+                  <div class="hr-s">Virtual por Zoom · compartida con Quito</div>
                 </div>
               </div>
               <div class="hr-row">
                 <div class="hr-ic">💻</div>
                 <div class="hr-tx">
-                  <div class="hr-d">Jueves</div>
+                  <div class="hr-d">Viernes</div>
                   <div class="hr-h">18:00 – 20:00</div>
                   <div class="hr-s">Virtual por Zoom · sesión de sede</div>
                 </div>
@@ -1494,8 +1682,9 @@ footer{background:#040d24;padding:60px 0 34px}
               <div class="sp-in">
                 <div class="sp-lbl">Sede CUE</div>
                 <h3 class="sp-titulo">Cuenca</h3>
+              <div class="sp-dato"><div class="sp-k">Bloque</div><div class="sp-v">Sierra<small>Inicio: noviembre de 2026</small></div></div>
               <div class="sp-dato"><div class="sp-k">Modalidad</div><div class="sp-v">100% virtual<small>Con encuentro presencial mensual</small></div></div>
-              <div class="sp-dato"><div class="sp-k">Sesiones semanales</div><div class="sp-v">Dos<small>Martes y jueves, ambas en vivo por Zoom</small></div></div>
+              <div class="sp-dato"><div class="sp-k">Sesiones semanales</div><div class="sp-v">Dos<small>Miércoles y viernes, ambas en vivo por Zoom</small></div></div>
               <div class="sp-dato"><div class="sp-k">Presencialidad</div><div class="sp-v">Una vez al mes<small>Sábado, en Cuenca</small></div></div>
               <div class="sp-dato"><div class="sp-k">Certificación</div><div class="sp-v">Avalada por Unión Estudiantil y la UMET</div></div>
               </div>
@@ -1507,14 +1696,14 @@ footer{background:#040d24;padding:60px 0 34px}
             <div>
               <span class="mod-badge mod-vir">100% virtual + encuentro mensual</span>
               <h3 class="met-h">Santo Domingo cursa el programa en línea, con un encuentro presencial cada mes.</h3>
-              <p class="met-p">Dos sesiones en vivo por semana en lugar de una, para sostener el mismo ritmo de trabajo que la sede presencial. Una vez al mes, la generación se reúne cara a cara en la ciudad.</p>
+              <p class="met-p">Dos sesiones en vivo por semana en lugar de una, para sostener el mismo ritmo de trabajo que la sede presencial. Santo Domingo pertenece al bloque Costa, que inicia en octubre de 2026. Una vez al mes, la generación se reúne cara a cara en la ciudad.</p>
               <div class="horario">
               <div class="hr-row">
                 <div class="hr-ic">💻</div>
                 <div class="hr-tx">
                   <div class="hr-d">Martes</div>
                   <div class="hr-h">18:00 – 20:00</div>
-                  <div class="hr-s">Virtual por Zoom · compartida con las cuatro sedes</div>
+                  <div class="hr-s">Virtual por Zoom · compartida con la Costa</div>
                 </div>
               </div>
               <div class="hr-row">
@@ -1542,6 +1731,7 @@ footer{background:#040d24;padding:60px 0 34px}
               <div class="sp-in">
                 <div class="sp-lbl">Sede SDO</div>
                 <h3 class="sp-titulo">Santo Domingo</h3>
+              <div class="sp-dato"><div class="sp-k">Bloque</div><div class="sp-v">Costa<small>Inicio: octubre de 2026</small></div></div>
               <div class="sp-dato"><div class="sp-k">Modalidad</div><div class="sp-v">100% virtual<small>Con encuentro presencial mensual</small></div></div>
               <div class="sp-dato"><div class="sp-k">Sesiones semanales</div><div class="sp-v">Dos<small>Martes y jueves, ambas en vivo por Zoom</small></div></div>
               <div class="sp-dato"><div class="sp-k">Presencialidad</div><div class="sp-v">Una vez al mes<small>Sábado, en Santo Domingo</small></div></div>
@@ -1553,11 +1743,28 @@ footer{background:#040d24;padding:60px 0 34px}
 
       <div class="aviso rv" style="max-width:840px;margin:clamp(38px,5vw,54px) auto 0">
         <span class="aviso-ic">🌐</span>
-        <p>La sesión virtual de los <b>martes es compartida por las cuatro sedes</b>. Estudias con jóvenes de todo el país desde la primera semana y los equipos de proyecto pueden ser mixtos.</p>
+        <p>El programa se dicta en <b>dos bloques regionales</b>: la Costa arranca en <b>octubre de 2026</b> y la Sierra en <b>noviembre de 2026</b>. Cada bloque comparte una sesión semanal, así que estudias con jóvenes de otras ciudades desde el primer día.</p>
       </div>
 
       <div style="text-align:center;margin-top:34px" class="rv rv-d3">
         <a class="btn btn-ghost-l" onclick="ir('sedes')">Comparar las cuatro sedes en detalle</a>
+      </div>
+    </div>
+  </section>
+
+    <!-- ══ PUERTA DE ENTRADA INSTITUCIONAL ══ -->
+  <section class="pad-sm" id="inst-puente">
+    <div class="wrap">
+      <div class="inst-hero-card rv" style="display:grid;grid-template-columns:1.25fr .75fr;gap:clamp(28px,4vw,56px);align-items:center;max-width:1000px;margin:0 auto">
+        <div>
+          <span class="inst-kicker">ELECTI para instituciones educativas</span>
+          <h2 style="font-size:clamp(24px,2.6vw,34px);font-weight:800;letter-spacing:-.035em;line-height:1.14;color:var(--ink);margin:20px 0 14px">Fortalece a quienes lideran<br>tu comunidad estudiantil.</h2>
+          <p style="font-size:16.5px;line-height:1.65;color:var(--ink-2)">Los colegios pueden seleccionar y patrocinar a sus representantes y líderes estudiantiles para que se formen en ELECTI, con un 30% de beneficio sobre la mensualidad y sin costo de matrícula.</p>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <a class="btn btn-primary" onclick="ir('instituciones')" style="justify-content:center">Conocer programa para colegios</a>
+          <a class="btn btn-ghost-l" onclick="ir('instituciones','inst-contacto')" style="justify-content:center">Solicitar información</a>
+        </div>
       </div>
     </div>
   </section>
@@ -1717,7 +1924,10 @@ footer{background:#040d24;padding:60px 0 34px}
       <div class="pr-box rv" style="max-width:900px;margin:0 auto">
         <div>
           <p class="eyebrow" style="margin-bottom:10px">Becas disponibles</p>
-          <div class="pr-money"><span class="pr-amt">$40</span><span class="pr-per">/mes · 6 meses</span></div>
+          <div class="pr-money"><span class="pr-amt">$40</span><span class="pr-per">/mes · 6 meses</span>
+            <span class="pr-mas">+</span>
+            <span class="pr-mat"><b>$15</b> matrícula<small>pago único</small></span>
+          </div>
           <p class="pr-sub">Cuatro tipos de beca, hasta del 100%. El dinero no debería ser la barrera.</p>
         </div>
         <a class="btn btn-dark btn-lg" onclick="ir('becas')">
@@ -1849,7 +2059,7 @@ footer{background:#040d24;padding:60px 0 34px}
         </div>
         <div class="exp-cell exp-b rv rv-d1">
           <span class="exp-emoji">💻</span>
-          <div class="exp-txt"><span class="exp-k">Clases en vivo</span><h4>Martes 18:00 – 20:00</h4><p>Por Zoom, con las cuatro sedes juntas. Las sedes virtuales suman una segunda sesión los jueves.</p></div>
+          <div class="exp-txt"><span class="exp-k">Clases en vivo</span><h4>18:00 – 20:00</h4><p>Costa los martes y jueves; Sierra los miércoles y viernes. Quito, híbrida, tiene una sola sesión virtual.</p></div>
         </div>
         <div class="exp-cell exp-c rv rv-d2">
           <span class="exp-emoji">🏛</span>
@@ -1876,8 +2086,8 @@ footer{background:#040d24;padding:60px 0 34px}
     <div class="wrap">
       <div class="sec-head">
         <p class="eyebrow rv">Metodología por sede</p>
-        <h2 class="h-section rv rv-d1">El mismo programa,<br>dos formatos.</h2>
-        <p class="lead rv rv-d2">Quito se cursa en modalidad híbrida. Guayaquil, Cuenca y Santo Domingo, en modalidad virtual con encuentros presenciales mensuales.</p>
+        <h2 class="h-section rv rv-d1">El mismo programa,<br>dos bloques.</h2>
+        <p class="lead rv rv-d2">El programa se dicta en dos calendarios: <b>Costa</b> (Guayaquil y Santo Domingo) desde octubre de 2026, y <b>Sierra</b> (Quito y Cuenca) desde noviembre. Quito es híbrida; las demás, virtuales con encuentro presencial mensual.</p>
       </div>
       <div class="tabla-wrap rv rv-d2">
         <table class="tabla">
@@ -1897,18 +2107,32 @@ footer{background:#040d24;padding:60px 0 34px}
               <td>100% virtual</td><td>100% virtual</td><td>100% virtual</td>
             </tr>
             <tr>
-              <th scope="row">Sesión de los martes</th>
-              <td class="uio"><b>18:00 – 20:00</b> · Zoom</td>
-              <td><b>18:00 – 20:00</b> · Zoom</td>
-              <td><b>18:00 – 20:00</b> · Zoom</td>
-              <td><b>18:00 – 20:00</b> · Zoom</td>
+              <th scope="row">Bloque regional</th>
+              <td class="uio"><b>Sierra</b></td>
+              <td><b>Costa</b></td>
+              <td><b>Sierra</b></td>
+              <td><b>Costa</b></td>
             </tr>
             <tr>
-              <th scope="row">Sesión de los jueves</th>
-              <td class="uio">No aplica</td>
-              <td><b>18:00 – 20:00</b> · Zoom</td>
-              <td><b>18:00 – 20:00</b> · Zoom</td>
-              <td><b>18:00 – 20:00</b> · Zoom</td>
+              <th scope="row">Inicio del ciclo</th>
+              <td class="uio"><b>Noviembre 2026</b></td>
+              <td><b>Octubre 2026</b></td>
+              <td><b>Noviembre 2026</b></td>
+              <td><b>Octubre 2026</b></td>
+            </tr>
+            <tr>
+              <th scope="row">Primera sesión<br>de la semana</th>
+              <td class="uio"><b>Miércoles</b><br>18:00 – 20:00 · Zoom</td>
+              <td><b>Martes</b><br>18:00 – 20:00 · Zoom</td>
+              <td><b>Miércoles</b><br>18:00 – 20:00 · Zoom</td>
+              <td><b>Martes</b><br>18:00 – 20:00 · Zoom</td>
+            </tr>
+            <tr>
+              <th scope="row">Segunda sesión<br>de la semana</th>
+              <td class="uio">No aplica<br><small>Se reemplaza por el sábado presencial</small></td>
+              <td><b>Jueves</b><br>18:00 – 20:00 · Zoom</td>
+              <td><b>Viernes</b><br>18:00 – 20:00 · Zoom</td>
+              <td><b>Jueves</b><br>18:00 – 20:00 · Zoom</td>
             </tr>
             <tr>
               <th scope="row">Presencialidad</th>
@@ -1938,7 +2162,7 @@ footer{background:#040d24;padding:60px 0 34px}
           </tbody>
         </table>
       </div>
-      <p class="tabla-nota rv">La sesión de los martes es común a las cuatro sedes. Desliza la tabla para verla completa.</p>
+      <p class="tabla-nota rv">Cada bloque regional comparte su primera sesión semanal: los martes la Costa, los miércoles la Sierra. Desliza la tabla para verla completa.</p>
     </div>
   </section>
 
@@ -2068,8 +2292,10 @@ footer{background:#040d24;padding:60px 0 34px}
         <div>
           <div class="pr-money">
             <span class="pr-amt">$40</span><span class="pr-per">/mes · 6 meses</span>
+            <span class="pr-mas">+</span>
+            <span class="pr-mat"><b>$15</b> matrícula<small>pago único</small></span>
           </div>
-          <p class="pr-sub">Más $15 de matrícula por única vez. Descuento por pago único.</p>
+          <p class="pr-sub">Total del programa: <b>$255</b> por estudiante. Las becas se aplican sobre la mensualidad. Descuento adicional por pago único.</p>
           <div class="pr-cmp">💡 Menos que una academia de inglés</div>
         </div>
         <a href="https://forms.gle/SdaHtjDcyFuYEa3T7" target="_blank" rel="noopener" class="btn btn-dark btn-lg">
@@ -2117,7 +2343,7 @@ footer{background:#040d24;padding:60px 0 34px}
         </div>
         <div class="fq rv rv-d1">
           <button class="fq-q" onclick="toggleFaq(this)">¿Cuánto tiempo semanal necesito?<span class="fq-ic"></span></button>
-          <div class="fq-a"><div class="fq-a-in">Depende de tu sede. En <b>Quito</b>: martes de 18:00 a 20:00 por Zoom y sábados de 11:00 a 13:30, presencial en la UMET. En <b>Guayaquil, Cuenca y Santo Domingo</b>: martes y jueves de 18:00 a 20:00 por Zoom, más un encuentro presencial un sábado al mes. A eso se suma el trabajo de tu proyecto con tu equipo, que administras según tu ritmo.</div></div>
+          <div class="fq-a"><div class="fq-a-in">Depende de tu sede. En <b>Quito</b>: miércoles de 18:00 a 20:00 por Zoom y sábados de 11:00 a 13:30, presencial en la UMET. En <b>Cuenca</b>: miércoles y viernes de 18:00 a 20:00. En <b>Guayaquil y Santo Domingo</b>: martes y jueves de 18:00 a 20:00. Las tres sedes virtuales suman un encuentro presencial un sábado al mes. A eso se suma el trabajo de tu proyecto con tu equipo, que administras según tu ritmo.</div></div>
         </div>
         <div class="fq rv rv-d1">
           <button class="fq-q" onclick="toggleFaq(this)">¿Cómo aplico a una beca?<span class="fq-ic"></span></button>
@@ -2125,11 +2351,11 @@ footer{background:#040d24;padding:60px 0 34px}
         </div>
         <div class="fq rv rv-d2">
           <button class="fq-q" onclick="toggleFaq(this)">¿En qué ciudades está ELECTI?<span class="fq-ic"></span></button>
-          <div class="fq-a"><div class="fq-a-in">Operamos en cuatro sedes: <b>Quito (UIO), Guayaquil (GYE), Cuenca (CUE) y Santo Domingo (SDO)</b>. Quito es híbrida, con clase presencial cada sábado en la UMET; las otras tres son virtuales, con un encuentro presencial al mes. La sesión de los martes es compartida por todas, así que conoces gente de todo el país. Indica tu ciudad al postular.</div></div>
+          <div class="fq-a"><div class="fq-a-in">Operamos en cuatro sedes, agrupadas en dos bloques regionales. <b>Costa</b>: Guayaquil y Santo Domingo, con inicio en octubre de 2026 y clases los martes y jueves. <b>Sierra</b>: Quito y Cuenca, con inicio en noviembre de 2026 y clases los miércoles y viernes. Quito es híbrida, con clase presencial cada sábado en la UMET; las otras tres son virtuales, con un encuentro presencial al mes. Indica tu ciudad al postular.</div></div>
         </div>
         <div class="fq rv rv-d2">
           <button class="fq-q" onclick="toggleFaq(this)">¿La sede virtual vale lo mismo que la presencial?<span class="fq-ic"></span></button>
-          <div class="fq-a"><div class="fq-a-in">Sí. El plan de estudios, los docentes, las evaluaciones y el certificado son exactamente los mismos en las cuatro sedes. La diferencia es de formato, no de nivel: donde no hay clase presencial semanal, el programa suma una segunda sesión en vivo cada semana y un encuentro presencial mensual. Todos los alumnos ejecutan su proyecto dentro de la misma red de colegios.</div></div>
+          <div class="fq-a"><div class="fq-a-in">Sí. El plan de estudios, los docentes, las evaluaciones y el certificado son exactamente los mismos en las cuatro sedes. La diferencia es de formato, no de nivel: donde no hay clase presencial semanal, el programa suma una segunda sesión en vivo cada semana y un encuentro presencial mensual. El calendario cambia según el bloque regional, pero la carga y el contenido son idénticos. Todos los alumnos ejecutan su proyecto dentro de la misma red de colegios.</div></div>
         </div>
         <div class="fq rv rv-d2">
           <button class="fq-q" onclick="toggleFaq(this)">¿El certificado tiene validez real?<span class="fq-ic"></span></button>
@@ -2190,32 +2416,32 @@ footer{background:#040d24;padding:60px 0 34px}
         <a class="comp-c principal" onclick="ir('sede-quito')">
           <div class="comp-ciudad">Quito</div>
           <div class="comp-tipo">Modalidad híbrida</div>
-          <div class="comp-li">Martes · virtual</div><div class="comp-li">Sábados · presencial</div><div class="comp-li">Campus UMET</div>
+          <div class="comp-li">Bloque Sierra · noviembre</div><div class="comp-li">Miércoles · virtual</div><div class="comp-li">Sábados · presencial</div><div class="comp-li">Campus UMET</div>
           <div class="comp-ver">Ver la sede →</div>
         </a>
         <a class="comp-c" onclick="ir('sede-guayaquil')">
           <div class="comp-ciudad">Guayaquil</div>
           <div class="comp-tipo">100% virtual</div>
-          <div class="comp-li">Martes · virtual</div><div class="comp-li">Jueves · virtual</div><div class="comp-li">1 sábado al mes presencial</div>
+          <div class="comp-li">Bloque Costa · octubre</div><div class="comp-li">Martes · virtual</div><div class="comp-li">Jueves · virtual</div><div class="comp-li">1 sábado al mes presencial</div>
           <div class="comp-ver">Ver la sede →</div>
         </a>
         <a class="comp-c" onclick="ir('sede-cuenca')">
           <div class="comp-ciudad">Cuenca</div>
           <div class="comp-tipo">100% virtual</div>
-          <div class="comp-li">Martes · virtual</div><div class="comp-li">Jueves · virtual</div><div class="comp-li">1 sábado al mes presencial</div>
+          <div class="comp-li">Bloque Sierra · noviembre</div><div class="comp-li">Miércoles · virtual</div><div class="comp-li">Viernes · virtual</div><div class="comp-li">1 sábado al mes presencial</div>
           <div class="comp-ver">Ver la sede →</div>
         </a>
         <a class="comp-c" onclick="ir('sede-santo-domingo')">
           <div class="comp-ciudad">Santo Domingo</div>
           <div class="comp-tipo">100% virtual</div>
-          <div class="comp-li">Martes · virtual</div><div class="comp-li">Jueves · virtual</div><div class="comp-li">1 sábado al mes presencial</div>
+          <div class="comp-li">Bloque Costa · octubre</div><div class="comp-li">Martes · virtual</div><div class="comp-li">Jueves · virtual</div><div class="comp-li">1 sábado al mes presencial</div>
           <div class="comp-ver">Ver la sede →</div>
         </a>
       </div>
 
       <div class="aviso" style="max-width:820px;margin:clamp(40px,5vw,60px) auto 0">
         <span class="aviso-ic">🌐</span>
-        <p>Las sesiones virtuales de los <b>martes son compartidas entre las cuatro sedes</b>. Estudias con gente de todo el país desde la primera semana, y los equipos de proyecto pueden ser mixtos.</p>
+        <p>El programa se dicta en <b>dos bloques regionales</b>: la Costa desde octubre de 2026 y la Sierra desde noviembre. Cada bloque comparte su primera sesión semanal, así que estudias con gente de otras ciudades desde el primer día y los equipos de proyecto pueden ser mixtos.</p>
       </div>
 
       <div class="cierre rv">
@@ -2254,12 +2480,12 @@ footer{background:#040d24;padding:60px 0 34px}
         <div>
           <span class="mod-badge mod-hib rv">Modalidad híbrida</span>
           <h2 class="h-section rv rv-d1" style="margin-bottom:16px">Cómo son<br>las clases.</h2>
-          <p class="lead rv rv-d2" style="margin-bottom:30px">Quito combina lo mejor de los dos mundos: la flexibilidad de una sesión virtual entre semana y el peso de encontrarse cara a cara todos los sábados en una universidad.</p>
+          <p class="lead rv rv-d2" style="margin-bottom:30px">Quito pertenece al bloque Sierra, que inicia en noviembre de 2026, y combina lo mejor de los dos mundos: la flexibilidad de una sesión virtual entre semana y el peso de encontrarse cara a cara todos los sábados en una universidad.</p>
           <div class="horario">
             <div class="rv rv-d2"><div class="hr-row">
             <div class="hr-ic">💻</div>
             <div class="hr-tx">
-              <div class="hr-d">Martes</div>
+              <div class="hr-d">Miércoles</div>
               <div class="hr-h">18:00 – 20:00</div>
               <div class="hr-s">Virtual por Zoom</div>
             </div>
@@ -2279,7 +2505,8 @@ footer{background:#040d24;padding:60px 0 34px}
           <div class="sp-in">
             <div class="sp-lbl">Sede UIO</div>
             <h3 class="sp-titulo">Quito</h3>
-            <div class="sp-dato"><div class="sp-k">Modalidad</div><div class="sp-v">Híbrida<small>Virtual entre semana + presencial cada sábado</small></div></div><div class="sp-dato"><div class="sp-k">Sede presencial</div><div class="sp-v">Universidad Metropolitana del Ecuador<small>UMET · Quito</small></div></div><div class="sp-dato"><div class="sp-k">Encuentros presenciales</div><div class="sp-v">Todos los sábados<small>Sin excepción durante el ciclo</small></div></div><div class="sp-dato"><div class="sp-k">Certificación</div><div class="sp-v">Avalada por Unión Estudiantil y la UMET</div></div>
+            <div class="sp-dato"><div class="sp-k">Bloque</div><div class="sp-v">Sierra<small>Inicio: noviembre de 2026</small></div></div>
+            <div class="sp-dato"><div class="sp-k">Modalidad</div><div class="sp-v">Híbrida<small>Miércoles virtual + sábado presencial</small></div></div><div class="sp-dato"><div class="sp-k">Sede presencial</div><div class="sp-v">Universidad Metropolitana del Ecuador<small>UMET · Quito</small></div></div><div class="sp-dato"><div class="sp-k">Encuentros presenciales</div><div class="sp-v">Todos los sábados<small>Sin excepción durante el ciclo</small></div></div><div class="sp-dato"><div class="sp-k">Certificación</div><div class="sp-v">Avalada por Unión Estudiantil y la UMET</div></div>
           </div>
         </div>
       </div>
@@ -2349,13 +2576,14 @@ footer{background:#040d24;padding:60px 0 34px}
           </div>
           <div class="aviso">
             <span class="aviso-ic">🌐</span>
-            <p>Las sesiones virtuales de los martes son <b>compartidas con las cuatro sedes</b>. Tu equipo de proyecto puede tener compañeros de otra ciudad, y la red que construyes es nacional.</p>
+            <p>Guayaquil pertenece al <b>bloque Costa</b>, que inicia en octubre de 2026. La sesión de los martes es compartida con la otra sede de la Costa. Tu equipo de proyecto puede tener compañeros de otra ciudad, y la red que construyes es nacional.</p>
           </div>
         </div>
         <div class="sede-panel rv rv-d2">
           <div class="sp-in">
             <div class="sp-lbl">Sede GYE</div>
             <h3 class="sp-titulo">Guayaquil</h3>
+            <div class="sp-dato"><div class="sp-k">Bloque</div><div class="sp-v">Costa<small>Inicio: octubre de 2026</small></div></div>
             <div class="sp-dato"><div class="sp-k">Modalidad</div><div class="sp-v">100% virtual<small>Con encuentro presencial mensual</small></div></div><div class="sp-dato"><div class="sp-k">Sesiones semanales</div><div class="sp-v">Dos<small>Martes y jueves, ambas por Zoom</small></div></div><div class="sp-dato"><div class="sp-k">Encuentros presenciales</div><div class="sp-v">Uno al mes<small>Sábado, en Guayaquil</small></div></div><div class="sp-dato"><div class="sp-k">Certificación</div><div class="sp-v">Avalada por Unión Estudiantil y la UMET</div></div>
           </div>
         </div>
@@ -2402,7 +2630,7 @@ footer{background:#040d24;padding:60px 0 34px}
             <div class="rv rv-d2"><div class="hr-row">
             <div class="hr-ic">💻</div>
             <div class="hr-tx">
-              <div class="hr-d">Martes</div>
+              <div class="hr-d">Miércoles</div>
               <div class="hr-h">18:00 – 20:00</div>
               <div class="hr-s">Virtual por Zoom</div>
             </div>
@@ -2410,7 +2638,7 @@ footer{background:#040d24;padding:60px 0 34px}
             <div class="rv rv-d3"><div class="hr-row">
             <div class="hr-ic">💻</div>
             <div class="hr-tx">
-              <div class="hr-d">Jueves</div>
+              <div class="hr-d">Viernes</div>
               <div class="hr-h">18:00 – 20:00</div>
               <div class="hr-s">Virtual por Zoom</div>
             </div>
@@ -2426,13 +2654,14 @@ footer{background:#040d24;padding:60px 0 34px}
           </div>
           <div class="aviso">
             <span class="aviso-ic">🌐</span>
-            <p>Las sesiones virtuales de los martes son <b>compartidas con las cuatro sedes</b>. Tu equipo de proyecto puede tener compañeros de otra ciudad, y la red que construyes es nacional.</p>
+            <p>Cuenca pertenece al <b>bloque Sierra</b>, que inicia en noviembre de 2026. La sesión de los miércoles es compartida con Quito. Tu equipo de proyecto puede tener compañeros de otra ciudad, y la red que construyes es nacional.</p>
           </div>
         </div>
         <div class="sede-panel rv rv-d2">
           <div class="sp-in">
             <div class="sp-lbl">Sede CUE</div>
             <h3 class="sp-titulo">Cuenca</h3>
+            <div class="sp-dato"><div class="sp-k">Bloque</div><div class="sp-v">Sierra<small>Inicio: noviembre de 2026</small></div></div>
             <div class="sp-dato"><div class="sp-k">Modalidad</div><div class="sp-v">100% virtual<small>Con encuentro presencial mensual</small></div></div><div class="sp-dato"><div class="sp-k">Sesiones semanales</div><div class="sp-v">Dos<small>Martes y jueves, ambas por Zoom</small></div></div><div class="sp-dato"><div class="sp-k">Encuentros presenciales</div><div class="sp-v">Uno al mes<small>Sábado, en Cuenca</small></div></div><div class="sp-dato"><div class="sp-k">Certificación</div><div class="sp-v">Avalada por Unión Estudiantil y la UMET</div></div>
           </div>
         </div>
@@ -2503,13 +2732,14 @@ footer{background:#040d24;padding:60px 0 34px}
           </div>
           <div class="aviso">
             <span class="aviso-ic">🌐</span>
-            <p>Las sesiones virtuales de los martes son <b>compartidas con las cuatro sedes</b>. Tu equipo de proyecto puede tener compañeros de otra ciudad, y la red que construyes es nacional.</p>
+            <p>Santo Domingo pertenece al <b>bloque Costa</b>, que inicia en octubre de 2026. La sesión de los martes es compartida con la otra sede de la Costa. Tu equipo de proyecto puede tener compañeros de otra ciudad, y la red que construyes es nacional.</p>
           </div>
         </div>
         <div class="sede-panel rv rv-d2">
           <div class="sp-in">
             <div class="sp-lbl">Sede SDO</div>
             <h3 class="sp-titulo">Santo Domingo</h3>
+            <div class="sp-dato"><div class="sp-k">Bloque</div><div class="sp-v">Costa<small>Inicio: octubre de 2026</small></div></div>
             <div class="sp-dato"><div class="sp-k">Modalidad</div><div class="sp-v">100% virtual<small>Con encuentro presencial mensual</small></div></div><div class="sp-dato"><div class="sp-k">Sesiones semanales</div><div class="sp-v">Dos<small>Martes y jueves, ambas por Zoom</small></div></div><div class="sp-dato"><div class="sp-k">Encuentros presenciales</div><div class="sp-v">Uno al mes<small>Sábado, en Santo Domingo</small></div></div><div class="sp-dato"><div class="sp-k">Certificación</div><div class="sp-v">Avalada por Unión Estudiantil y la UMET</div></div>
           </div>
         </div>
@@ -2527,6 +2757,320 @@ footer{background:#040d24;padding:60px 0 34px}
       </div>
     </div>
   </section>
+</div>
+
+
+<!-- ══════════════ PÁGINA: ELECTI INSTITUCIONES (B2B) ══════════════ -->
+<div class="pg" id="pg-instituciones">
+
+  <!-- 1 · HERO INSTITUCIONAL -->
+  <section class="inst-hero">
+    <div class="wrap inst-hero-grid">
+      <div>
+        <span class="inst-kicker">ELECTI Instituciones</span>
+        <h1 class="inst-h1">Formamos a los estudiantes<br>que lideran su comunidad.</h1>
+        <p class="inst-sub">Su institución selecciona y patrocina a sus representantes y líderes estudiantiles para que se formen en ELECTI y devuelvan esas herramientas al colegio.</p>
+        <div class="inst-acciones">
+          <a class="btn btn-primary" onclick="ir('instituciones','inst-contacto')">Solicitar información</a>
+          <a class="btn btn-ghost-l" onclick="ir('instituciones','inst-modalidades')">Conocer modalidades</a>
+        </div>
+        <p class="inst-nota-h"><b>Beneficio institucional desde 2 estudiantes:</b> 30% sobre la mensualidad y exención total de la matrícula. Condición preferencial permanente por vinculación institucional.</p>
+      </div>
+      <div class="inst-hero-card">
+        <div class="inst-hc-t">Valor por estudiante · 6 meses</div>
+        <div class="inst-hc-fila"><span class="inst-hc-k">Valor regular<small>$40/mes + $15 de matrícula</small></span><span class="inst-hc-v">$255</span></div>
+        <div class="inst-hc-fila"><span class="inst-hc-k">Beca de Liderazgo Estudiantil · 25%<small>$30/mes + $15 de matrícula</small></span><span class="inst-hc-v">$195</span></div>
+        <div class="inst-hc-fila destaca"><span class="inst-hc-k">Institución Educativa Aliada · 30%<small>$28/mes, sin matrícula</small></span><span class="inst-hc-v">$168</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 · PROBLEMA / OPORTUNIDAD -->
+  <section class="inst-sec">
+    <div class="wrap">
+      <div class="inst-head">
+        <p class="inst-eyebrow rv">El punto de partida</p>
+        <h2 class="inst-h2 rv rv-d1">Sus estudiantes ya lideran.<br>La formación es lo que falta.</h2>
+        <p class="inst-lead rv rv-d2">Cada colegio tiene estudiantes que representan a sus compañeros, dirigen clubes, organizan campañas y sostienen proyectos. Asumen esas responsabilidades con voluntad, pero rara vez con método: planificar, medir, delegar, presentar y sostener una iniciativa son competencias que se aprenden.</p>
+        <p class="inst-lead rv rv-d2" style="margin-top:18px">ELECTI no reemplaza los procesos internos de la institución. Los complementa con formación externa estructurada y con una comunidad intercolegial que expone a sus estudiantes a realidades distintas a la propia.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 · MODELO DE IMPACTO -->
+  <section class="inst-sec papel">
+    <div class="wrap">
+      <div class="inst-head">
+        <p class="inst-eyebrow rv">Modelo de impacto</p>
+        <h2 class="inst-h2 rv rv-d1">Formar, aplicar, transferir, medir.</h2>
+        <p class="inst-lead rv rv-d2">La institución no financia una participación individual. Invierte en estudiantes capaces de generar impacto dentro de su propia comunidad educativa.</p>
+      </div>
+      <div class="inst-flujo">
+        <div class="inst-paso rv"><div class="inst-paso-n">01</div><h3>Formar</h3><p>El estudiante cursa ELECTI y desarrolla liderazgo, comunicación, oratoria, gestión de proyectos, emprendimiento, trabajo colaborativo y participación.</p></div>
+        <div class="inst-paso rv rv-d1"><div class="inst-paso-n">02</div><h3>Aplicar</h3><p>Utiliza esas herramientas en proyectos y responsabilidades reales, no en ejercicios teóricos.</p></div>
+        <div class="inst-paso rv rv-d2"><div class="inst-paso-n">03</div><h3>Transferir</h3><p>Lleva de vuelta al colegio conocimientos, metodologías e iniciativas que benefician a toda la comunidad educativa.</p></div>
+        <div class="inst-paso rv rv-d3"><div class="inst-paso-n">04</div><h3>Medir</h3><p>Según el nivel de vinculación, ELECTI entrega seguimiento y reportes institucionales sobre el proceso.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 · COMPETENCIAS -->
+  <section class="inst-sec">
+    <div class="wrap">
+      <div class="inst-head">
+        <p class="inst-eyebrow rv">Competencias</p>
+        <h2 class="inst-h2 rv rv-d1">Qué trabaja el programa.</h2>
+      </div>
+      <div class="inst-comp rv rv-d2">
+        <div><b>Liderazgo</b><span>Dirigir equipos, tomar decisiones y asumir responsabilidad sobre resultados.</span></div>
+        <div><b>Comunicación y oratoria</b><span>Argumentar, presentar en público y sostener una postura con claridad.</span></div>
+        <div><b>Gestión de proyectos</b><span>Planificar, presupuestar, ejecutar y evaluar iniciativas reales.</span></div>
+        <div><b>Emprendimiento e iniciativa</b><span>Identificar oportunidades y convertirlas en propuestas viables.</span></div>
+        <div><b>Trabajo colaborativo</b><span>Coordinar con pares de otros colegios, ciudades y contextos.</span></div>
+        <div><b>Participación estudiantil</b><span>Entender la representación como una función con deberes concretos.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5 · A QUIÉN PATROCINAR -->
+  <section class="inst-sec papel">
+    <div class="wrap">
+      <div class="inst-head">
+        <p class="inst-eyebrow rv">Perfil de los estudiantes</p>
+        <h2 class="inst-h2 rv rv-d1">¿A quién puede patrocinar<br>la institución?</h2>
+        <p class="inst-lead rv rv-d2">La selección la define el colegio, según sus propios criterios y prioridades.</p>
+      </div>
+      <div class="inst-lista rv rv-d2">
+        <div><span></span><p>Miembros del Consejo Estudiantil</p></div>
+        <div><span></span><p>Presidentes y directivas de curso</p></div>
+        <div><span></span><p>Líderes de clubes y comités</p></div>
+        <div><span></span><p>Representantes en instancias del colegio</p></div>
+        <div><span></span><p>Estudiantes involucrados en proyectos</p></div>
+        <div><span></span><p>Estudiantes con potencial de liderazgo identificado</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 · BENEFICIO INSTITUCIONAL -->
+  <section class="inst-sec marino">
+    <div class="wrap">
+      <div class="inst-head">
+        <p class="inst-eyebrow rv">Condición institucional</p>
+        <h2 class="inst-h2 rv rv-d1">Un valor preferencial<br>por vincularse como institución.</h2>
+        <p class="inst-lead rv rv-d2">No se trata de una promoción temporal. Es la condición que aplica de forma permanente cuando la participación se canaliza a través del colegio, desde dos estudiantes en adelante. Además del 30% sobre la mensualidad, <b style="color:#fff">las instituciones vinculadas no pagan matrícula</b>.</p>
+      </div>
+      <div class="inst-valores">
+        <div class="inst-val rv">
+          <div class="inst-val-k">Valor regular</div>
+          <div class="inst-val-n">$40<span>/mes</span></div>
+          <div class="inst-val-d">+ $15 de matrícula · <b>$255</b> en total</div>
+          <p>Aplicación individual del estudiante, sin vinculación institucional.</p>
+        </div>
+        <div class="inst-val rv rv-d1">
+          <div class="inst-val-k">Beca de Liderazgo · 25%</div>
+          <div class="inst-val-n">$30<span>/mes</span></div>
+          <div class="inst-val-d">+ $15 de matrícula · <b>$195</b> en total</div>
+          <p>Para miembros de Consejo Estudiantil que aplican por su cuenta, según las condiciones del programa.</p>
+        </div>
+        <div class="inst-val on rv rv-d2">
+          <div class="inst-val-k">Institución Aliada · 30%</div>
+          <div class="inst-val-n">$28<span>/mes</span></div>
+          <div class="inst-val-d">Sin matrícula · <b>$168</b> en total</div>
+          <p>Cuando el colegio canaliza la participación de dos o más estudiantes.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 · MODALIDADES -->
+  <section class="inst-sec" id="inst-modalidades">
+    <div class="wrap">
+      <div class="inst-head">
+        <p class="inst-eyebrow rv">Niveles de vinculación</p>
+        <h2 class="inst-h2 rv rv-d1">Tres formas de trabajar juntos.</h2>
+        <p class="inst-lead rv rv-d2">La diferencia entre niveles no es el número de cupos, sino la profundidad del acompañamiento y del seguimiento institucional.</p>
+      </div>
+      <div class="inst-mods">
+        <div class="inst-mod rv">
+          <div class="inst-mod-top">
+            <div class="inst-mod-k">Desde 2 estudiantes</div>
+            <h3>Institución Educativa Aliada</h3>
+            <div class="inst-mod-v">$28/mes por estudiante · sin matrícula</div>
+          </div>
+          <ul>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Beneficio institucional del 30% sobre la mensualidad</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Sin costo de matrícula</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Programa ELECTI completo</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Certificación con aval de la UMET</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Seguimiento general del proceso</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Reconocimiento como Institución Educativa Aliada</li>
+          </ul>
+          <a class="btn btn-ghost-l" onclick="ir('instituciones','inst-contacto')">Solicitar información</a>
+        </div>
+        <div class="inst-mod destacada rv rv-d1">
+          <div class="inst-mod-top">
+            <div class="inst-mod-k">Desde 5 estudiantes</div>
+            <h3>Institución Educativa Asociada</h3>
+            <div class="inst-mod-v">$28/mes por estudiante · sin matrícula</div>
+          </div>
+          <ul>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Todo lo de Institución Aliada, sin matrícula</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Reporte institucional del proceso</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Reunión de seguimiento con el colegio</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Actividad complementaria para sus estudiantes</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Acceso preferente a determinadas iniciativas</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Reconocimiento dentro de la Red de Instituciones Aliadas</li>
+          </ul>
+          <a class="btn btn-primary" onclick="ir('instituciones','inst-contacto')">Solicitar información</a>
+        </div>
+        <div class="inst-mod rv rv-d2">
+          <div class="inst-mod-top">
+            <div class="inst-mod-k">Desde 10 estudiantes</div>
+            <h3>Alianza Institucional Estratégica</h3>
+            <div class="inst-mod-v">Propuesta a medida</div>
+          </div>
+          <ul>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Beneficio del 30% y exención de matrícula</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Diagnóstico inicial de liderazgo estudiantil</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Seguimiento ampliado y acompañamiento de iniciativas</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Capacitaciones o actividades exclusivas</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Reuniones institucionales periódicas</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Reporte de resultados y planificación conjunta</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>Prioridad en proyectos y actividades de la red</li>
+          </ul>
+          <a class="btn btn-ghost-l" onclick="ir('instituciones','inst-contacto')">Solicitar propuesta institucional</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8 · PATROCINIO FLEXIBLE -->
+  <section class="inst-sec papel">
+    <div class="wrap inst-patro">
+      <div>
+        <p class="inst-eyebrow rv">Esquemas de financiamiento</p>
+        <h2 class="inst-h2 rv rv-d1">La institución define<br>cómo se financia.</h2>
+        <div class="rv rv-d2" style="margin-top:26px">
+          <div class="inst-opcion"><b>Patrocinio completo</b><span>El colegio cubre el valor institucional de cada estudiante seleccionado.</span></div>
+          <div class="inst-opcion"><b>Copatrocinio con la familia</b><span>El colegio aporta una parte y la familia completa el resto.</span></div>
+          <div class="inst-opcion"><b>Esquema institucional propio</b><span>El colegio define sus propios criterios de asignación, fondos o becas internas.</span></div>
+        </div>
+      </div>
+      <div class="inst-split rv rv-d2">
+        <div class="inst-split-t">Ejemplo de copatrocinio · $168 por estudiante</div>
+        <div class="inst-barra"><div class="b1">Colegio $84</div><div class="b2">Familia $84</div></div>
+        <p class="inst-split-pie">Distribución sobre el valor institucional de $168 por estudiante ($28 mensuales durante seis meses, sin matrícula). Es únicamente un ejemplo: cada institución define su propio esquema y la proporción que considere adecuada.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9 · COLEGIOS BI -->
+  <section class="inst-sec" id="inst-bi">
+    <div class="wrap inst-bi">
+      <div>
+        <p class="inst-eyebrow rv">Instituciones con programas BI</p>
+        <h2 class="inst-h2 rv rv-d1">Una experiencia<br>extracurricular complementaria.</h2>
+      </div>
+      <div>
+        <p class="inst-lead rv rv-d2">Para instituciones que ofrecen programas del Bachillerato Internacional, ELECTI puede funcionar como una experiencia extracurricular que fortalece competencias que el colegio ya trabaja: liderazgo, iniciativa, colaboración, comunicación, servicio a la comunidad, gestión de proyectos y participación estudiantil.</p>
+        <div class="inst-bi-tags rv rv-d2">
+          <span>Liderazgo</span><span>Iniciativa</span><span>Colaboración</span>
+          <span>Comunicación</span><span>Servicio</span><span>Gestión de proyectos</span><span>Participación</span>
+        </div>
+        <p class="inst-aclara rv rv-d3">ELECTI es un programa independiente de Fundación Unión Estudiantil. No forma parte de los componentes académicos oficiales del Bachillerato Internacional ni mantiene relación de afiliación, certificación o reconocimiento con International Baccalaureate. Corresponde a cada institución determinar cómo articula esta experiencia con su propia planificación.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10 · RED -->
+  <section class="inst-sec marino">
+    <div class="wrap">
+      <div class="inst-head">
+        <p class="inst-eyebrow rv">Red de Instituciones Aliadas</p>
+        <h2 class="inst-h2 rv rv-d1">Liderazgo estudiantil<br>que cruza colegios.</h2>
+        <p class="inst-lead rv rv-d2">Las instituciones vinculadas forman parte de una red intercolegial en construcción, pensada para que el trabajo de cada Consejo Estudiantil deje de ocurrir en aislamiento.</p>
+      </div>
+      <div class="inst-red">
+        <div class="rv"><b>Encuentros</b><p>Espacios de trabajo entre estudiantes y representantes de distintas instituciones.</p></div>
+        <div class="rv rv-d1"><b>Colaboración entre consejos</b><p>Intercambio de prácticas y coordinación entre directivas estudiantiles.</p></div>
+        <div class="rv rv-d2"><b>Proyectos conjuntos</b><p>Iniciativas que involucran a más de un colegio a la vez.</p></div>
+        <div class="rv"><b>Actividades</b><p>Programación complementaria abierta a las instituciones de la red.</p></div>
+        <div class="rv rv-d1"><b>Intercambio de experiencias</b><p>Documentación y difusión de lo que funciona en cada comunidad.</p></div>
+        <div class="rv rv-d2"><b>Oportunidades</b><p>Acceso preferente de sus estudiantes a determinadas convocatorias.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 11 · CONTACTO -->
+  <section class="inst-sec papel" id="inst-contacto">
+    <div class="wrap inst-form-grid">
+      <div>
+        <p class="inst-eyebrow rv">Contacto institucional</p>
+        <h2 class="inst-h2 rv rv-d1">Conversemos sobre el liderazgo estudiantil de su institución.</h2>
+        <p class="inst-lead rv rv-d2">Complete el formulario y el equipo de ELECTI se comunicará para revisar el perfil de sus estudiantes y proponer la modalidad de vinculación más adecuada.</p>
+        <div class="rv rv-d2" style="margin-top:30px">
+          <div class="inst-opcion"><b>Escríbanos directamente</b><span>mreza@unionestudiantil.org</span></div>
+          <div class="inst-opcion"><b>Instagram</b><span>@electi.ec</span></div>
+        </div>
+      </div>
+
+      <div class="inst-form rv rv-d1">
+        <form id="form-instituciones" onsubmit="return enviarInstituciones(event)">
+          <div class="inst-campos">
+            <div class="inst-campo">
+              <label for="i-nombre">Nombre y apellido</label>
+              <input id="i-nombre" name="nombre" type="text" required autocomplete="name">
+            </div>
+            <div class="inst-campo">
+              <label for="i-cargo">Cargo</label>
+              <input id="i-cargo" name="cargo" type="text" required placeholder="Rector, coordinador, DECE…">
+            </div>
+            <div class="inst-campo ancho">
+              <label for="i-colegio">Institución educativa</label>
+              <input id="i-colegio" name="institucion" type="text" required>
+            </div>
+            <div class="inst-campo">
+              <label for="i-ciudad">Ciudad</label>
+              <input id="i-ciudad" name="ciudad" type="text" required>
+            </div>
+            <div class="inst-campo">
+              <label for="i-tel">Teléfono</label>
+              <input id="i-tel" name="telefono" type="tel" required autocomplete="tel">
+            </div>
+            <div class="inst-campo ancho">
+              <label for="i-correo">Correo institucional</label>
+              <input id="i-correo" name="correo" type="email" required autocomplete="email">
+            </div>
+            <div class="inst-campo">
+              <label for="i-cantidad">Estudiantes interesados</label>
+              <select id="i-cantidad" name="cantidad" required>
+                <option value="">Seleccione…</option>
+                <option>2–4</option><option>5–9</option><option>10–19</option><option>20+</option>
+              </select>
+            </div>
+            <div class="inst-campo">
+              <label for="i-modalidad">Modalidad de interés</label>
+              <select id="i-modalidad" name="modalidad" required>
+                <option value="">Seleccione…</option>
+                <option>Institución Educativa Aliada</option>
+                <option>Institución Educativa Asociada</option>
+                <option>Alianza Institucional Estratégica</option>
+                <option>Quiero recibir asesoría</option>
+              </select>
+            </div>
+            <div class="inst-campo ancho">
+              <label for="i-mensaje">Mensaje o comentarios</label>
+              <textarea id="i-mensaje" name="mensaje" rows="4"></textarea>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary">Solicitar propuesta institucional</button>
+          <div class="inst-aviso-envio" id="inst-aviso"></div>
+          <p class="inst-form-nota">Los datos se utilizan únicamente para responder a esta solicitud.</p>
+        </form>
+      </div>
+    </div>
+  </section>
+
 </div>
 
 <!-- ══════════════ PÁGINA: UNIÓN ESTUDIANTIL ══════════════ -->
@@ -2614,6 +3158,13 @@ footer{background:#040d24;padding:60px 0 34px}
           <a onclick="ir('sede-cuenca')">Cuenca · CUE</a>
           <a onclick="ir('sede-santo-domingo')">Santo Domingo · SDO</a>
           <a onclick="ir('sedes')">Comparar sedes</a>
+        </div>
+        <div class="ft-col">
+          <h5>Colegios</h5>
+          <a onclick="ir('instituciones')">ELECTI Instituciones</a>
+          <a onclick="ir('instituciones','inst-modalidades')">Modalidades de vinculación</a>
+          <a onclick="ir('instituciones','inst-bi')">Colegios BI</a>
+          <a onclick="ir('instituciones','inst-contacto')">Solicitar propuesta</a>
         </div>
         <div class="ft-col">
           <h5>Acceso</h5>
@@ -2772,7 +3323,8 @@ document.addEventListener('keydown', function(e){
 
 // ── Enrutador ──
 var PAGINAS = ['home','programa','docentes','becas','preguntas','sedes',
-               'sede-quito','sede-guayaquil','sede-cuenca','sede-santo-domingo','ue'];
+               'sede-quito','sede-guayaquil','sede-cuenca','sede-santo-domingo','ue',
+               'instituciones'];
 
 function mostrarPagina(id){
   var pgs = document.querySelectorAll('.pg');
@@ -2833,6 +3385,51 @@ function irSeccion(id){
   if (id === 'faq') return ir('preguntas');
   if (enPrograma.indexOf(id) !== -1) return ir('programa', id);
   ir('home', id);
+}
+
+
+// ══════════════════════════════════════════════════════════
+// ELECTI INSTITUCIONES · envío del formulario B2B
+// PENDIENTE DE INTEGRACIÓN: hoy sólo valida y compone un correo.
+// Ver la nota "INTEGRACIÓN PENDIENTE" en la documentación de entrega.
+// Para revertir: eliminar esta función y la página #pg-instituciones.
+// ══════════════════════════════════════════════════════════
+function enviarInstituciones(ev){
+  ev.preventDefault();
+  var f = ev.target;
+  var aviso = document.getElementById('inst-aviso');
+  var d = {};
+  ['nombre','cargo','institucion','ciudad','telefono','correo','cantidad','modalidad','mensaje']
+    .forEach(function(k){ d[k] = (f.elements[k] && f.elements[k].value || '').trim(); });
+
+  if (!d.nombre || !d.cargo || !d.institucion || !d.ciudad || !d.telefono ||
+      !d.correo || !d.cantidad || !d.modalidad){
+    aviso.className = 'inst-aviso-envio err';
+    aviso.textContent = 'Falta completar algún campo obligatorio.';
+    return false;
+  }
+
+  var cuerpo = [
+    'Solicitud de vinculación institucional — ELECTI Instituciones', '',
+    'Nombre: ' + d.nombre,
+    'Cargo: ' + d.cargo,
+    'Institución: ' + d.institucion,
+    'Ciudad: ' + d.ciudad,
+    'Correo: ' + d.correo,
+    'Teléfono: ' + d.telefono,
+    'Estudiantes interesados: ' + d.cantidad,
+    'Modalidad de interés: ' + d.modalidad, '',
+    'Mensaje:', (d.mensaje || '—')
+  ].join('\n');
+
+  window.location.href = 'mailto:mreza@unionestudiantil.org'
+    + '?subject=' + encodeURIComponent('Solicitud institucional · ' + d.institucion)
+    + '&body=' + encodeURIComponent(cuerpo);
+
+  aviso.className = 'inst-aviso-envio ok';
+  aviso.textContent = 'Se abrirá su cliente de correo con la solicitud lista para enviar. '
+    + 'Si no se abre, escríbanos a mreza@unionestudiantil.org.';
+  return false;
 }
 
 // ── Selector de sede (metodología en el inicio) ──
