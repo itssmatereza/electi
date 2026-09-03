@@ -1,4 +1,26 @@
+# ══════════════════════════════════════════════════════════
 # Redirecciones de las rutas antiguas (por si quedó algún link guardado)
+# ══════════════════════════════════════════════════════════
 /electi-landing.html      /                  301
 /electi-portal.html       /portal/           301
 /electi-privacidad.html   /privacidad.html   301
+
+# ══════════════════════════════════════════════════════════
+# Atajos legibles · útiles para QR, flyers y bio de Instagram.
+# Redirigen a la ruta hash que ya entiende el router del index.
+# Ojo: NO son URLs indexables (el # no viaja al servidor);
+# eso llega cuando migremos a páginas reales.
+# ══════════════════════════════════════════════════════════
+/programa                 /#programa         302
+/becas                    /#becas            302
+/preguntas                /#preguntas        302
+/docentes                 /#docentes         302
+/sedes                    /#sedes            302
+/quito                    /#sede-quito       302
+/guayaquil                /#sede-guayaquil   302
+/cuenca                   /#sede-cuenca      302
+/santodomingo             /#sede-santo-domingo 302
+/colegios                 /#instituciones    302
+/instituciones            /#instituciones    302
+/uide                     /#uide             302
+/postular                 https://forms.gle/SdaHtjDcyFuYEa3T7  302
