@@ -7,7 +7,7 @@
   Cross-Origin-Opener-Policy: same-origin-allow-popups
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
-  Permissions-Policy: geolocation=(), microphone=(), camera=(), interest-cohort=()
+  Permissions-Policy: geolocation=(), microphone=(), interest-cohort=()
 
 # ══════════════════════════════════════════════════════════
 # HTML · siempre revalidar para que un deploy se vea al instante
