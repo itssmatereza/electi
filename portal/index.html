@@ -3,7 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ELECTI Portal</title>
+<title>Portal ELECTI</title>
+<meta name="description" content="Portal institucional de ELECTI — asistencia, pagos, materiales y seguimiento del programa.">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#081a4a">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -20,6 +26,28 @@ html { overflow-x: hidden; }
 body { font-family: 'DM Sans', sans-serif; background: var(--off); color: var(--text); min-height: 100vh; overflow-x: hidden; max-width: 100vw; }
 * { max-width: 100%; }
 img, svg, table { max-width: 100%; }
+
+/* Campo de beca variable */
+.beca-input-row { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
+.beca-input-row input[type="number"] {
+  width: 92px !important; text-align: center; font-weight: 700; font-size: 16px !important;
+  font-variant-numeric: tabular-nums;
+}
+.beca-pct { font-size: 15px; font-weight: 700; color: var(--gray); margin-left: -4px; }
+.beca-quick { display: flex; gap: 5px; flex-wrap: wrap; }
+.beca-quick button {
+  font-size: 11.5px; font-weight: 700; padding: 5px 10px; border-radius: 100px; cursor: pointer;
+  background: var(--off); border: 1px solid var(--border); color: var(--gray);
+  font-family: 'DM Sans', sans-serif; transition: all 0.15s;
+}
+.beca-quick button:hover { border-color: var(--sky); color: var(--navy); }
+.beca-quick button.on { background: var(--navy); border-color: var(--navy); color: #fff; }
+.beca-preview {
+  margin-top: 11px; background: var(--off); border: 1px solid var(--border);
+  border-radius: 10px; padding: 12px 14px; font-size: 12.5px; color: var(--gray); line-height: 1.7;
+}
+.beca-preview b { color: var(--text); font-weight: 700; }
+.beca-preview .bp-total { font-size: 17px; font-weight: 800; color: var(--navy); letter-spacing: -0.4px; }
 
 /* ── LOGIN ── */
 #login-screen {
@@ -203,20 +231,6 @@ tbody tr:hover td { background: var(--off); }
 .progress-wrap { background: var(--border); border-radius: 100px; height: 6px; overflow: hidden; margin-top: 4px; }
 .progress-bar { height: 100%; border-radius: 100px; background: linear-gradient(90deg, var(--navy), var(--sky)); transition: width 0.4s ease; }
 .progress-bar.low { background: linear-gradient(90deg, #b91c1c, var(--red)); }
-
-/* materiales */
-.materials-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
-.material-card {
-  background: var(--off); border: 1px solid var(--border); border-radius: 12px; padding: 20px;
-  display: flex; align-items: flex-start; gap: 14px; transition: border-color 0.15s;
-}
-.material-card:hover { border-color: var(--sky-light); }
-.material-icon { width: 40px; height: 40px; border-radius: 10px; background: var(--navy); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.material-icon svg { width: 18px; height: 18px; stroke: var(--sky); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.material-info h5 { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
-.material-info span { font-size: 12px; color: var(--gray); }
-.material-link { margin-top: 10px; display: inline-block; font-size: 12px; font-weight: 600; color: var(--blue); text-decoration: none; }
-.material-link:hover { text-decoration: underline; }
 
 /* anuncios */
 .anuncio { border-left: 3px solid var(--sky); padding: 16px 20px; background: var(--off); border-radius: 0 10px 10px 0; margin-bottom: 12px; }
@@ -519,11 +533,6 @@ tbody tr:hover td { background: var(--off); }
 .al-avatar-cam svg { width: 11px; height: 11px; stroke: var(--navy-dark); fill: none; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
 .al-avatar-edit .al-hero-avatar { margin-bottom: 0; }
 
-/* Foto en la ficha */
-.fd-foto { width: 62px; height: 62px; border-radius: 12px; overflow: hidden; background: var(--navy);
-  display: flex; align-items: center; justify-content: center; color: var(--sky); font-weight: 800; }
-.fd-foto img { width: 100%; height: 100%; object-fit: cover; }
-
 /* Materiales estilo Classroom */
 .mat-fase { margin-bottom: 26px; }
 .mat-fase-head { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
@@ -567,8 +576,6 @@ tbody tr:hover td { background: var(--off); }
 .al-block-move button { width: 28px; height: 28px; border: 1px solid var(--border); background: var(--off); border-radius: 7px; cursor: pointer; color: var(--gray); font-size: 10px; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
 .al-block-move button:hover:not(:disabled) { background: var(--border); color: var(--navy); }
 .al-block-move button:disabled { opacity: 0.25; cursor: default; }
-.al-cuota-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
-.al-cuota-row:last-child { border-bottom: none; }
 
 /* modal */
 .modal-bg {
@@ -645,14 +652,8 @@ tbody tr:hover td { background: var(--off); }
   .mobile-topbar { display: flex; }
   .bottom-nav { display: flex; }
   .stats-row { grid-template-columns: repeat(2, 1fr); }
-  .materials-grid { grid-template-columns: 1fr; }
   .al-status-grid { grid-template-columns: 1fr; }
   .al-blocks-grid { grid-template-columns: 1fr; }
-  .al-detail td { background: var(--off) !important; white-space: normal !important; }
-  .al-detail-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(215px, 1fr)); gap: 16px 32px; padding: 8px 4px; font-size: 13px; white-space: normal; }
-  .fd-item { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
-  .fd-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--gray); font-weight: 700; white-space: normal; }
-  .fd-value { font-size: 13.5px; color: var(--text); font-weight: 500; overflow-wrap: anywhere; white-space: normal; }
   .link-more { color: var(--blue); cursor: pointer; font-size: 12px; font-weight: 600; }
   #sidebar-backdrop { display: none; position: fixed; inset: 0; background: rgba(8,26,74,0.45); z-index: 75; }
 
@@ -678,8 +679,6 @@ tbody tr:hover td { background: var(--off); }
   #acuerdo-overlay { padding: 8px !important; }
   #acuerdo-overlay .btn { padding: 8px 11px; font-size: 12px; }
   .dash-grid { grid-template-columns: 1fr !important; }
-  .mobile-topbar { display: flex; }
-  .bottom-nav { display: flex; }
   .toast { bottom: calc(76px + env(safe-area-inset-bottom, 0px)); left: 14px; right: 14px; }
   table { display: block; overflow-x: auto; white-space: nowrap; }
 }
@@ -837,6 +836,7 @@ tbody tr:hover td { background: var(--off); }
           <option value="ALL">Todas las sedes</option>
           <option value="UIO">Solo Quito</option>
           <option value="GYE">Solo Guayaquil</option>
+          <option value="CUE">Solo Cuenca</option>
           <option value="SDO">Solo Santo Domingo</option>
         </select>
         <button class="btn btn-navy" onclick="loadAttendance()">Cargar sesión</button>
@@ -895,6 +895,7 @@ tbody tr:hover td { background: var(--off); }
             <option value="ALL">Todas las sedes</option>
             <option value="UIO">Solo Quito</option>
             <option value="GYE">Solo Guayaquil</option>
+            <option value="CUE">Solo Cuenca</option>
             <option value="SDO">Solo Santo Domingo</option>
           </select>
           <button class="btn btn-ghost" onclick="exportFinancieroExcel()">⬇ Excel financiero</button>
@@ -1216,6 +1217,7 @@ tbody tr:hover td { background: var(--off); }
       <select id="m-sede">
         <option value="UIO">Quito (UIO)</option>
         <option value="GYE">Guayaquil (GYE)</option>
+        <option value="CUE">Cuenca (CUE)</option>
         <option value="SDO">Santo Domingo (SDO)</option>
       </select>
     </div>
@@ -1229,25 +1231,24 @@ tbody tr:hover td { background: var(--off); }
     <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--sky);margin:18px 0 10px;">Documentos</div>
     <div class="field"><label>URL del acuerdo firmado (Google Drive)</label><input type="url" id="m-acuerdo-url" placeholder="https://drive.google.com/..."></div>
     <input type="hidden" id="m-edit" value="">
-    <div class="field"><label>Beca</label>
-      <select id="m-beca">
-        <option value="25" selected>Beca estándar 25% — cuota $30</option>
-        <option value="0">Sin beca — cuota $40</option>
-        <option value="40">Beca de acceso 40% — cuota $24</option>
-        <option value="50">Beca parcial 50% — cuota $20</option>
-        <option value="100">Beca completa 100% — sin costo</option>
-      </select>
+    <div class="field"><label>Beca — porcentaje de descuento</label>
+      <div class="beca-input-row">
+        <input type="number" id="m-beca" min="0" max="100" step="1" value="25" oninput="previewBeca()" onchange="previewBeca()">
+        <span class="beca-pct">%</span>
+        <div class="beca-quick" id="m-beca-quick"></div>
+      </div>
+      <div class="beca-preview" id="m-beca-preview"></div>
     </div>
     <div class="field"><label>Plan de pago</label>
-      <select id="m-plan">
+      <select id="m-plan" onchange="previewBeca()">
         <option value="mensual">Mensual (cuotas)</option>
         <option value="unico">Pago único (10% dcto.)</option>
       </select>
     </div>
     <div class="field"><label>Matrícula</label>
-      <select id="m-matricula">
-        <option value="normal">$15 — regular</option>
-        <option value="exenta">Exenta (inscrito antes del 1 de junio)</option>
+      <select id="m-matricula" onchange="previewBeca()">
+        <option value="normal">Regular</option>
+        <option value="exenta">Exenta</option>
       </select>
     </div>
     <div class="modal-actions">
@@ -1367,12 +1368,13 @@ tbody tr:hover td { background: var(--off); }
     </div>
     <div id="rp-alumno-extra" style="display:none;">
       <div class="field"><label>Sede</label>
-        <select id="rp-sede"><option value="UIO">Quito (UIO)</option><option value="GYE">Guayaquil (GYE)</option><option value="SDO">Santo Domingo (SDO)</option></select>
+        <select id="rp-sede"><option value="UIO">Quito (UIO)</option><option value="GYE">Guayaquil (GYE)</option><option value="CUE">Cuenca (CUE)</option><option value="SDO">Santo Domingo (SDO)</option></select>
       </div>
-      <div class="field"><label>Beca</label>
-        <select id="rp-beca">
-          <option value="0">Sin beca</option><option value="25">25%</option><option value="40">40%</option><option value="50">50%</option><option value="100">100%</option>
-        </select>
+      <div class="field"><label>Beca — porcentaje de descuento</label>
+        <div class="beca-input-row">
+          <input type="number" id="rp-beca" min="0" max="100" step="1" value="25">
+          <span class="beca-pct">%</span>
+        </div>
       </div>
     </div>
     <div class="modal-actions">
@@ -1566,8 +1568,32 @@ let state = {
 
 // ─── CAPA DE DATOS (Firestore) ───
 const _escrito = {};   // huella de lo ya guardado, evita escrituras repetidas
+// Si alguna lectura inicial falla, el estado en memoria queda incompleto.
+// Escribir en ese caso sobrescribiría documentos completos con datos parciales,
+// así que bloqueamos toda escritura hasta que la carga se complete bien.
+let _cargaCompleta = false;
+let _erroresCarga = [];
+
+function puedeEscribir() {
+  if (_cargaCompleta) return true;
+  toast('⚠ No se guardó: los datos no cargaron completos. Recarga la página antes de editar.');
+  return false;
+}
+
+function avisarCargaIncompleta() {
+  if (_erroresCarga.length === 0) return;
+  const banner = document.createElement('div');
+  banner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:500;background:#991B1B;color:#fff;' +
+    'padding:12px 18px;font-size:13.5px;font-weight:600;text-align:center;line-height:1.5;';
+  banner.innerHTML = '⚠ No se pudieron cargar: <b>' + _erroresCarga.join(', ') + '</b>. ' +
+    'La edición está bloqueada para no borrar información. ' +
+    '<button onclick="location.reload()" style="margin-left:10px;background:#fff;color:#991B1B;border:none;' +
+    'border-radius:6px;padding:5px 12px;font-weight:700;cursor:pointer;font-family:inherit;">Recargar</button>';
+  document.body.appendChild(banner);
+}
 
 function guardarDoc(col, id, data) {
+  if (!_cargaCompleta) return Promise.resolve();
   const clave = col + '/' + id;
   const huella = JSON.stringify(data);
   if (_escrito[clave] === huella) return Promise.resolve();
@@ -1620,29 +1646,39 @@ async function cargarDatosAlumno(uid) {
   state.anuncios   = (anunciosD && anunciosD.items) || [];
   state.materiales = (materialesD && materialesD.items) || [];
   state.config     = cfg || {};
+  _cargaCompleta = true;   // el alumno no escribe colecciones compartidas
   return perfil;
 }
 
 async function cargarDatos(rol) {
   const esAdmin = rol === 'admin';
+  _cargaCompleta = false;
+  _erroresCarga = [];
+  // Cada lectura registra su fallo. Las colecciones que se guardan como documento
+  // único (multas, anuncios, materiales) son las críticas: si no cargan y luego
+  // se escribe, se pierde todo lo que contenían.
+  function critico(promesa, nombre) {
+    return promesa.catch(function(e) { _erroresCarga.push(nombre); console.error('Fallo al cargar ' + nombre, e); return null; });
+  }
   const [usuarios, pagos, asistencia, multasD, anunciosD, materialesD, cfg] = await Promise.all([
-    window.fb.getDocs('usuarios').catch(() => []),
+    critico(window.fb.getDocs('usuarios'), 'alumnos y equipo'),
     // Los profesores no tienen permiso de lectura sobre pagos (por reglas de seguridad)
-    esAdmin ? window.fb.getDocs('pagos').catch(() => []) : Promise.resolve([]),
-    window.fb.getDocs('asistencia').catch(() => []),
-    window.fb.getDoc('colecciones', 'multas').catch(() => null),
-    window.fb.getDoc('colecciones', 'anuncios').catch(() => null),
-    window.fb.getDoc('colecciones', 'materiales').catch(() => null),
-    window.fb.getDoc('config', 'general').catch(() => null),
+    esAdmin ? critico(window.fb.getDocs('pagos'), 'pagos') : Promise.resolve([]),
+    critico(window.fb.getDocs('asistencia'), 'asistencia'),
+    esAdmin ? critico(window.fb.getDoc('colecciones', 'multas'), 'multas') : Promise.resolve(null),
+    critico(window.fb.getDoc('colecciones', 'anuncios'), 'anuncios'),
+    critico(window.fb.getDoc('colecciones', 'materiales'), 'materiales'),
+    window.fb.getDoc('config', 'general').catch(function(){ return null; }),
   ]);
-  state.equipo  = usuarios.filter(u => u.rol === 'admin' || u.rol === 'profesor')
+  const listaUsuarios = usuarios || [];
+  state.equipo  = listaUsuarios.filter(u => u.rol === 'admin' || u.rol === 'profesor')
                           .map(u => Object.assign({}, u, { username: u._id }));
-  state.alumnos = usuarios.filter(u => u.rol === 'alumno')
+  state.alumnos = listaUsuarios.filter(u => u.rol === 'alumno')
                           .map(u => Object.assign({}, u, { username: u._id }));
   state.pagos = {};
-  pagos.forEach(p => { const o = Object.assign({}, p); delete o._id; state.pagos[p._id] = o; });
+  (pagos || []).forEach(p => { const o = Object.assign({}, p); delete o._id; state.pagos[p._id] = o; });
   state.asistencia = {};
-  asistencia.forEach(s => { state.asistencia[s._id] = s.registros || {}; });
+  (asistencia || []).forEach(s => { state.asistencia[s._id] = s.registros || {}; });
   state.multas     = esAdmin ? ((multasD && multasD.items) || []) : [];
   state.anuncios   = (anunciosD && anunciosD.items) || [];
   state.materiales = (materialesD && materialesD.items) || [];
@@ -1654,6 +1690,17 @@ async function cargarDatos(rol) {
   _escrito['colecciones/multas'] = JSON.stringify({ items: state.multas });
   _escrito['colecciones/anuncios'] = JSON.stringify({ items: state.anuncios });
   _escrito['colecciones/materiales'] = JSON.stringify({ items: state.materiales });
+  _cargaCompleta = _erroresCarga.length === 0;
+  if (!_cargaCompleta) avisarCargaIncompleta();
+}
+
+function badgeSede(s) {
+  const sd = s || 'UIO';
+  return sd === 'GYE' ? 'badge-yellow' : sd === 'CUE' ? 'badge-navy' : sd === 'SDO' ? 'badge-green' : 'badge-navy';
+}
+
+function nombreSede(s) {
+  return { UIO: 'Quito', GYE: 'Guayaquil', CUE: 'Cuenca', SDO: 'Santo Domingo' }[s || 'UIO'] || 'Quito';
 }
 
 // ─── FINANZAS ───
@@ -1858,7 +1905,6 @@ async function vincularGoogle() {
     toast(c.includes('credential-already-in-use') ? 'Esa cuenta de Google ya está vinculada a otro usuario' : 'No se pudo vincular. Intenta de nuevo.');
   }
 }
-document.getElementById('login-pass').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
 
 async function doLogout() {
   try { await window.fb.signOut(); } catch (e) {}
@@ -1871,8 +1917,8 @@ async function doLogout() {
 
 function launchApp() {
   const cfg = getConfig();
-  const ds = document.getElementById('dash-sub');
-  if (ds) ds.textContent = cfg.cicloNombre;
+  const lc = document.getElementById('login-ciclo');
+  if (lc) lc.textContent = cfg.cicloNombre;
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('app').style.display = 'block';
   const av = document.getElementById('sidebar-avatar');
@@ -1978,6 +2024,14 @@ function buildNav() {
 }
 
 function navigate(page) {
+  // Aviso si hay una sesión de asistencia cargada y sin guardar
+  if (state.attSession && state.attSession.key && page !== 'asistencia') {
+    const guardado = JSON.stringify(state.asistencia[state.attSession.key] || {});
+    if (guardado !== JSON.stringify(state.attSession.data)) {
+      if (!confirm('Tienes asistencia sin guardar en esta sesión. Si sales ahora se pierde.\n\n¿Salir de todos modos?')) return;
+    }
+    state.attSession = {};
+  }
   if ((page === 'pagos' || page === 'alumnos' || page === 'multas' || page === 'config' || page === 'equipo') && state.user.role !== 'admin') { toast('Sección exclusiva de administración'); return; }
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -2064,6 +2118,7 @@ function setMin(username, val) {
 }
 
 function saveAttendance() {
+  if (!puedeEscribir()) return;
   if (!state.attSession.key) { toast('Carga una sesión primero'); return; }
   state.asistencia[state.attSession.key] = { ...state.attSession.data };
   sincronizarMultas(state.attSession.key);
@@ -2145,11 +2200,13 @@ function renderDashboard() {
 
   const uio = state.alumnos.filter(function(a){ return (a.sede || 'UIO') === 'UIO'; }).length;
   const gye = state.alumnos.filter(function(a){ return a.sede === 'GYE'; }).length;
+  const cue = state.alumnos.filter(function(a){ return a.sede === 'CUE'; }).length;
   const sdo = state.alumnos.filter(function(a){ return a.sede === 'SDO'; }).length;
   const chips = ['<span class="al-chip">' + cfg.cicloNombre + '</span>',
                  '<span class="al-chip">👥 ' + state.alumnos.length + ' alumnos</span>'];
   if (uio) chips.push('<span class="al-chip">UIO ' + uio + '</span>');
   if (gye) chips.push('<span class="al-chip">GYE ' + gye + '</span>');
+  if (cue) chips.push('<span class="al-chip">CUE ' + cue + '</span>');
   if (sdo) chips.push('<span class="al-chip">SDO ' + sdo + '</span>');
   chips.push('<span class="al-chip accent">' + (esAdmin ? 'Administrador' : 'Profesor') + '</span>');
   document.getElementById('dash-chips').innerHTML = chips.join('');
@@ -2204,7 +2261,7 @@ function renderDashboard() {
   let metricas = [];
   metricas.push({ ico:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/>',
     cls:'ico-blue', lbl:'Alumnos', val:state.alumnos.length,
-    sub: uio + ' UIO · ' + gye + ' GYE' + (sdo ? ' · ' + sdo + ' SDO' : '') });
+    sub: [uio + ' UIO', gye + ' GYE'].concat(cue ? [cue + ' CUE'] : []).concat(sdo ? [sdo + ' SDO'] : []).join(' · ') });
   metricas.push({ ico:'<path d="M20 6L9 17l-5-5"/>', cls:'ico-green', lbl:'Asistencia',
     val: asistProm !== null ? asistProm + '%' : '—', sub: sesiones + (sesiones === 1 ? ' sesión registrada' : ' sesiones registradas') });
 
@@ -2508,10 +2565,10 @@ function renderAlumnos() {
   const q = (document.getElementById('search-lista') ? document.getElementById('search-lista').value : '').toLowerCase().trim();
 
   // Conteos para los filtros
-  const cuenta = { todos: state.alumnos.length, UIO: 0, GYE: 0, SDO: 0, mora: 0, riesgo: 0, beca: 0 };
+  const cuenta = { todos: state.alumnos.length, UIO: 0, GYE: 0, CUE: 0, SDO: 0, mora: 0, riesgo: 0, beca: 0 };
   state.alumnos.forEach(function(a){
     var sd = a.sede || 'UIO';
-    if (sd === 'GYE') cuenta.GYE++; else if (sd === 'SDO') cuenta.SDO++; else cuenta.UIO++;
+    if (sd === 'GYE') cuenta.GYE++; else if (sd === 'CUE') cuenta.CUE++; else if (sd === 'SDO') cuenta.SDO++; else cuenta.UIO++;
     if (resumenPago(a).mora) cuenta.mora++;
     const s = getAlumnoStats(a.username);
     if (s.total > 0 && s.faltas >= 2) cuenta.riesgo++;
@@ -2521,6 +2578,7 @@ function renderAlumnos() {
     { k:'todos', lbl:'Todos', n:cuenta.todos },
     { k:'UIO', lbl:'Quito', n:cuenta.UIO },
     { k:'GYE', lbl:'Guayaquil', n:cuenta.GYE },
+    { k:'CUE', lbl:'Cuenca', n:cuenta.CUE },
     { k:'SDO', lbl:'Santo Domingo', n:cuenta.SDO },
     { k:'beca', lbl:'Con beca', n:cuenta.beca },
     { k:'mora', lbl:'En mora', n:cuenta.mora },
@@ -2534,6 +2592,7 @@ function renderAlumnos() {
   let lista = state.alumnos.filter(a => !q || (a.name + ' ' + (a.email||'') + ' ' + (a.colegio||'')).toLowerCase().includes(q));
   if (filtroAlumnos === 'UIO') lista = lista.filter(function(a){ return (a.sede || 'UIO') === 'UIO'; });
   else if (filtroAlumnos === 'GYE') lista = lista.filter(function(a){ return a.sede === 'GYE'; });
+  else if (filtroAlumnos === 'CUE') lista = lista.filter(function(a){ return a.sede === 'CUE'; });
   else if (filtroAlumnos === 'SDO') lista = lista.filter(function(a){ return a.sede === 'SDO'; });
   else if (filtroAlumnos === 'beca') lista = lista.filter(function(a){ return a.beca > 0; });
   else if (filtroAlumnos === 'mora') lista = lista.filter(function(a){ return resumenPago(a).mora; });
@@ -2546,7 +2605,7 @@ function renderAlumnos() {
     <td><div class="tbl-nombre">${avatarHTML(a)}<div><strong>${a.name}</strong>${a.suspendido ? ' <span class="badge badge-red" style="font-size:10px;">Suspendido</span>' : ''}<br><span class="link-more" onclick="abrirFicha('${a.username}')">Ver ficha completa →</span></div></div></td>
     <td style="font-family:'DM Mono',monospace;font-size:12px;">${a.email || '—'}</td>
     <td>${a.colegio || '—'}</td>
-    <td><span class="badge ${(a.sede||'UIO')==='GYE'?'badge-yellow':(a.sede==='SDO'?'badge-green':'badge-navy')}">${a.sede||'UIO'}</span></td>
+    <td><span class="badge ${badgeSede(a.sede)}">${a.sede||'UIO'}</span></td>
     <td>${a.beca > 0 ? `<span class="badge badge-navy">${a.beca}%</span>` : '<span style="color:var(--gray);">—</span>'}</td>
     <td style="font-size:13px;">${a.plan === 'unico' ? 'Pago único' : 'Mensual'}</td>
     <td style="white-space:nowrap;"><button class="btn btn-sky" style="margin-right:6px;font-size:12px;" onclick="generarAcuerdo('${a.username}')">📄 Acuerdo</button><button class="btn btn-ghost" style="margin-right:6px;" onclick="editAlumno('${a.username}')">Editar</button><button class="btn btn-ghost" style="margin-right:6px;" title="${a.suspendido ? 'Reactivar acceso' : 'Suspender acceso'}" onclick="toggleSuspension('${a.username}')">${a.suspendido ? '▶' : '⛔'}</button><button class="btn btn-red" onclick="deleteAlumno('${a.username}')">${delPend === a.username ? '¿Confirmar?' : 'Eliminar'}</button></td>
@@ -2560,15 +2619,6 @@ function toggleSidebar() {
   const abrir = !sb.classList.contains('open');
   sb.classList.toggle('open', abrir);
   if (bd) bd.style.display = abrir ? 'block' : 'none';
-}
-
-function toggleDetalle(u) {
-  const el = document.getElementById('det-' + u);
-  const lm = document.getElementById('lm-' + u);
-  if (!el) return;
-  const abierto = el.style.display !== 'none';
-  el.style.display = abierto ? 'none' : '';
-  if (lm) lm.textContent = abierto ? '▸ Ver ficha completa' : '▾ Ocultar ficha';
 }
 
 function renderMateriales(mode) {
@@ -2934,16 +2984,74 @@ function renderAlumnoHome() {
   }
 }
 
+// ─── BECA VARIABLE ───
+// El porcentaje es libre (0–100). La cuota se recalcula sobre cuotaBase de la configuración.
+const BECA_ATAJOS = [0, 25, 40, 50, 75, 100];
+
+function becaValida(v) {
+  const n = Math.round(parseFloat(v));
+  if (isNaN(n)) return 0;
+  return Math.max(0, Math.min(100, n));
+}
+
+function pintarAtajosBeca() {
+  const cont = document.getElementById('m-beca-quick');
+  if (!cont) return;
+  const actual = becaValida(document.getElementById('m-beca').value);
+  cont.innerHTML = BECA_ATAJOS.map(function(n) {
+    return '<button type="button" class="' + (n === actual ? 'on' : '') + '" onclick="setBeca(' + n + ')">' +
+      (n === 0 ? 'Sin beca' : n + '%') + '</button>';
+  }).join('');
+}
+
+function setBeca(n) {
+  document.getElementById('m-beca').value = n;
+  previewBeca();
+}
+
+function previewBeca() {
+  const inp = document.getElementById('m-beca');
+  if (!inp) return;
+  const beca = becaValida(inp.value);
+  if (String(beca) !== inp.value && inp.value !== '') inp.value = beca;
+  pintarAtajosBeca();
+
+  const cfg = getConfig();
+  const plan = document.getElementById('m-plan').value;
+  const matExenta = document.getElementById('m-matricula').value === 'exenta';
+  const cuota = Math.round(cfg.cuotaBase * (1 - beca / 100));
+  const mat = (beca === 100 || matExenta) ? 0 : cfg.matricula;
+  const bruto = mat + cuota * cfg.numCuotas;
+  const total = plan === 'unico' ? Math.round(bruto * 0.9) : bruto;
+  const ahorro = Math.round(cfg.cuotaBase * cfg.numCuotas + cfg.matricula) - bruto;
+
+  let txt = '';
+  if (beca === 100) {
+    txt = '<b>Beca completa.</b> Sin costo de matrícula ni cuotas.<br>' +
+          'El compromiso del acuerdo se mantiene igual que para cualquier participante.';
+  } else {
+    txt = 'Cuota mensual: <b>$' + cuota + '</b>' +
+          (beca > 0 ? ' <span style="color:var(--green);font-weight:700;">(−$' + (cfg.cuotaBase - cuota) + '/mes)</span>' : '') +
+          '<br>Matrícula: <b>' + (mat === 0 ? 'Exenta' : '$' + mat) + '</b>' +
+          ' &nbsp;·&nbsp; ' + cfg.numCuotas + ' cuotas' +
+          (plan === 'unico' ? ' &nbsp;·&nbsp; <b>pago único −10%</b>' : '') +
+          '<br><span class="bp-total">Total del ciclo: $' + total + '</span>' +
+          (ahorro > 0 ? ' <span style="font-size:11.5px;">(ahorra $' + ahorro + ' frente al valor regular)</span>' : '');
+  }
+  document.getElementById('m-beca-preview').innerHTML = txt;
+}
+
 // ─── CRUD ───
 function abrirNuevoAlumno() {
   document.getElementById('m-edit').value = '';
   document.getElementById('modal-alumno-title').textContent = 'Agregar alumno';
   ['m-nombre','m-user','m-pass','m-colegio','m-tel','m-correo','m-rep-nombre','m-rep-tel','m-rep-correo','m-cedula','m-rep-cedula','m-acuerdo-url','m-foto'].forEach(id => document.getElementById(id).value = '');
   pintarPreview('m', '', '');
-  document.getElementById('m-beca').value = '0';
+  document.getElementById('m-beca').value = '25';
   document.getElementById('m-plan').value = 'mensual';
   document.getElementById('m-matricula').value = 'normal';
   document.getElementById('m-sede').value = 'UIO';
+  previewBeca();
   document.getElementById('m-user').disabled = false;
   document.getElementById('m-pass').disabled = false;
   openModal('modal-alumno');
@@ -2974,6 +3082,7 @@ function editAlumno(u) {
   document.getElementById('m-acuerdo-url').value = a.acuerdoUrl || '';
   document.getElementById('m-foto').value = a.fotoUrl || '';
   pintarPreview('m', a.fotoUrl || '', a.initials || '');
+  previewBeca();
   openModal('modal-alumno');
 }
 
@@ -2983,7 +3092,7 @@ async function addAlumno() {
   const email = document.getElementById('m-user').value.trim().toLowerCase();
   const pass = document.getElementById('m-pass').value.trim();
   const colegio = document.getElementById('m-colegio').value.trim();
-  const beca = parseInt(document.getElementById('m-beca').value);
+  const beca = becaValida(document.getElementById('m-beca').value);
   const plan = document.getElementById('m-plan').value;
   const matricula = document.getElementById('m-matricula').value;
   const sede = document.getElementById('m-sede').value;
@@ -3040,6 +3149,7 @@ async function addAlumno() {
 
 let delPend = null;
 async function deleteAlumno(u) {
+  if (!puedeEscribir()) return;
   if (delPend !== u) {
     delPend = u;
     toast('Pulsa "¿Confirmar?" para eliminar definitivamente');
@@ -3056,9 +3166,14 @@ async function deleteAlumno(u) {
     delete _escrito['pagos/' + u];
     delete state.pagos[u];
     state.multas = state.multas.filter(m => m.username !== u);
-    Object.keys(state.asistencia).forEach(k => { delete state.asistencia[k][u]; });
+    // Quitar sus registros de asistencia Y persistirlos: antes solo se borraban en memoria
+    const sesionesTocadas = [];
+    Object.keys(state.asistencia).forEach(k => {
+      if (state.asistencia[k][u] !== undefined) { delete state.asistencia[k][u]; sesionesTocadas.push(k); }
+    });
     await window.fb.delDoc('usuarios', u).catch(() => {});
     await window.fb.delDoc('pagos', u).catch(() => {});
+    sesionesTocadas.forEach(k => guardarDoc('asistencia', k, { registros: state.asistencia[k] }));
     guardarDoc('colecciones', 'multas', { items: state.multas });
   }
   delPend = null;
@@ -3075,6 +3190,7 @@ function mostrarAvisoBorrado(correo) {
 }
 
 function addAnuncio() {
+  if (!puedeEscribir()) return;
   const titulo = document.getElementById('a-titulo').value.trim();
   const body = document.getElementById('a-body').value.trim();
   if (!titulo || !body) { toast('Completa todos los campos'); return; }
@@ -3084,9 +3200,10 @@ function addAnuncio() {
   renderAnuncios(); toast('✓ Anuncio publicado');
 }
 
-function deleteAnuncio(i) { state.anuncios.splice(i, 1); save(); renderAnuncios(); toast('Anuncio eliminado'); }
+function deleteAnuncio(i) { if (!puedeEscribir()) return; state.anuncios.splice(i, 1); save(); renderAnuncios(); toast('Anuncio eliminado'); }
 
 function addMaterial() {
+  if (!puedeEscribir()) return;
   const titulo = document.getElementById('mat-titulo').value.trim();
   const fase = document.getElementById('mat-fase').value;
   const tipo = document.getElementById('mat-tipo').value;
@@ -3098,7 +3215,7 @@ function addMaterial() {
   renderMateriales('admin'); toast('✓ Material guardado');
 }
 
-function deleteMaterial(i) { state.materiales.splice(i, 1); save(); renderMateriales('admin'); toast('Material eliminado'); }
+function deleteMaterial(i) { if (!puedeEscribir()) return; state.materiales.splice(i, 1); save(); renderMateriales('admin'); toast('Material eliminado'); }
 
 // ─── BACKUP ───
 function exportData() {
@@ -3253,7 +3370,7 @@ async function repararCuenta() {
     let perfil;
     if (rol === 'alumno') {
       perfil = { name, email, rol: 'alumno', sede: document.getElementById('rp-sede').value,
-                 beca: parseInt(document.getElementById('rp-beca').value), plan: 'mensual', matricula: 'normal', initials };
+                 beca: becaValida(document.getElementById('rp-beca').value), plan: 'mensual', matricula: 'normal', initials };
     } else {
       perfil = { name, email, rol, label: rol === 'admin' ? 'Administrador' : 'Profesor', initials };
     }
@@ -3314,8 +3431,6 @@ function guardarConfig() {
     cuotaBase: parseFloat(document.getElementById('cfg-cuota').value),
   });
   const cfg = getConfig();
-  const ds = document.getElementById('dash-sub');
-  if (ds) ds.textContent = cfg.cicloNombre;
   toast('✓ Configuración guardada');
 }
 
@@ -3477,8 +3592,9 @@ async function procesarImport(rows) {
       cedula: getCol(row, ['cedula'], ['repres']) || getCol(row, ['documento'], ['repres']),
       colegio: getCol(row, ['colegio']) || getCol(row, ['universidad']) || getCol(row, ['institucion']),
       sede: (sedeRaw.includes('gye') || sedeRaw.includes('guayaquil')) ? 'GYE'
+          : (sedeRaw.includes('cue') || sedeRaw.includes('cuenca')) ? 'CUE'
           : (sedeRaw.includes('sdo') || sedeRaw.includes('santodomingo') || sedeRaw.includes('santo')) ? 'SDO' : 'UIO',
-      beca: parseInt(getCol(row, ['beca'])) || 0,
+      beca: becaValida(getCol(row, ['beca'])),
       plan: planRaw.includes('unic') ? 'unico' : 'mensual',
       matricula: matRaw.includes('exent') ? 'exenta' : 'normal',
       telefono: getCol(row, ['telefono'], ['repres']) || getCol(row, ['celular'], ['repres']),
@@ -3507,7 +3623,7 @@ async function procesarImport(rows) {
 
 function plantillaImport() {
   const data = [
-    ['Nombre', 'Correo (obligatorio)', 'Contraseña', 'Cédula', 'Colegio', 'Sede (UIO/GYE/SDO)', 'Beca %', 'Plan (mensual/unico)', 'Matrícula (normal/exenta)', 'Teléfono', 'Nombre representante', 'Cédula representante', 'Teléfono representante', 'Correo representante', 'URL acuerdo firmado'],
+    ['Nombre', 'Correo (obligatorio)', 'Contraseña', 'Cédula', 'Colegio', 'Sede (UIO/GYE/CUE/SDO)', 'Beca %', 'Plan (mensual/unico)', 'Matrícula (normal/exenta)', 'Teléfono', 'Nombre representante', 'Cédula representante', 'Teléfono representante', 'Correo representante', 'URL acuerdo firmado'],
     ['Ana García', 'ana@mail.com', 'electi2026', '1712345678', 'Colegio San Gabriel', 'UIO', '25', 'mensual', 'normal', '0991234567', 'María Pérez', '1798765432', '0998765432', 'maria@mail.com', ''],
   ];
   descargarLibro([{ name: 'Plantilla', data }], 'plantilla-alumnos-electi.xlsx');
@@ -3522,7 +3638,18 @@ function generarAcuerdo(u) {
   const mesesL = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
   const fecha = hoy.getDate() + ' de ' + mesesL[hoy.getMonth()] + ' de ' + hoy.getFullYear();
   const beca = a.beca || 0;
-  const valorBeca = Math.round(300 * beca / 100);
+  const cfgA = getConfig();
+  const M2 = getMeses();
+  const rangoCiclo = M2.length ? (M2[0].label + ' – ' + M2[M2.length - 1].label) : cfgA.cicloNombre;
+  const mesIni = mesesL[(cfgA.inicioMes - 1 + 12) % 12];
+  const mesFin = M2.length ? mesesL[M2[M2.length - 1].n - 1] : mesIni;
+  const anioFin = M2.length ? M2[M2.length - 1].y : cfgA.inicioAnio;
+  const periodoTxt = mesIni.charAt(0).toUpperCase() + mesIni.slice(1) + ' – ' +
+                     mesFin.charAt(0).toUpperCase() + mesFin.slice(1) + ' ' + anioFin;
+  const valorRegular = cfgA.matricula + cfgA.cuotaBase * cfgA.numCuotas;
+  // Valor referencial de la beca: lo que ELECTI deja de percibir por este/a participante
+  const valorBeca = Math.round(valorRegular * beca / 100);
+  const ciudad = nombreSede(a.sede);
   const ck = v => v ? '☑' : '☐';
   const valorTxt = r.total === 0 ? 'Sin costo — Beca completa 100%' : 'USD $' + r.total + (a.plan === 'unico' ? ' (incluye 10% de descuento por pago único)' : '');
   const doc = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>Acuerdo — ${a.name}</title><style>
@@ -3544,7 +3671,7 @@ p{margin:0 0 6px;text-align:justify;}
 </style></head><body>
 <button class="btnprint" onclick="window.print()">🖨 Imprimir / Guardar PDF</button>
 <div class="head"><div class="brand">ELECTI<small>La Élite Juvenil — Unión Estudiantil · UMET</small></div>
-<div style="text-align:right;font-size:10px;color:#8A9AB8;">Generación Julio – Diciembre 2026<br>Quito, ${fecha}</div></div>
+<div style="text-align:right;font-size:10px;color:#8A9AB8;">${cfgA.cicloNombre}<br>${ciudad}, ${fecha}</div></div>
 <h1>ACUERDO DE COMPROMISO Y PARTICIPACIÓN</h1><div class="sub">Programa de Formación ELECTI</div>
 <div class="datos"><table>
 <tr><td><b>Participante:</b> ${a.name}</td><td><b>Cédula:</b> ${a.cedula || '____________________'}</td></tr>
@@ -3554,16 +3681,16 @@ p{margin:0 0 6px;text-align:justify;}
 </table></div>
 <p>ELECTI es un programa de formación impulsado por <b>Unión Estudiantil</b>, en alianza con la UMET, que fortalece el liderazgo, la gestión de proyectos y el desarrollo integral de jóvenes. <b>Todo participante — con o sin beca — asume el mismo nivel de compromiso</b> con el programa y su comunidad.</p>
 <h2>1. Sobre el programa</h2>
-<p>Julio a diciembre de 2026. Modalidad híbrida: martes 18:00–20:00 (virtual, Zoom) y sábados 11:00–13:30 (presencial, UMET). Culmina con la ejecución de un proyecto real y certificación oficial para quienes cumplan este acuerdo.</p>
+<p>Periodo ${periodoTxt} (${rangoCiclo}). Modalidad híbrida: martes 18:00–20:00 (virtual, Zoom) y sábados 11:00–13:30 (presencial, sede ${ciudad}). Culmina con la ejecución de un proyecto real y certificación oficial para quienes cumplan este acuerdo.</p>
 <h2>2. Compromiso económico — aplica a todos los participantes</h2>
-<p>La inscripción compromete el <b>programa semestral completo</b> (valor regular USD $255: matrícula $15 + 6 cuotas de $40). Modalidad de este/a participante:</p>
+<p>La inscripción compromete el <b>programa completo del ciclo</b> (valor regular USD $${valorRegular}: matrícula $${cfgA.matricula} + ${cfgA.numCuotas} cuotas de $${cfgA.cuotaBase}). Modalidad de este/a participante:</p>
 <div class="opciones">${ck(a.plan !== 'unico')} <b>Pago mensual</b> — cuotas dentro de los primeros 5 días de cada mes; retraso mayor a 10 días suspende el acceso.<br>
 ${ck(a.plan === 'unico')} <b>Pago único</b> — semestre por adelantado con 10% de descuento.<br>
 ${ck(beca > 0)} <b>Beca del ${beca > 0 ? beca : '____'}%</b> — compromiso por el valor con descuento aplicado.<br>
-${ck(a.matricula === 'exenta')} Matrícula exenta (inscripción antes del 1 de junio de 2026).</div>
+${ck(a.matricula === 'exenta')} Matrícula exenta.</div>
 <p><b>Valor total del semestre para este/a participante: ${valorTxt}.</b> El retiro voluntario no extingue el compromiso: el saldo pendiente permanece exigible, salvo causas de fuerza mayor justificadas y acordadas con la coordinación. Como respaldo, todas las partes firman el <b>Pagaré de Compromiso anexo</b>. La certificación se entrega con la cuenta al día, incluidas multas del fondo de convivencia.</p>
 <h2>3. Sobre las becas — un reconocimiento, no una excepción al compromiso</h2>
-<p>Las becas son un reconocimiento al mérito y una herramienta de acceso (valor referencial de la beca completa: USD $300). El/la becado/a asume exactamente los mismos compromisos que cualquier participante; la beca se renueva mensualmente con el cumplimiento de este acuerdo. Ante incumplimiento sostenido, la coordinación podrá revisar su continuidad, pudiendo el/la participante continuar bajo tarifa regular. Ante abandono injustificado, aplica el pagaré por el valor referencial de la beca.</p>
+<p>Las becas son un reconocimiento al mérito y una herramienta de acceso (valor referencial de una beca completa en este ciclo: USD $${valorRegular}). El/la becado/a asume exactamente los mismos compromisos que cualquier participante; la beca se renueva mensualmente con el cumplimiento de este acuerdo. Ante incumplimiento sostenido, la coordinación podrá revisar su continuidad, pudiendo el/la participante continuar bajo tarifa regular. Ante abandono injustificado, aplica el pagaré por el valor referencial de la beca.</p>
 <h2>4. Asistencia y sistema de faltas</h2>
 <p>Límite: <b>equivalente a 2 faltas en todo el programa</b>. Equivalencias: 1 falta injustificada = 1 falta · 2 faltas justificadas = 1 injustificada. Las justificaciones se presentan con 48 horas de anticipación (salvo emergencias respaldadas). Superar el límite deriva en revisión de continuidad — y de la beca, cuando aplique.</p>
 <h2>5. Multas por atrasos y fondo de convivencia</h2>
@@ -3577,7 +3704,7 @@ ${ck(a.matricula === 'exenta')} Matrícula exenta (inscripción antes del 1 de j
 <h2>9. Autorización de uso de imagen</h2>
 <p>El/la participante y su representante autorizan a ELECTI y Unión Estudiantil el uso de fotografías y registros audiovisuales de actividades del programa con fines institucionales, educativos y de difusión.</p>
 <h2>10. Aceptación</h2>
-<p>Con su firma, las partes confirman haber leído, comprendido y aceptado este acuerdo para toda la Generación Julio – Diciembre 2026.</p>
+<p>Con su firma, las partes confirman haber leído, comprendido y aceptado este acuerdo para todo el ciclo ${cfgA.cicloNombre} (${periodoTxt}).</p>
 <div class="firmas">
 <div class="firma"><div class="linea"></div><b>${a.name}</b><i>Participante</i></div>
 <div class="firma"><div class="linea"></div><b>${a.repNombre || 'Representante legal'}</b><i>Representante legal</i></div>
@@ -3658,8 +3785,8 @@ function limpiarMultasHuerfanas() {
   toast(quitadas > 0 ? '✓ ' + quitadas + ' multa(s) huérfana(s) eliminadas' : 'No había multas huérfanas');
 }
 
-function toggleMulta(i) { state.multas[i].pagada = !state.multas[i].pagada; save(); renderMultas(); }
-function deleteMulta(i) { state.multas.splice(i, 1); save(); renderMultas(); }
+function toggleMulta(i) { if (!puedeEscribir()) return; state.multas[i].pagada = !state.multas[i].pagada; save(); renderMultas(); }
+function deleteMulta(i) { if (!puedeEscribir()) return; state.multas.splice(i, 1); save(); renderMultas(); }
 
 function abrirMultaManual() {
   const sel = document.getElementById('mu-alumno');
@@ -3668,6 +3795,7 @@ function abrirMultaManual() {
 }
 
 function addMulta() {
+  if (!puedeEscribir()) return;
   const u = document.getElementById('mu-alumno').value;
   const motivo = document.getElementById('mu-motivo').value.trim();
   const monto = parseFloat(document.getElementById('mu-monto').value);
