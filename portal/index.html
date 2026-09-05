@@ -1522,7 +1522,7 @@ import { getAuth, signInWithEmailAndPassword, signOut, createUserWithEmailAndPas
          EmailAuthProvider, reauthenticateWithCredential,
          GoogleAuthProvider, signInWithPopup, linkWithPopup, deleteUser, getAdditionalUserInfo,
          signInWithRedirect, getRedirectResult, sendEmailVerification, fetchSignInMethodsForEmail,
-         initializeAuth, inMemoryPersistence, browserPopupRedirectResolver }
+         initializeAuth, inMemoryPersistence, browserPopupRedirectResolver, browserLocalPersistence }
   from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
 import { getFirestore, collection, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc, writeBatch }
   from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
@@ -1537,7 +1537,15 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+// getAuth() guarda la sesión en IndexedDB. Al abrir el popup de Google el
+// navegador considera esta pestaña "oculta" y Firebase cierra esa base de datos;
+// cuando el popup devuelve el resultado ya no puede escribirlo y aparece
+// "Database is closing/hidden". localStorage no se cierra al ocultarse la pestaña,
+// conserva la sesión entre recargas igual que IndexedDB, y elimina el problema.
+const auth = initializeAuth(app, {
+  persistence: browserLocalPersistence,
+  popupRedirectResolver: browserPopupRedirectResolver
+});
 const db = getFirestore(app);
 // App secundaria: crear usuarios sin cerrar la sesión del admin
 const appSec = initializeApp(firebaseConfig, 'secundaria');
@@ -1560,7 +1568,11 @@ window.fb = {
     cred._esNueva = !!(info && info.isNewUser);
     return cred;
   },
-  signInGoogleRedirect: function() { return signInWithRedirect(auth, this.googleProvider, browserPopupRedirectResolver); },
+  signInGoogleRedirect: function() {
+    // Marca para saber, al volver, si la redirección trajo sesión o se perdió
+    try { sessionStorage.setItem('electi_redirect_google', String(Date.now())); } catch (e) {}
+    return signInWithRedirect(auth, this.googleProvider, browserPopupRedirectResolver);
+  },
   resultadoRedirect: () => getRedirectResult(auth),
   linkGoogle: function() { return linkWithPopup(auth.currentUser, this.googleProvider); },
   cambiarPass: async (actual, nueva) => {
@@ -1980,7 +1992,7 @@ async function loginGoogle() {
       // varias pestañas del portal abiertas o en modo incógnito). La redirección
       // no depende de ese almacenamiento, así que resuelve el caso.
       console.warn('Popup no disponible, se pasa a redirección:', e);
-      err.textContent = 'Redirigiendo a Google...';
+      err.textContent = 'El acceso directo con Google falló. Redirigiendo...';
       err.style.display = 'block';
       try { await window.fb.signInGoogleRedirect(); }
       catch (e5) {
@@ -4491,9 +4503,24 @@ document.getElementById('att-date').value = new Date().toISOString().split('T')[
 
 // ─── ARRANQUE ───
 async function revisarRetornoGoogle() {
+  let esperaba = false;
+  try { esperaba = !!sessionStorage.getItem('electi_redirect_google'); } catch (e) {}
+  try { sessionStorage.removeItem('electi_redirect_google'); } catch (e) {}
   try {
     const cred = await window.fb.resultadoRedirect();
-    if (!cred || !cred.user) return;
+    if (!cred || !cred.user) {
+      // Volvimos de Google pero la sesión no sobrevivió al viaje. Pasa cuando el
+      // navegador aísla el almacenamiento del dominio de autenticación de Firebase
+      // (portal-electi.firebaseapp.com) respecto del dominio del portal.
+      if (esperaba) {
+        const err = document.getElementById('login-err');
+        err.innerHTML = 'Google te autenticó, pero tu navegador no dejó volver la sesión al portal. ' +
+          'Entra con <b>tu correo y contraseña</b>; si no la recuerdas, usa "Olvidé mi contraseña". ' +
+          'Desde el celular el acceso con Google sí funciona.';
+        err.style.display = 'block';
+      }
+      return;
+    }
     const err = document.getElementById('login-err');
     let perfil = null;
     try { perfil = await window.fb.getDoc('usuarios', cred.user.uid); } catch (e) { perfil = null; }
