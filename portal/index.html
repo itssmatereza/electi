@@ -1521,7 +1521,8 @@ import { getAuth, signInWithEmailAndPassword, signOut, createUserWithEmailAndPas
          sendPasswordResetEmail, onAuthStateChanged, updatePassword,
          EmailAuthProvider, reauthenticateWithCredential,
          GoogleAuthProvider, signInWithPopup, linkWithPopup, deleteUser, getAdditionalUserInfo,
-         signInWithRedirect, getRedirectResult, sendEmailVerification, fetchSignInMethodsForEmail }
+         signInWithRedirect, getRedirectResult, sendEmailVerification, fetchSignInMethodsForEmail,
+         initializeAuth, inMemoryPersistence, browserPopupRedirectResolver }
   from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
 import { getFirestore, collection, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc, writeBatch }
   from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
@@ -1540,7 +1541,12 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 // App secundaria: crear usuarios sin cerrar la sesión del admin
 const appSec = initializeApp(firebaseConfig, 'secundaria');
-const authSec = getAuth(appSec);
+// La app secundaria SOLO sirve para crear cuentas sin cerrar la sesión del admin.
+// Con getAuth() abriría una segunda conexión a IndexedDB sobre el mismo origen, y
+// eso choca con la sesión principal: en escritorio provoca el error
+// "Database is closing/hidden" justo al abrir el popup de Google.
+// Con persistencia en memoria no guarda nada en el navegador y el conflicto desaparece.
+const authSec = initializeAuth(appSec, { persistence: inMemoryPersistence });
 
 window.fb = {
   auth, db, authSec,
@@ -1549,12 +1555,12 @@ window.fb = {
   resetPass: (e) => sendPasswordResetEmail(auth, e),
   googleProvider: new GoogleAuthProvider(),
   signInGoogle: async function() {
-    const cred = await signInWithPopup(auth, this.googleProvider);
+    const cred = await signInWithPopup(auth, this.googleProvider, browserPopupRedirectResolver);
     const info = getAdditionalUserInfo(cred);
     cred._esNueva = !!(info && info.isNewUser);
     return cred;
   },
-  signInGoogleRedirect: function() { return signInWithRedirect(auth, this.googleProvider); },
+  signInGoogleRedirect: function() { return signInWithRedirect(auth, this.googleProvider, browserPopupRedirectResolver); },
   resultadoRedirect: () => getRedirectResult(auth),
   linkGoogle: function() { return linkWithPopup(auth.currentUser, this.googleProvider); },
   cambiarPass: async (actual, nueva) => {
@@ -1968,6 +1974,18 @@ async function loginGoogle() {
     } else if (c.includes('network-request-failed')) {
       err.textContent = 'Sin conexión estable. Revisa tu internet e intenta de nuevo.';
       err.style.display = 'block';
+    } else if (c.includes('internal-error') || c.includes('web-storage-unsupported') ||
+               (e && e.message && /Database is closing|Database deleted|IndexedDB|hidden/i.test(e.message))) {
+      // Fallo del almacenamiento local del navegador (típico en escritorio con
+      // varias pestañas del portal abiertas o en modo incógnito). La redirección
+      // no depende de ese almacenamiento, así que resuelve el caso.
+      console.warn('Popup no disponible, se pasa a redirección:', e);
+      err.textContent = 'Redirigiendo a Google...';
+      err.style.display = 'block';
+      try { await window.fb.signInGoogleRedirect(); }
+      catch (e5) {
+        err.textContent = 'No se pudo abrir Google. Cierra otras pestañas del portal e intenta de nuevo, o entra con tu correo y contraseña.';
+      }
     } else {
       console.error('Error de Google Sign-In:', e);
       err.textContent = 'No se pudo iniciar sesión con Google. Detalle: ' + (c || (e && e.message) || 'desconocido');
@@ -3926,7 +3944,9 @@ function generarAcuerdo(u) {
     '<button class="btnprint" onclick="window.print()">Guardar como PDF</button>' +
     // Al abrirse en pestaña propia se lanza el diálogo solo. Dentro del visor
     // (iframe) no se hace nada, porque ahí es solo previsualización.
-    '<scr' + 'ipt>(function(){ if (window.self !== window.top) return; ' +
+    '<scr' + 'ipt>(function(){ ' +
+    // Dentro del visor del portal el botón duplica al de la barra: se oculta.
+    'if (window.self !== window.top) { var b=document.querySelector(".btnprint"); if(b) b.style.display="none"; return; } ' +
     'function imprimir(){ setTimeout(function(){ window.print(); }, 250); } ' +
     'if (document.fonts && document.fonts.ready) { document.fonts.ready.then(imprimir); } ' +
     'else { window.addEventListener("load", imprimir); } })();</scr' + 'ipt>' +
