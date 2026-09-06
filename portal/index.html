@@ -1703,8 +1703,7 @@ function guardarDoc(col, id, data) {
 
 // save() sincroniza a Firestore solo lo que cambió
 function save() {
-  const esAdmin = state.user && state.user.role === 'admin';
-  if (esAdmin) {
+  if (esAdmin()) {
     state.alumnos.forEach(a => guardarDoc('usuarios', a.username, limpiarAlumno(a)));
     Object.keys(state.pagos).forEach(uid => guardarDoc('pagos', uid, state.pagos[uid]));
     guardarDoc('colecciones', 'multas', { items: state.multas });
@@ -1747,7 +1746,7 @@ async function cargarDatosAlumno(uid) {
 }
 
 async function cargarDatos(rol) {
-  const esAdmin = rol === 'admin';
+  const esAdministrador = esAdmin(rol);
   _cargaCompleta = false;
   _erroresCarga = [];
   // Cada lectura registra su fallo. Las colecciones que se guardan como documento
@@ -1759,15 +1758,15 @@ async function cargarDatos(rol) {
   const [usuarios, pagos, asistencia, multasD, anunciosD, materialesD, cfg] = await Promise.all([
     critico(window.fb.getDocs('usuarios'), 'alumnos y equipo'),
     // Los profesores no tienen permiso de lectura sobre pagos (por reglas de seguridad)
-    esAdmin ? critico(window.fb.getDocs('pagos'), 'pagos') : Promise.resolve([]),
+    esAdministrador ? critico(window.fb.getDocs('pagos'), 'pagos') : Promise.resolve([]),
     critico(window.fb.getDocs('asistencia'), 'asistencia'),
-    esAdmin ? critico(window.fb.getDoc('colecciones', 'multas'), 'multas') : Promise.resolve(null),
+    esAdministrador ? critico(window.fb.getDoc('colecciones', 'multas'), 'multas') : Promise.resolve(null),
     critico(window.fb.getDoc('colecciones', 'anuncios'), 'anuncios'),
     critico(window.fb.getDoc('colecciones', 'materiales'), 'materiales'),
     window.fb.getDoc('config', 'general').catch(function(){ return null; }),
   ]);
   const listaUsuarios = usuarios || [];
-  state.equipo  = listaUsuarios.filter(u => u.rol === 'admin' || u.rol === 'profesor')
+  state.equipo  = listaUsuarios.filter(u => u.rol === 'dueno' || u.rol === 'admin' || u.rol === 'profesor')
                           .map(u => Object.assign({}, u, { username: u._id }));
   state.alumnos = listaUsuarios.filter(u => u.rol === 'alumno')
                           .map(u => Object.assign({}, u, { username: u._id }));
@@ -1775,7 +1774,7 @@ async function cargarDatos(rol) {
   (pagos || []).forEach(p => { const o = Object.assign({}, p); delete o._id; state.pagos[p._id] = o; });
   state.asistencia = {};
   (asistencia || []).forEach(s => { state.asistencia[s._id] = s.registros || {}; });
-  state.multas     = esAdmin ? ((multasD && multasD.items) || []) : [];
+  state.multas     = esAdministrador ? ((multasD && multasD.items) || []) : [];
   state.anuncios   = (anunciosD && anunciosD.items) || [];
   state.materiales = (materialesD && materialesD.items) || [];
   state.config     = cfg || {};
@@ -1797,6 +1796,28 @@ function badgeSede(s) {
 
 function nombreSede(s) {
   return { UIO: 'Quito', GYE: 'Guayaquil', CUE: 'Cuenca', SDO: 'Santo Domingo' }[s || 'UIO'] || 'Quito';
+}
+
+// ─── JERARQUÍA DE ROLES ───
+// dueno > admin > profesor > alumno. Una persona solo puede editar, quitar o
+// restablecer la clave de alguien de nivel ESTRICTAMENTE inferior al suyo.
+// Esto impide que un administrador elimine a otro administrador o al dueño.
+const NIVEL_ROL  = { dueno: 3, admin: 2, profesor: 1, alumno: 0 };
+const NOMBRE_ROL = { dueno: 'Dueño', admin: 'Administrador', profesor: 'Profesor', alumno: 'Alumno' };
+
+function nivelDe(rol) { return NIVEL_ROL[rol] !== undefined ? NIVEL_ROL[rol] : 0; }
+function miNivel() { return nivelDe(state.user && state.user.role); }
+// El dueño tiene exactamente las mismas funciones que un administrador
+function esAdmin(rol) { const r = rol || (state.user && state.user.role); return r === 'admin' || r === 'dueno'; }
+function esDueno() { return !!(state.user && state.user.role === 'dueno'); }
+function puedeGestionarA(miembro) {
+  if (!miembro) return false;
+  if (miembro.username === state.user.username) return false;   // nadie se toca a sí mismo
+  return miNivel() > nivelDe(miembro.rol);
+}
+function badgeRol(rol) {
+  const cls = rol === 'dueno' ? 'badge-yellow' : rol === 'admin' ? 'badge-navy' : 'badge-green';
+  return '<span class="badge ' + cls + '">' + (NOMBRE_ROL[rol] || rol) + '</span>';
 }
 
 // ─── FINANZAS ───
@@ -2044,8 +2065,8 @@ function launchApp() {
   document.getElementById('sidebar-uname').textContent = state.user.name;
   document.getElementById('sidebar-uemail').textContent = state.user.email || '';
   document.getElementById('sidebar-role').textContent = state.user.label ||
-    (state.user.role === 'profesor' ? 'Profesor' : state.user.role === 'admin' ? 'Administrador' : 'Alumno');
-  document.getElementById('btn-backup').style.display = state.user.role === 'admin' ? 'block' : 'none';
+    (NOMBRE_ROL[state.user.role] || 'Alumno');
+  document.getElementById('btn-backup').style.display = esAdmin() ? 'block' : 'none';
   buildNav();
   buildBottomNav();
   navigate(state.user.role === 'alumno' ? 'alumno-home' : 'dashboard');
@@ -2127,7 +2148,7 @@ function buildBottomNav() {
 }
 
 function buildNav() {
-  const items = state.user.role === 'admin' ? ADMIN_NAV : state.user.role === 'profesor' ? PROFE_NAV : ALUMNO_NAV;
+  const items = esAdmin() ? ADMIN_NAV : state.user.role === 'profesor' ? PROFE_NAV : ALUMNO_NAV;
   const nav = document.getElementById('sidebar-nav');
   nav.innerHTML = '';
   items.forEach(item => {
@@ -2145,7 +2166,7 @@ function navigate(page) {
     }
     state.attSession = {};
   }
-  if ((page === 'pagos' || page === 'alumnos' || page === 'multas' || page === 'config' || page === 'equipo') && state.user.role !== 'admin') { toast('Sección exclusiva de administración'); return; }
+  if ((page === 'pagos' || page === 'alumnos' || page === 'multas' || page === 'config' || page === 'equipo') && !esAdmin()) { toast('Sección exclusiva de administración'); return; }
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.querySelectorAll('.bn-item').forEach(n => n.classList.remove('active'));
@@ -2298,7 +2319,7 @@ function estadoAtt(v) {
 
 // ─── RENDERS ADMIN ───
 function renderDashboard() {
-  const esAdmin = state.user.role === 'admin';
+  const soyAdmin = esAdmin();
   const cfg = getConfig();
   const hoy = new Date();
   const dias = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
@@ -2321,7 +2342,7 @@ function renderDashboard() {
   if (gye) chips.push('<span class="al-chip">GYE ' + gye + '</span>');
   if (cue) chips.push('<span class="al-chip">CUE ' + cue + '</span>');
   if (sdo) chips.push('<span class="al-chip">SDO ' + sdo + '</span>');
-  chips.push('<span class="al-chip accent">' + (esAdmin ? 'Administrador' : 'Profesor') + '</span>');
+  chips.push('<span class="al-chip accent">' + (soyAdmin ? 'Administrador' : 'Profesor') + '</span>');
   document.getElementById('dash-chips').innerHTML = chips.join('');
 
   // Progreso del ciclo
@@ -2353,8 +2374,8 @@ function renderDashboard() {
   // ── Acciones rápidas ──
   const acciones = [];
   acciones.push({ ico:'✓', bg:'#F0FDF4', lbl:'Tomar asistencia', fn:"navigate('asistencia')" });
-  if (esAdmin) acciones.push({ ico:'👤', bg:'#EEF2FF', lbl:'Nuevo alumno', fn:"navigate('alumnos');setTimeout(abrirNuevoAlumno,150)" });
-  if (esAdmin) acciones.push({ ico:'💳', bg:'#FFF7ED', lbl:'Registrar pago', fn:"navigate('pagos')" });
+  if (soyAdmin) acciones.push({ ico:'👤', bg:'#EEF2FF', lbl:'Nuevo alumno', fn:"navigate('alumnos');setTimeout(abrirNuevoAlumno,150)" });
+  if (soyAdmin) acciones.push({ ico:'💳', bg:'#FFF7ED', lbl:'Registrar pago', fn:"navigate('pagos')" });
   acciones.push({ ico:'📚', bg:'#F5F3FF', lbl:'Subir material', fn:"navigate('materiales');setTimeout(function(){openModal('modal-material')},150)" });
   acciones.push({ ico:'🔔', bg:'#FEF2F2', lbl:'Nuevo anuncio', fn:"navigate('anuncios');setTimeout(function(){openModal('modal-anuncio')},150)" });
   const qa = document.getElementById('dash-acciones');
@@ -2378,7 +2399,7 @@ function renderDashboard() {
   metricas.push({ ico:'<path d="M20 6L9 17l-5-5"/>', cls:'ico-green', lbl:'Asistencia',
     val: asistProm !== null ? asistProm + '%' : '—', sub: sesiones + (sesiones === 1 ? ' sesión registrada' : ' sesiones registradas') });
 
-  if (esAdmin) {
+  if (soyAdmin) {
     let cobrado = 0, pendiente = 0, total = 0;
     state.alumnos.forEach(function(a){ const r = resumenPago(a); cobrado += r.pagado; pendiente += r.pendiente; total += r.total; });
     const tasa = total > 0 ? Math.round((cobrado / total) * 100) : 0;
@@ -2402,7 +2423,7 @@ function renderDashboard() {
 
   // ── Gráfico de cobranza (solo admin) ──
   const cardCob = document.getElementById('card-chart-cobranza');
-  if (!esAdmin) {
+  if (!soyAdmin) {
     cardCob.style.display = 'none';
     document.querySelector('#page-dashboard .dash-grid').style.gridTemplateColumns = '1fr';
   } else {
@@ -2477,7 +2498,7 @@ function renderDashboard() {
     const nom = a.name + ' · ' + (a.sede || 'UIO');
     if (st.total > 0 && st.faltas > 2) alertas.push({ n:nom, tag:'Faltas: ' + faltasTxt(st.faltas) + ' — revisión', cls:'badge-red' });
     else if (st.total > 0 && st.faltas === 2) alertas.push({ n:nom, tag:'En el límite de faltas', cls:'badge-yellow' });
-    if (esAdmin) {
+    if (soyAdmin) {
       const r = resumenPago(a);
       const dm = diasMora(a);
       if (a.suspendido) alertas.push({ n:nom, tag:'⛔ Suspendido', cls:'badge-red',
@@ -2511,7 +2532,7 @@ function renderDashboard() {
   state.anuncios.forEach(function(a){
     act.push({ fecha:a.fecha, ico:'🔔', bg:'#FEF2F2', titulo:'Anuncio: ' + a.titulo, desc:a.autor ? 'Por ' + a.autor : 'Publicado' });
   });
-  if (esAdmin) {
+  if (soyAdmin) {
     state.multas.forEach(function(m){
       const al = state.alumnos.find(function(x){ return x.username === m.username; });
       act.push({ fecha:m.fecha, ico:'⏱', bg:'#FFF7ED', titulo:'Multa de $' + m.monto + (al ? ' — ' + al.name : ''), desc:m.motivo });
@@ -3355,12 +3376,18 @@ function renderEquipo() {
   tbody.innerHTML = state.equipo.map(m => `<tr>
     <td><div class="tbl-nombre">${avatarHTML(m)}<div><strong>${m.name || '—'}</strong>${m.username === state.user.username ? ' <span class="badge badge-gray">tú</span>' : ''}<br><span style="font-size:11px;color:var(--gray);">${m.label || ''}</span></div></div></td>
     <td style="font-family:'DM Mono',monospace;font-size:12px;">${m.email || '—'}</td>
-    <td><span class="badge ${m.rol === 'admin' ? 'badge-navy' : 'badge-green'}">${m.rol === 'admin' ? 'Administrador' : 'Profesor'}</span></td>
-    <td style="font-size:12px;color:var(--gray);">${m.rol === 'admin' ? 'Todo el portal' : 'Solo académico'}</td>
+    <td>${badgeRol(m.rol)}</td>
+    <td style="font-size:12px;color:var(--gray);">${m.rol === 'dueno' ? 'Todo el portal · cuenta protegida' : m.rol === 'admin' ? 'Todo el portal' : 'Solo académico'}</td>
     <td style="white-space:nowrap;">
-      <button class="btn btn-ghost" style="margin-right:6px;font-size:12px;" onclick="editMiembro('${m.username}')">Editar</button>
+      ${(() => {
+        const yo = m.username === state.user.username;
+        // Cada quien puede editar su propia ficha; sobre los demás, solo hacia abajo
+        if (yo) return `<button class="btn btn-ghost" style="font-size:12px;" onclick="editMiembro('${m.username}')">Editar mi perfil</button>`;
+        if (!puedeGestionarA(m)) return `<span style="font-size:11.5px;color:var(--gray);">Sin permisos sobre esta cuenta</span>`;
+        return `<button class="btn btn-ghost" style="margin-right:6px;font-size:12px;" onclick="editMiembro('${m.username}')">Editar</button>
       <button class="btn btn-ghost" style="margin-right:6px;font-size:12px;" onclick="resetMiembro('${m.email}')">Restablecer clave</button>
-      ${m.username === state.user.username ? '' : `<button class="btn btn-red" style="font-size:12px;" onclick="quitarMiembro('${m.username}')">${delPendEq === m.username ? '¿Confirmar?' : 'Quitar'}</button>`}
+      <button class="btn btn-red" style="font-size:12px;" onclick="quitarMiembro('${m.username}')">${delPendEq === m.username ? '¿Confirmar?' : 'Quitar'}</button>`;
+      })()}
     </td>
   </tr>`).join('');
 }
@@ -3372,15 +3399,35 @@ function abrirNuevoMiembro() {
   document.getElementById('eq-correo').disabled = false;
   ['eq-nombre','eq-correo','eq-pass','eq-label','eq-foto'].forEach(id => document.getElementById(id).value = '');
   pintarPreview('eq', '', '');
+  pintarOpcionesRol('profesor', false);
   document.getElementById('eq-rol').value = 'profesor';
   openModal('modal-miembro');
+}
+
+// El selector solo ofrece roles por debajo del propio: un administrador nunca
+// puede crear ni ascender a alguien a dueño o a su mismo nivel.
+function pintarOpcionesRol(actual, esMiPropioPerfil) {
+  const sel = document.getElementById('eq-rol');
+  const desc = { dueno: 'Dueño — acceso total, cuenta protegida',
+                 admin: 'Administrador — acceso total',
+                 profesor: 'Profesor — solo académico' };
+  let roles = ['profesor', 'admin', 'dueno'].filter(r => nivelDe(r) < miNivel());
+  // Al editarse a sí mismo, o si el rol actual no está en la lista, se conserva
+  if (actual && roles.indexOf(actual) === -1) roles.push(actual);
+  sel.innerHTML = roles.map(r => '<option value="' + r + '">' + desc[r] + '</option>').join('');
+  sel.value = actual || 'profesor';
+  // Nadie cambia su propio rol: evita que el dueño se degrade y quede sin dueño
+  sel.disabled = !!esMiPropioPerfil;
 }
 
 function editMiembro(uid) {
   const m = state.equipo.find(x => x.username === uid);
   if (!m) return;
+  const yo = m.username === state.user.username;
+  if (!yo && !puedeGestionarA(m)) { toast('No tienes permisos sobre esa cuenta'); return; }
   document.getElementById('eq-edit').value = uid;
-  document.getElementById('modal-miembro-title').textContent = 'Editar miembro del equipo';
+  document.getElementById('modal-miembro-title').textContent = yo ? 'Editar mi perfil' : 'Editar miembro del equipo';
+  pintarOpcionesRol(m.rol, yo);
   document.getElementById('eq-pass-field').style.display = 'none';
   document.getElementById('eq-correo').disabled = true;
   document.getElementById('eq-nombre').value = m.name || '';
@@ -3405,7 +3452,13 @@ async function addMiembro() {
     if (!name) { toast('El nombre es obligatorio'); return; }
     const m = state.equipo.find(x => x.username === editUid);
     if (!m) return;
-    const perfilEdit = { name, email: m.email, rol, label: label || (rol === 'admin' ? 'Administrador' : 'Profesor'),
+    const yo = m.username === state.user.username;
+    if (!yo && !puedeGestionarA(m)) { toast('No tienes permisos sobre esa cuenta'); return; }
+    // El rol nunca puede subir hasta el propio nivel ni por encima.
+    // Editándose a sí mismo, el rol queda intacto.
+    const rolFinal = yo ? m.rol : (nivelDe(rol) < miNivel() ? rol : m.rol);
+    if (!yo && rolFinal !== rol) { toast('No puedes asignar un rol igual o superior al tuyo'); return; }
+    const perfilEdit = { name, email: m.email, rol: rolFinal, label: label || NOMBRE_ROL[rolFinal],
                          fotoUrl: fotoUrl,
                          initials: name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() };
     try {
@@ -3424,7 +3477,8 @@ async function addMiembro() {
   let uidCreado = null;
   try {
     uidCreado = await window.fb.crearUsuarioAuth(email, pass);
-    const perfil = { name, email, rol, label: label || (rol === 'admin' ? 'Administrador' : 'Profesor'),
+    if (nivelDe(rol) >= miNivel()) { toast('No puedes crear una cuenta de rol igual o superior al tuyo'); return; }
+    const perfil = { name, email, rol, label: label || NOMBRE_ROL[rol],
                      fotoUrl: fotoUrl,
                      initials: name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() };
     await window.fb.setDoc('usuarios', uidCreado, perfil);
@@ -3441,12 +3495,22 @@ async function addMiembro() {
 }
 
 async function resetMiembro(email) {
+  const objetivo = state.equipo.find(m => m.email === email);
+  if (objetivo && !puedeGestionarA(objetivo)) { toast('No tienes permisos sobre esa cuenta'); return; }
   try { await window.fb.resetPass(email); toast('✓ Correo de restablecimiento enviado a ' + email); }
   catch (e) { toast('No se pudo enviar el correo'); }
 }
 
 let delPendEq = null;
 async function quitarMiembro(uid) {
+  const objetivo = state.equipo.find(m => m.username === uid);
+  if (!puedeGestionarA(objetivo)) {
+    toast(objetivo && objetivo.rol === 'dueno'
+      ? 'La cuenta del dueño no se puede eliminar'
+      : 'No tienes permisos sobre esa cuenta');
+    return;
+  }
+  if (!puedeEscribir()) return;
   if (delPendEq !== uid) {
     delPendEq = uid;
     renderEquipo();
@@ -3487,7 +3551,8 @@ async function repararCuenta() {
       perfil = { name, email, rol: 'alumno', sede: document.getElementById('rp-sede').value,
                  beca: becaValida(document.getElementById('rp-beca').value), plan: 'mensual', matricula: 'normal', initials };
     } else {
-      perfil = { name, email, rol, label: rol === 'admin' ? 'Administrador' : 'Profesor', initials };
+      if (nivelDe(rol) >= miNivel()) { toast('No puedes asignar un rol igual o superior al tuyo'); return; }
+      perfil = { name, email, rol, label: NOMBRE_ROL[rol] || 'Profesor', initials };
     }
     await window.fb.setDoc('usuarios', uid, perfil);
     if (rol === 'alumno') { state.alumnos.push(Object.assign({ username: uid }, perfil)); renderAlumnos(); }
@@ -4250,7 +4315,7 @@ async function cambiarPasswordUsuario() {
 function abrirFicha(uid) {
   const a = state.alumnos.find(function(x){ return x.username === uid; });
   if (!a) return;
-  const esAdmin = state.user.role === 'admin';
+  const soyAdmin = esAdmin();
   const st = getAlumnoStats(uid);
   const ini = a.initials || (a.name || '?').split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase();
 
@@ -4291,7 +4356,7 @@ function abrirFicha(uid) {
   '</div></div>';
 
   // Pagos (solo admin)
-  if (esAdmin) {
+  if (soyAdmin) {
     const r = resumenPago(a);
     const p = getPagos(a);
     const mu = multasResumen(uid);
@@ -4350,12 +4415,12 @@ function abrirFicha(uid) {
   }
   h += dato('Correo', a.email);
   h += dato('Teléfono', a.telefono);
-  if (esAdmin) h += dato('Cédula', a.cedula);
+  if (soyAdmin) h += dato('Cédula', a.cedula);
   h += dato('Institución', a.colegio);
   h += dato('Representante', a.repNombre);
   h += dato('Tel. representante', a.repTel);
   h += dato('Correo representante', a.repCorreo);
-  if (esAdmin) h += dato('Cédula representante', a.repCedula);
+  if (soyAdmin) h += dato('Cédula representante', a.repCedula);
   h += dato('Matrícula', a.matricula === 'exenta' ? 'Exenta' : '$' + getConfig().matricula);
   h += dato('Acuerdo firmado', a.acuerdoUrl
     ? '<a href="' + a.acuerdoUrl + '" target="_blank" style="color:var(--blue);font-weight:600;">Ver en Drive →</a>'
@@ -4363,7 +4428,7 @@ function abrirFicha(uid) {
   h += '</div></div></div>';
 
   // Acciones
-  if (esAdmin) {
+  if (soyAdmin) {
     const q = String.fromCharCode(39);
     h += '<div class="ficha-sec"><div class="ficha-sec-tit">⚙ Acciones</div><div class="ficha-acciones">' +
       '<button class="btn btn-sky" onclick="cerrarFicha();generarAcuerdo(' + q + uid + q + ')">📄 Generar acuerdo</button>' +
