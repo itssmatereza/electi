@@ -11,6 +11,20 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- El navegador tarda en abrir cada conexión nueva (DNS, TLS). Avisándole
+     ahora, esas negociaciones ocurren mientras se pinta el login en vez de
+     cuando el alumno ya pulsó "Ingresar". -->
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://identitytoolkit.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<!-- Los tres módulos de Firebase se cargan en cadena: el navegador no descubre
+     el segundo hasta leer el primero. Declarándolos aquí bajan en paralelo. -->
+<link rel="modulepreload" href="https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js" crossorigin>
+<link rel="modulepreload" href="https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js" crossorigin>
+<link rel="modulepreload" href="https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js" crossorigin>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -179,7 +193,33 @@ img, svg, table { max-width: 100%; }
   margin-top: 10px; box-shadow: 0 8px 20px rgba(66,165,245,0.22);
 }
 .btn-login:hover:not(:disabled) { background: var(--sky-light); transform: translateY(-2px); box-shadow: 0 12px 26px rgba(66,165,245,0.3); }
-.btn-login:disabled { opacity: 0.6; cursor: default; }
+.btn-login:disabled { opacity: 0.75; cursor: default; }
+.btn-login .spin {
+  display: inline-block; width: 15px; height: 15px; margin-right: 9px;
+  vertical-align: -2px; border-radius: 50%;
+  border: 2px solid rgba(13,42,110,0.25); border-top-color: var(--navy);
+  animation: girar 0.7s linear infinite;
+}
+@keyframes girar { to { transform: rotate(360deg); } }
+
+/* Barra indeterminada sobre la tarjeta de login: comunica "sigo trabajando"
+   sin prometer un porcentaje que no podemos calcular. */
+.login-barra {
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  border-radius: 26px 26px 0 0; overflow: hidden; display: none;
+}
+.login-barra.on { display: block; }
+.login-barra::after {
+  content: ''; position: absolute; top: 0; left: 0; height: 100%; width: 38%;
+  background: linear-gradient(90deg, transparent, var(--sky), transparent);
+  animation: recorrer 1.15s ease-in-out infinite;
+}
+@keyframes recorrer { 0% { left: -38%; } 100% { left: 100%; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-login .spin, .login-barra::after { animation: none; }
+  .login-barra::after { left: 0; width: 100%; opacity: 0.5; }
+}
 .login-olvide {
   display: block; text-align: center; margin-top: 15px;
   color: rgba(255,255,255,0.5); font-size: 12.5px; cursor: pointer; background: none;
@@ -956,6 +996,7 @@ tbody tr:hover td { background: var(--off); }
 <div id="login-screen">
   <div class="login-box">
 
+    <div class="login-barra" id="login-barra"></div>
     <div class="login-marca">
       <img class="login-iso" src="data:image/png;base64,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" alt="ELECTI" width="256" height="313">
       <div class="login-logo-mark">ELECTI</div>
@@ -1933,23 +1974,30 @@ function guardarDoc(col, id, data) {
   const huella = JSON.stringify(data);
   if (_escrito[clave] === huella) return Promise.resolve();
   _escrito[clave] = huella;
-  return window.fb.setDoc(col, id, data).catch(e => {
+  return window.fb.setDoc(col, id, data).then(function(){ return true; }).catch(e => {
     delete _escrito[clave];
     console.error('Error guardando ' + clave, e);
-    toast('⚠ No se pudo guardar. Revisa tu conexión.');
+    const permiso = e && e.code && String(e.code).indexOf('permission-denied') !== -1;
+    toast(permiso ? '⚠ Tu cuenta no tiene permiso para este cambio' : '⚠ No se pudo guardar. Revisa tu conexión.');
+    return false;
   });
 }
 
 // save() sincroniza a Firestore solo lo que cambió
+// Devuelve una promesa que resuelve false si alguna escritura fue rechazada.
+// Antes save() era fuego y olvido: la interfaz decía "guardado" aunque
+// Firestore hubiera rechazado el cambio, y el dato solo desaparecía al recargar.
 function save() {
+  const tareas = [];
   if (esAdmin()) {
-    state.alumnos.forEach(a => guardarDoc('usuarios', a.username, limpiarAlumno(a)));
-    Object.keys(state.pagos).forEach(uid => guardarDoc('pagos', uid, state.pagos[uid]));
-    guardarDoc('colecciones', 'multas', { items: state.multas });
+    state.alumnos.forEach(a => tareas.push(guardarDoc('usuarios', a.username, limpiarAlumno(a))));
+    Object.keys(state.pagos).forEach(uid => tareas.push(guardarDoc('pagos', uid, state.pagos[uid])));
+    tareas.push(guardarDoc('colecciones', 'multas', { items: state.multas }));
   }
-  Object.keys(state.asistencia).forEach(k => guardarDoc('asistencia', k, { registros: state.asistencia[k] }));
-  guardarDoc('colecciones', 'anuncios', { items: state.anuncios });
-  guardarDoc('colecciones', 'materiales', { items: state.materiales });
+  Object.keys(state.asistencia).forEach(k => tareas.push(guardarDoc('asistencia', k, { registros: state.asistencia[k] })));
+  tareas.push(guardarDoc('colecciones', 'anuncios', { items: state.anuncios }));
+  tareas.push(guardarDoc('colecciones', 'materiales', { items: state.materiales }));
+  return Promise.all(tareas).then(function(r){ return r.indexOf(false) === -1; });
 }
 
 function limpiarAlumno(a) {
@@ -2050,15 +2098,20 @@ function pintarFotoAsync(elId, uid, iniciales, estilo) {
 }
 
 // Carga reducida para alumnos (solo lo que sus permisos alcanzan)
-async function cargarDatosAlumno(uid) {
+// 'previa' son las lecturas que ya arrancaron durante el login. Si no llega,
+// la funcion sigue sirviendo por si se llama desde otro sitio.
+function valorPrecargado(v) { return (v && v.__fallo) ? null : v; }
+
+async function cargarDatosAlumno(uid, previa) {
+  const p = previa || precargaComun();
   const [perfil, misPagos, asistencia, multasD, anunciosD, materialesD, cfg] = await Promise.all([
     window.fb.getDoc('usuarios', uid),
     window.fb.getDoc('pagos', uid).catch(() => null),
-    window.fb.getDocs('asistencia').catch(() => []),
+    p.asistencia.then(valorPrecargado).then(function(v){ return v || []; }),
     window.fb.getDoc('colecciones', 'multas').catch(() => null),
-    window.fb.getDoc('colecciones', 'anuncios').catch(() => null),
-    window.fb.getDoc('colecciones', 'materiales').catch(() => null),
-    window.fb.getDoc('config', 'general').catch(() => null),
+    p.anuncios.then(valorPrecargado),
+    p.materiales.then(valorPrecargado),
+    p.config.then(valorPrecargado),
   ]);
   state.equipo = [];
   state.alumnos = perfil ? [Object.assign({}, perfil, { username: uid })] : [];
@@ -2074,7 +2127,8 @@ async function cargarDatosAlumno(uid) {
   return perfil;
 }
 
-async function cargarDatos(rol) {
+async function cargarDatos(rol, previa) {
+  const p = previa || precargaComun();
   const esAdministrador = esAdmin(rol);
   _cargaCompleta = false;
   _erroresCarga = [];
@@ -2084,15 +2138,23 @@ async function cargarDatos(rol) {
   function critico(promesa, nombre) {
     return promesa.catch(function(e) { _erroresCarga.push(nombre); console.error('Fallo al cargar ' + nombre, e); return null; });
   }
+  // Las lecturas precargadas ya atraparon su error y devuelven un marcador;
+  // aqui se traduce a la misma lista de fallos que usa el bloqueo de escritura.
+  function criticoPre(promesa, nombre) {
+    return promesa.then(function(v) {
+      if (v && v.__fallo) { _erroresCarga.push(nombre); return null; }
+      return v;
+    });
+  }
   const [usuarios, pagos, asistencia, multasD, anunciosD, materialesD, cfg] = await Promise.all([
     critico(window.fb.getDocs('usuarios'), 'alumnos y equipo'),
     // Los profesores no tienen permiso de lectura sobre pagos (por reglas de seguridad)
     esAdministrador ? critico(window.fb.getDocs('pagos'), 'pagos') : Promise.resolve([]),
-    critico(window.fb.getDocs('asistencia'), 'asistencia'),
+    criticoPre(p.asistencia, 'asistencia'),
     esAdministrador ? critico(window.fb.getDoc('colecciones', 'multas'), 'multas') : Promise.resolve(null),
-    critico(window.fb.getDoc('colecciones', 'anuncios'), 'anuncios'),
-    critico(window.fb.getDoc('colecciones', 'materiales'), 'materiales'),
-    window.fb.getDoc('config', 'general').catch(function(){ return null; }),
+    criticoPre(p.anuncios, 'anuncios'),
+    criticoPre(p.materiales, 'materiales'),
+    p.config.then(valorPrecargado),
   ]);
   const listaUsuarios = usuarios || [];
   state.equipo  = listaUsuarios.filter(u => u.rol === 'dueno' || u.rol === 'admin' || u.rol === 'profesor')
@@ -2218,7 +2280,7 @@ async function doLogin() {
   const btn = document.getElementById('btn-login');
   if (!email || !pass) { err.textContent = 'Ingresa tu correo y contraseña.'; err.style.display = 'block'; return; }
   err.style.display = 'none';
-  btn.textContent = 'Ingresando...'; btn.disabled = true;
+  faseLogin('Ingresando...');
   try {
     const cred = await window.fb.signIn(email, pass);
     await entrarConPerfil(cred.user.uid, email, err);
@@ -2243,7 +2305,7 @@ async function doLogin() {
       : 'No se pudo ingresar (' + (c || 'error desconocido') + '). Contacta a coordinación.';
     err.style.display = 'block';
   } finally {
-    btn.textContent = 'Ingresar al portal →'; btn.disabled = false;
+    faseLogin('');
   }
 }
 
@@ -2261,7 +2323,34 @@ async function olvidePass() {
   }
 }
 
+// Un solo lugar controla el estado visible de "estoy trabajando".
+function faseLogin(texto) {
+  const btn = document.getElementById('btn-login');
+  const barra = document.getElementById('login-barra');
+  if (barra) barra.classList.toggle('on', !!texto);
+  if (!btn) return;
+  if (texto) { btn.disabled = true; btn.innerHTML = '<span class="spin"></span>' + texto; }
+  else { btn.disabled = false; btn.textContent = 'Ingresar al portal →'; }
+}
+
+// Estas cuatro lecturas las necesitan todos los roles. Arrancarlas sin esperar
+// al perfil convierte dos viajes a Firestore en uno solo: mientras vuelve el
+// perfil, ya están viajando las demás.
+function precargaComun() {
+  const capturar = function(nombre, promesa) {
+    return promesa.catch(function(e){ console.error('Fallo al cargar ' + nombre, e); return { __fallo: nombre }; });
+  };
+  return {
+    asistencia: capturar('asistencia', window.fb.getDocs('asistencia')),
+    anuncios:   capturar('anuncios',   window.fb.getDoc('colecciones', 'anuncios')),
+    materiales: capturar('materiales', window.fb.getDoc('colecciones', 'materiales')),
+    config:     capturar('config',     window.fb.getDoc('config', 'general')),
+  };
+}
+
 async function entrarConPerfil(uid, email, err, esGoogle) {
+  faseLogin('Verificando tu cuenta...');
+  const previa = precargaComun();
   let perfil = null, errLectura = null;
   try { perfil = await window.fb.getDoc('usuarios', uid); }
   catch (e) { perfil = null; errLectura = (e && e.code) || 'error'; console.error('Error leyendo perfil:', e); }
@@ -2286,8 +2375,10 @@ async function entrarConPerfil(uid, email, err, esGoogle) {
     return false;
   }
   state.user = Object.assign({}, perfil, { username: uid, role: perfil.rol, email: email });
-  if (perfil.rol === 'alumno') await cargarDatosAlumno(uid);
-  else await cargarDatos(perfil.rol);
+  faseLogin('Cargando tu portal...');
+  if (perfil.rol === 'alumno') await cargarDatosAlumno(uid, previa);
+  else await cargarDatos(perfil.rol, previa);
+  faseLogin('');
   launchApp();
   return true;
 }
@@ -2318,8 +2409,11 @@ async function loginGoogle() {
     }
 
     state.user = Object.assign({}, perfil, { username: cred.user.uid, role: perfil.rol, email: cred.user.email });
-    if (perfil.rol === 'alumno') await cargarDatosAlumno(cred.user.uid);
-    else await cargarDatos(perfil.rol);
+    faseLogin('Cargando tu portal...');
+    const previaG = precargaComun();
+    if (perfil.rol === 'alumno') await cargarDatosAlumno(cred.user.uid, previaG);
+    else await cargarDatos(perfil.rol, previaG);
+    faseLogin('');
     launchApp();
   } catch (e) {
     const c = e && e.code ? e.code : '';
@@ -3913,10 +4007,22 @@ function addAnuncio() {
   const titulo = document.getElementById('a-titulo').value.trim();
   const body = document.getElementById('a-body').value.trim();
   if (!titulo || !body) { toast('Completa todos los campos'); return; }
-  state.anuncios.push({ titulo, body, fecha: new Date().toISOString().split('T')[0], autor: state.user.name });
-  save(); closeModal('modal-anuncio');
-  document.getElementById('a-titulo').value = ''; document.getElementById('a-body').value = '';
-  renderAnuncios(); toast('✓ Anuncio publicado');
+  const nuevo = { titulo, body, fecha: new Date().toISOString().split('T')[0], autor: state.user.name };
+  state.anuncios.push(nuevo);
+  closeModal('modal-anuncio');
+  renderAnuncios();
+  toast('Publicando...');
+  save().then(function(ok){
+    if (ok) {
+      document.getElementById('a-titulo').value = ''; document.getElementById('a-body').value = '';
+      toast('✓ Anuncio publicado');
+      return;
+    }
+    // Rechazado: se revierte para que la pantalla no muestre algo que no existe.
+    const i = state.anuncios.indexOf(nuevo);
+    if (i !== -1) state.anuncios.splice(i, 1);
+    renderAnuncios();
+  });
 }
 
 function deleteAnuncio(i) { if (!soloAdmin()) return; if (!puedeEscribir()) return; state.anuncios.splice(i, 1); save(); renderAnuncios(); toast('Anuncio eliminado'); }
@@ -3928,10 +4034,21 @@ function addMaterial() {
   const tipo = document.getElementById('mat-tipo').value;
   const url = document.getElementById('mat-url').value.trim();
   if (!titulo || !url) { toast('Completa todos los campos'); return; }
-  state.materiales.push({ titulo, fase, tipo, url });
-  save(); closeModal('modal-material');
-  document.getElementById('mat-titulo').value = ''; document.getElementById('mat-url').value = '';
-  renderMateriales('admin'); toast('✓ Material guardado');
+  const nuevo = { titulo, fase, tipo, url };
+  state.materiales.push(nuevo);
+  closeModal('modal-material');
+  renderMateriales('admin');
+  toast('Guardando...');
+  save().then(function(ok){
+    if (ok) {
+      document.getElementById('mat-titulo').value = ''; document.getElementById('mat-url').value = '';
+      toast('✓ Material guardado');
+      return;
+    }
+    const i = state.materiales.indexOf(nuevo);
+    if (i !== -1) state.materiales.splice(i, 1);
+    renderMateriales('admin');
+  });
 }
 
 function deleteMaterial(i) { if (!soloAdmin()) return; if (!puedeEscribir()) return; state.materiales.splice(i, 1); save(); renderMateriales('admin'); toast('Material eliminado'); }
@@ -5491,15 +5608,13 @@ async function revisarRetornoGoogle() {
 }
 
 function iniciarPortal() {
-  const btn = document.getElementById('btn-login');
-  if (btn) { btn.disabled = false; btn.textContent = 'Ingresar al portal →'; }
+  faseLogin('');
   revisarRetornoGoogle();
 }
 if (window.fb) iniciarPortal();
 else {
   window.addEventListener('fb-ready', iniciarPortal);
-  const b = document.getElementById('btn-login');
-  if (b) { b.disabled = true; b.textContent = 'Conectando...'; }
+  faseLogin('Conectando...');
 }
 document.getElementById('login-pass').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
 </script>
