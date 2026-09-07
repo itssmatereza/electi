@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{TITULO}}</title>
+<meta name="description" content="{{DESCRIPCION}}">
+{{ROBOTS}}<meta property="og:title" content="{{COMPARTIR}}">
+<meta property="og:description" content="{{DESCRIPCION}}">
+<meta property="og:type" content="website">
+<meta property="og:url" content="{{DOMINIO}}{{RUTA}}">
+<meta property="og:image" content="{{DOMINIO}}/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="ELECTI — No aprendas sobre liderazgo. Ejecuta.">
+<meta property="og:locale" content="es_EC">
+<meta property="og:site_name" content="ELECTI">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="{{COMPARTIR}}">
+<meta name="twitter:description" content="{{DESCRIPCION}}">
+<meta name="twitter:image" content="{{DOMINIO}}/og.jpg">
+<link rel="canonical" href="{{DOMINIO}}{{RUTA}}">
+<link rel="icon" type="image/jpeg" href="/assets/logo-electi.jpg">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="theme-color" content="#0D2A6E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/electi.css">
+<noscript><style>.rv{opacity:1!important;transform:none!important}</style></noscript>
+<script>
+/* Compatibilidad con los enlaces antiguos que llevaban # (QR, bios, mensajes ya enviados).
+   Se ejecuta antes de dibujar la página, así que el visitante no ve el salto.
+   Cuando esos enlaces dejen de circular, este bloque se puede borrar. */
+(function(){
+  if (location.pathname !== '/' || !location.hash) return;
+  var M = {'home':'/','programa':'/programa/','docentes':'/docentes/','becas':'/becas/',
+           'preguntas':'/preguntas/','sedes':'/sedes/','sede-quito':'/quito/',
+           'sede-guayaquil':'/guayaquil/','sede-cuenca':'/cuenca/',
+           'sede-santo-domingo':'/santodomingo/','instituciones':'/colegios/',
+           'ue':'/institucional/','uide':'/uide/'};
+  var p = location.hash.replace('#','').split('/');
+  var destino = M[p[0]];
+  if (destino && destino !== '/') location.replace(destino + (p[1] ? '#' + p[1] : ''));
+})();
+</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "EducationalOrganization", "name": "ELECTI", "alternateName": "ELECTI — Escuela de liderazgo y gestión de proyectos", "url": "{{DOMINIO}}/", "logo": "{{DOMINIO}}/icon-512.png", "image": "{{DOMINIO}}/og.jpg", "description": "Escuela de liderazgo y gestión de proyectos para jóvenes, programa de Fundación Unión Estudiantil en alianza académica con la Universidad Metropolitana del Ecuador (UMET).", "email": "mreza@unionestudiantil.org", "telephone": "+593962893857", "sameAs": ["https://instagram.com/electi.ec", "https://instagram.com/estudiantil_union"], "parentOrganization": {"@type": "Organization", "name": "Fundación Unión Estudiantil"}, "areaServed": [{"@type": "City", "name": "Quito"}, {"@type": "City", "name": "Guayaquil"}, {"@type": "City", "name": "Cuenca"}, {"@type": "City", "name": "Santo Domingo de los Tsáchilas"}], "address": {"@type": "PostalAddress", "addressCountry": "EC", "addressLocality": "Quito", "addressRegion": "Pichincha"}}</script>
+</head>
+<body>
+
+<!-- ══════ NAV ══════ -->
+{{NAV}}
+
+{{MENU_MOVIL}}
+
+{{CONTENIDO}}
+
+{{PIE}}
+
+{{WHATSAPP_FAB}}
+
+<script src="/assets/electi.js"></script>
+</body>
+</html>

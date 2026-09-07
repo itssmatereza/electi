@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://electi.pages.dev/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://electi.pages.dev/becas/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://electi.pages.dev/colegios/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://electi.pages.dev/cuenca/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://electi.pages.dev/docentes/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://electi.pages.dev/guayaquil/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://electi.pages.dev/institucional/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://electi.pages.dev/preguntas/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://electi.pages.dev/privacidad.html</loc><changefreq>yearly</changefreq><priority>0.2</priority></url>
+  <url><loc>https://electi.pages.dev/programa/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://electi.pages.dev/quito/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://electi.pages.dev/santodomingo/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://electi.pages.dev/sedes/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+</urlset>
