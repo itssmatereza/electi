@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ELECTI — Escuela de liderazgo y gestión de proyectos | Quito · Guayaquil · Cuenca · Santo Domingo</title>
 <meta name="description" content="Escuela de liderazgo y gestión de proyectos para jóvenes, con sedes en Quito, Guayaquil, Cuenca y Santo Domingo. Quito en modalidad híbrida; el resto, virtual con encuentros presenciales mensuales. Aval académico de la UMET.">
-<meta property="og:title" content="ELECTI — La Élite Juvenil">
+<meta property="og:title" content="ELECTI — No aprendas sobre liderazgo. Ejecuta.">
 <meta property="og:description" content="No aprendas sobre liderazgo. Ejecuta. Cuatro sedes en Ecuador: Quito, Guayaquil, Cuenca y Santo Domingo. Aval académico de la UMET.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://electi.pages.dev/">
@@ -16,7 +16,7 @@
 <meta property="og:locale" content="es_EC">
 <meta property="og:site_name" content="ELECTI">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="ELECTI — La Élite Juvenil">
+<meta name="twitter:title" content="ELECTI — No aprendas sobre liderazgo. Ejecuta.">
 <meta name="twitter:description" content="No aprendas sobre liderazgo. Ejecuta. Cuatro sedes en Ecuador.">
 <meta name="twitter:image" content="https://electi.pages.dev/og.jpg">
 <link rel="canonical" href="https://electi.pages.dev/">
@@ -421,7 +421,6 @@ nav.scrolled{border-bottom-color:var(--line);box-shadow:0 1px 20px rgba(8,21,58,
 }
 .exp-txt h4{color:#fff;font-size:clamp(17px,2vw,25px);font-weight:800;line-height:1.2;margin-bottom:5px}
 .exp-txt p{color:rgba(255,255,255,.6);font-size:13.5px;line-height:1.55;max-width:400px}
-.exp-emoji{position:absolute;top:22px;right:24px;font-size:26px;opacity:.32;z-index:1}
 
 
 /* ══════════ NAV CON DESPLEGABLES ══════════ */
@@ -570,7 +569,8 @@ nav.scrolled{border-bottom-color:var(--line);box-shadow:0 1px 20px rgba(8,21,58,
   display:flex;gap:14px;align-items:flex-start;padding:20px 24px;border-radius:16px;
   background:#FFFBEB;border:1px solid #FDE68A;margin-top:24px;
 }
-.aviso-ic{font-size:19px;flex-shrink:0;line-height:1.4}
+.aviso-ic{flex-shrink:0;line-height:0;color:#B45309}
+.aviso-ic svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
 .aviso p{font-size:14px;color:#92400E;line-height:1.65;margin:0}
 .aviso b{font-weight:700}
 
@@ -791,6 +791,63 @@ nav.scrolled{border-bottom-color:var(--line);box-shadow:0 1px 20px rgba(8,21,58,
   color:var(--blue);background:#EEF3FC;padding:8px 15px;border-radius:100px;font-weight:600;
 }
 
+/* ══ ICONOGRAFÍA SVG ══ (reemplaza los emojis: render consistente entre sistemas) */
+.p-ico svg,.af-ico svg,.pt-fi svg,.hr-ic svg,.sk-ico svg,.ue-c-i svg,.rep-ico svg{
+  width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.85;
+  stroke-linecap:round;stroke-linejoin:round;
+}
+.pt-fi svg{width:18px;height:18px}
+.af-ico svg{width:23px;height:23px}
+.exp-ico svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.tt-win svg,.af-proof svg,.pr-cmp svg{
+  width:14px;height:14px;flex-shrink:0;fill:none;stroke:currentColor;
+  stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round;
+}
+.p-ico{color:#DC2626}
+.af-ico{color:var(--blue)}
+.hr-ic{color:var(--blue)}
+.pt-fi{color:var(--sky)}
+.ue-c-i{color:var(--blue)}
+.sk-ico{color:var(--blue)}
+.sk-big .sk-ico{color:#fff}
+.exp-ico{position:absolute;top:22px;right:24px;opacity:.32;z-index:1;color:currentColor;line-height:0}
+
+/* ══ HERO · franja de credibilidad ══ */
+.hero-proof{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:0;
+  max-width:760px;margin:clamp(46px,6vw,68px) auto 0;
+  border:1px solid rgba(255,255,255,.14);border-radius:var(--r);
+  background:rgba(255,255,255,.045);backdrop-filter:blur(10px);overflow:hidden;
+}
+.hp{padding:22px 14px;text-align:center;border-right:1px solid rgba(255,255,255,.1)}
+.hp:last-child{border-right:none}
+.hp-n{font-size:clamp(22px,3.1vw,30px);font-weight:900;color:#fff;letter-spacing:-.04em;line-height:1}
+.hp-l{font-size:11.5px;font-weight:600;color:rgba(255,255,255,.5);margin-top:7px;line-height:1.35}
+@media (max-width:700px){
+  .hero-proof{grid-template-columns:repeat(2,1fr)}
+  .hp:nth-child(2){border-right:none}
+  .hp:nth-child(1),.hp:nth-child(2){border-bottom:1px solid rgba(255,255,255,.1)}
+}
+
+/* ══ PARA REPRESENTANTES ══ */
+.rep{background:var(--paper)}
+.rep-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:clamp(38px,5vw,54px)}
+.rep-card{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:26px 22px}
+.rep-ico{
+  width:44px;height:44px;border-radius:12px;background:#EEF3FC;color:var(--blue);
+  display:flex;align-items:center;justify-content:center;margin-bottom:18px;
+}
+.rep-card h3{font-size:16.5px;font-weight:800;margin-bottom:8px}
+.rep-card p{font-size:14px;color:var(--muted);line-height:1.62}
+.rep-foot{
+  display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;
+  margin-top:26px;padding:24px 28px;background:#fff;border:1px solid var(--line);border-radius:var(--r);
+}
+.rep-foot p{font-size:15px;color:var(--ink-2);line-height:1.6;max-width:560px}
+.rep-foot p b{color:var(--ink)}
+@media (max-width:900px){.rep-grid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:560px){.rep-grid{grid-template-columns:1fr}.rep-foot{flex-direction:column;align-items:stretch;text-align:left}}
+
 /* ══ FAQ ══ */
 .faq{background:#fff}
 .faq-list{max-width:800px;margin:0 auto}
@@ -965,7 +1022,8 @@ footer{background:#040d24;padding:60px 0 34px}
   .exp-grid{grid-template-columns:1fr;grid-auto-rows:auto;gap:12px}
   .exp-a,.exp-b,.exp-c,.exp-d,.exp-e,.exp-f{grid-column:span 1;grid-row:span 1}
   .exp-cell{min-height:172px;padding:22px;border-radius:var(--r)}
-  .exp-emoji{font-size:22px;top:18px;right:18px}
+  .exp-ico{top:18px;right:18px}
+  .exp-ico svg{width:22px;height:22px}
 
   .tm{padding:32px 24px 28px}
   .tm-ava{width:116px;height:116px}
@@ -1381,7 +1439,6 @@ footer{background:#040d24;padding:60px 0 34px}
     <img src="data:image/jpeg;base64,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" alt="ELECTI" width="36" height="36">
     <span class="nav-brand-txt">
       <span class="nav-brand-name">ELECTI</span>
-      <span class="nav-brand-sub">La Élite Juvenil</span>
     </span>
   </a>
   <ul class="nav-links">
@@ -1434,7 +1491,7 @@ footer{background:#040d24;padding:60px 0 34px}
         </a>
         <div class="dd-sep"></div>
         <a class="dd-link" onclick="ir('sedes')">
-          <span class="dd-ic">⇄</span>
+          <span class="dd-ic" style="line-height:0"><svg viewBox="0 0 24 24" aria-hidden="true" style="width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round"><polyline points="16 3 20 7 16 11"/><line x1="20" y1="7" x2="4" y2="7"/><polyline points="8 13 4 17 8 21"/><line x1="4" y1="17" x2="20" y2="17"/></svg></span>
           <span class="dd-tx"><strong>Comparar sedes</strong><span>Ver las cuatro juntas</span></span>
         </a>
       </div>
@@ -1482,7 +1539,7 @@ footer{background:#040d24;padding:60px 0 34px}
   <a onclick="ir('instituciones')">Para colegios · ELECTI Instituciones</a>
   <a onclick="ir('ue')">Institucional · Unión Estudiantil</a>
   <a href="https://instagram.com/electi.ec" target="_blank" rel="noopener">Instagram · @electi.ec</a>
-  <a href="/portal" class="mob-portal">🔐 Portal de alumnos</a>
+  <a href="/portal" class="mob-portal"><svg viewBox="0 0 24 24" aria-hidden="true" style="width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-2px;margin-right:7px"><rect x="4" y="10.5" width="16" height="10.5" rx="2"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></svg> Portal de alumnos</a>
   <a href="https://forms.gle/SdaHtjDcyFuYEa3T7" target="_blank" rel="noopener" class="mob-cta">Postular ahora →</a>
 </div>
 
@@ -1498,13 +1555,13 @@ footer{background:#040d24;padding:60px 0 34px}
     <div class="orb orb-1"></div>
     <div class="orb orb-2"></div>
     <div class="wrap hero-inner">
-      <div class="pill rv"><span class="pill-dot"></span> Convocatoria 2027 abierta · 4 sedes en Ecuador</div>
+      <div class="pill rv"><span class="pill-dot"></span> Postulaciones abiertas · Generación 2026 · 4 sedes</div>
       <h1 class="h-display rv rv-d1">
         No aprendas sobre<br>liderazgo.<br><span class="grad">Ejecuta.</span>
       </h1>
       <p class="hero-sub rv rv-d2">
-        Seis meses. Un proyecto real lanzado dentro de la red estudiantil más grande del Ecuador.
-        La experiencia que te abre <b>becas universitarias, prácticas y liderazgo real</b>.
+        <b>Escuela de liderazgo y gestión de proyectos</b> para estudiantes de colegio y primeros años de universidad.
+        Seis meses para lanzar un proyecto real dentro de la red estudiantil más grande del Ecuador.
       </p>
       <div class="hero-btns rv rv-d3">
         <a href="https://forms.gle/SdaHtjDcyFuYEa3T7" target="_blank" rel="noopener" class="btn btn-primary btn-lg">
@@ -1513,60 +1570,17 @@ footer{background:#040d24;padding:60px 0 34px}
         </a>
         <a class="btn btn-ghost-d btn-lg" onclick="irSeccion('programa')">Ver el programa</a>
       </div>
+      <!-- PENDIENTE: añadir fecha de cierre de postulaciones. Sin deadline, "cupos limitados" no genera urgencia. -->
       <p class="hero-note rv rv-d4">Costa inicia en octubre · Sierra en noviembre de 2026<br>Postular toma 5 minutos · Becas disponibles hasta del 100%</p>
 
-      <div class="mockup-stage rv rv-d5">
-        <div class="mockup">
-          <div class="mock-bar">
-            <span class="mock-dot" style="background:#FF5F57"></span>
-            <span class="mock-dot" style="background:#FEBC2E"></span>
-            <span class="mock-dot" style="background:#28C840"></span>
-            <div class="mock-url">electi.pages.dev/portal</div>
-          </div>
-          <div class="mock-body">
-            <aside class="mock-side">
-              <div class="mock-side-top">
-                <div class="mock-ava"></div>
-                <div class="mock-lines"><div class="mock-ln"></div><div class="mock-ln sm"></div></div>
-              </div>
-              <div class="mock-nav act"><i></i> Inicio</div>
-              <div class="mock-nav"><i></i> Mis faltas</div>
-              <div class="mock-nav"><i></i> Pagos</div>
-              <div class="mock-nav"><i></i> Materiales</div>
-              <div class="mock-nav"><i></i> Anuncios</div>
-            </aside>
-            <div class="mock-main">
-              <div class="mock-hero">
-                <div class="mock-h-l"><div class="mock-h-t"></div><div class="mock-h-s"></div></div>
-                <div class="mock-ring"></div>
-              </div>
-              <div class="mock-kpis">
-                <div class="mock-kpi"><div class="mock-kpi-l"></div><div class="mock-kpi-v g"></div></div>
-                <div class="mock-kpi"><div class="mock-kpi-l"></div><div class="mock-kpi-v a"></div></div>
-                <div class="mock-kpi"><div class="mock-kpi-l"></div><div class="mock-kpi-v"></div></div>
-                <div class="mock-kpi"><div class="mock-kpi-l"></div><div class="mock-kpi-v b"></div></div>
-              </div>
-              <div class="mock-cards">
-                <div class="mock-card">
-                  <div class="mock-kpi-l" style="width:46%"></div>
-                  <div class="mock-chart">
-                    <div class="mock-bar-i" style="height:44%"></div><div class="mock-bar-i" style="height:70%"></div>
-                    <div class="mock-bar-i" style="height:56%"></div><div class="mock-bar-i" style="height:88%"></div>
-                    <div class="mock-bar-i" style="height:64%"></div><div class="mock-bar-i" style="height:100%"></div>
-                  </div>
-                </div>
-                <div class="mock-card">
-                  <div class="mock-kpi-l" style="width:52%"></div>
-                  <div class="mock-row"><span class="mock-row-d" style="background:#16A34A"></span><span class="mock-row-l"></span></div>
-                  <div class="mock-row"><span class="mock-row-d" style="background:#16A34A"></span><span class="mock-row-l" style="width:74%"></span></div>
-                  <div class="mock-row"><span class="mock-row-d" style="background:#D97706"></span><span class="mock-row-l" style="width:86%"></span></div>
-                  <div class="mock-row"><span class="mock-row-d" style="background:#E6EBF4"></span><span class="mock-row-l" style="width:62%"></span></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="mock-glow"></div>
+      <!-- Franja de credibilidad. Reemplazó al mockup del portal, que ahora vive
+           solo en la sección "Tu portal privado". Aquí debería ir una foto real
+           de generación cuando la tengas. -->
+      <div class="hero-proof rv rv-d5">
+        <div class="hp"><div class="hp-n">6</div><div class="hp-l">meses de programa</div></div>
+        <div class="hp"><div class="hp-n">4</div><div class="hp-l">sedes en Ecuador</div></div>
+        <div class="hp"><div class="hp-n">+150</div><div class="hp-l">colegios en la red</div></div>
+        <div class="hp"><div class="hp-n">100%</div><div class="hp-l">beca máxima disponible</div></div>
       </div>
     </div>
   </section>
@@ -1602,17 +1616,17 @@ footer{background:#040d24;padding:60px 0 34px}
       </div>
       <div class="p-grid">
         <div class="p-card rv">
-          <div class="p-ico">📚</div>
+          <div class="p-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
           <h3>Teoría sin práctica</h3>
           <p>Cursos de liderazgo que terminan en un certificado y un cuaderno lleno de apuntes que nadie vuelve a abrir.</p>
         </div>
         <div class="p-card rv rv-d1">
-          <div class="p-ico">🚪</div>
+          <div class="p-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21h18"/><path d="M6 21V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v17"/><circle cx="14.6" cy="12.2" r=".9"/></svg></div>
           <h3>Ideas sin puerta</h3>
           <p>Tienes el proyecto en la cabeza, pero no la red, el presupuesto ni el permiso para llevarlo a algún lado.</p>
         </div>
         <div class="p-card rv rv-d2">
-          <div class="p-ico">⏳</div>
+          <div class="p-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg></div>
           <h3>Experiencia que llega tarde</h3>
           <p>Descubres cómo funciona el mundo real a los 22, compitiendo contra quienes empezaron a los 16.</p>
         </div>
@@ -1696,7 +1710,7 @@ footer{background:#040d24;padding:60px 0 34px}
               <p class="met-p">Es la sede fundacional y la única con presencialidad semanal. La sesión del miércoles se dicta por Zoom junto a Cuenca, la otra sede de la Sierra; el sábado la generación se reúne en la Universidad Metropolitana del Ecuador.</p>
               <div class="horario">
               <div class="hr-row">
-                <div class="hr-ic">💻</div>
+                <div class="hr-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="13" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
                 <div class="hr-tx">
                   <div class="hr-d">Miércoles</div>
                   <div class="hr-h">18:00 – 20:00</div>
@@ -1704,7 +1718,7 @@ footer{background:#040d24;padding:60px 0 34px}
                 </div>
               </div>
               <div class="hr-row destaca">
-                <div class="hr-ic">🏛</div>
+                <div class="hr-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21h18"/><path d="M4 9.5h16L12 3 4 9.5z"/><line x1="7" y1="12" x2="7" y2="18"/><line x1="12" y1="12" x2="12" y2="18"/><line x1="17" y1="12" x2="17" y2="18"/></svg></div>
                 <div class="hr-tx">
                   <div class="hr-d">Sábados</div>
                   <div class="hr-h">11:00 – 13:30</div>
@@ -1737,7 +1751,7 @@ footer{background:#040d24;padding:60px 0 34px}
               <p class="met-p">Dos sesiones en vivo por semana en lugar de una, para sostener el mismo ritmo de trabajo que la sede presencial. Guayaquil pertenece al bloque Costa, que inicia en octubre de 2026. Una vez al mes, la generación se reúne cara a cara en la ciudad.</p>
               <div class="horario">
               <div class="hr-row">
-                <div class="hr-ic">💻</div>
+                <div class="hr-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="13" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
                 <div class="hr-tx">
                   <div class="hr-d">Martes</div>
                   <div class="hr-h">18:00 – 20:00</div>
@@ -1745,7 +1759,7 @@ footer{background:#040d24;padding:60px 0 34px}
                 </div>
               </div>
               <div class="hr-row">
-                <div class="hr-ic">💻</div>
+                <div class="hr-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="13" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
                 <div class="hr-tx">
                   <div class="hr-d">Jueves</div>
                   <div class="hr-h">18:00 – 20:00</div>
@@ -1753,7 +1767,7 @@ footer{background:#040d24;padding:60px 0 34px}
                 </div>
               </div>
               <div class="hr-row destaca">
-                <div class="hr-ic">🤝</div>
+                <div class="hr-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9"/><path d="M16 3.1a4 4 0 0 1 0 7.8"/></svg></div>
                 <div class="hr-tx">
                   <div class="hr-d">Un sábado al mes</div>
                   <div class="hr-h">Encuentro presencial</div>
@@ -1786,7 +1800,7 @@ footer{background:#040d24;padding:60px 0 34px}
               <p class="met-p">Dos sesiones en vivo por semana en lugar de una, para sostener el mismo ritmo de trabajo que la sede presencial. Cuenca pertenece al bloque Sierra, que inicia en noviembre de 2026. Una vez al mes, la generación se reúne cara a cara en la ciudad.</p>
               <div class="horario">
               <div class="hr-row">
-                <div class="hr-ic">💻</div>
+                <div class="hr-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="13" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
                 <div class="hr-tx">
                   <div class="hr-d">Miércoles</div>
                   <div class="hr-h">18:00 – 20:00</div>
@@ -1794,7 +1808,7 @@ footer{background:#040d24;padding:60px 0 34px}
                 </div>
               </div>
               <div class="hr-row">
-                <div class="hr-ic">💻</div>
+                <div class="hr-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="13" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
                 <div class="hr-tx">
                   <div class="hr-d">Viernes</div>
                   <div class="hr-h">18:00 – 20:00</div>
@@ -1802,7 +1816,7 @@ footer{background:#040d24;padding:60px 0 34px}
                 </div>
               </div>
               <div class="hr-row destaca">
-                <div class="hr-ic">🤝</div>
+                <div class="hr-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9"/><path d="M16 3.1a4 4 0 0 1 0 7.8"/></svg></div>
                 <div class="hr-tx">
                   <div class="hr-d">Un sábado al mes</div>
                   <div class="hr-h">Encuentro presencial</div>
@@ -1835,7 +1849,7 @@ footer{background:#040d24;padding:60px 0 34px}
               <p class="met-p">Dos sesiones en vivo por semana en lugar de una, para sostener el mismo ritmo de trabajo que la sede presencial. Santo Domingo pertenece al bloque Costa, que inicia en octubre de 2026. Una vez al mes, la generación se reúne cara a cara en la ciudad.</p>
               <div class="horario">
               <div class="hr-row">
-                <div class="hr-ic">💻</div>
+                <div class="hr-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="13" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
                 <div class="hr-tx">
                   <div class="hr-d">Martes</div>
                   <div class="hr-h">18:00 – 20:00</div>
@@ -1843,7 +1857,7 @@ footer{background:#040d24;padding:60px 0 34px}
                 </div>
               </div>
               <div class="hr-row">
-                <div class="hr-ic">💻</div>
+                <div class="hr-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="13" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
                 <div class="hr-tx">
                   <div class="hr-d">Jueves</div>
                   <div class="hr-h">18:00 – 20:00</div>
@@ -1851,7 +1865,7 @@ footer{background:#040d24;padding:60px 0 34px}
                 </div>
               </div>
               <div class="hr-row destaca">
-                <div class="hr-ic">🤝</div>
+                <div class="hr-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9"/><path d="M16 3.1a4 4 0 0 1 0 7.8"/></svg></div>
                 <div class="hr-tx">
                   <div class="hr-d">Un sábado al mes</div>
                   <div class="hr-h">Encuentro presencial</div>
@@ -1878,7 +1892,7 @@ footer{background:#040d24;padding:60px 0 34px}
         </div>
 
       <div class="aviso rv" style="max-width:840px;margin:clamp(38px,5vw,54px) auto 0">
-        <span class="aviso-ic">🌐</span>
+        <span class="aviso-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><line x1="3" y1="12" x2="21" y2="12"/><path d="M12 3a14.5 14.5 0 0 1 0 18 14.5 14.5 0 0 1 0-18z"/></svg></span>
         <p>El programa se dicta en <b>dos bloques regionales</b>: la Costa arranca en <b>octubre de 2026</b> y la Sierra en <b>noviembre de 2026</b>. Cada bloque comparte una sesión semanal, así que estudias con jóvenes de otras ciudades desde el primer día.</p>
       </div>
 
@@ -1899,22 +1913,22 @@ footer{background:#040d24;padding:60px 0 34px}
 
       <div class="af-grid">
         <div class="af rv">
-          <div class="af-ico">🎓</div>
+          <div class="af-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 9 12 4 2 9l10 5 10-5z"/><path d="M6 11.4V16c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.6"/></svg></div>
           <h3>Becas universitarias</h3>
           <p>Las universidades premian a quien llega con experiencia real, no solo con notas. Un proyecto ejecutado y liderazgo comprobable pesan en cualquier proceso de admisión.</p>
-          <span class="af-proof">✓ Alumni con becas del 70% y 100%</span>
+          <span class="af-proof"><svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg> Alumni con becas del 70% y 100%</span>
         </div>
         <div class="af rv rv-d1">
-          <div class="af-ico">🚀</div>
+          <div class="af-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></div>
           <h3>Destacas desde el primer semestre</h3>
           <p>Mientras tus compañeros descubren cómo funciona un equipo, tú ya dirigiste uno. Esa ventaja se nota en trabajos grupales, en prácticas y en las primeras oportunidades.</p>
-          <span class="af-proof">✓ Prácticas en 2.º semestre</span>
+          <span class="af-proof"><svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg> Prácticas en 2.º semestre</span>
         </div>
         <div class="af rv rv-d2">
-          <div class="af-ico">🗳</div>
+          <div class="af-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6"/><path d="M8.4 14.4 7 22l5-2.4 5 2.4-1.4-7.6"/></svg></div>
           <h3>Lideras tu consejo estudiantil</h3>
           <p>Vuelves a tu colegio con herramientas que nadie más tiene: cómo planificar una campaña, gestionar un presupuesto y ejecutar propuestas que sí se cumplen.</p>
-          <span class="af-proof">✓ Formación de consejos desde 2016</span>
+          <span class="af-proof"><svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg> Formación de consejos desde 2017</span>
         </div>
       </div>
 
@@ -1947,7 +1961,7 @@ footer{background:#040d24;padding:60px 0 34px}
       <div class="tt-grid">
         <div class="tt rv">
           <div class="tt-mark">"</div>
-          <span class="tt-win">🎓 Beca del 100% · USFQ</span>
+          <span class="tt-win"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 9 12 4 2 9l10 5 10-5z"/><path d="M6 11.4V16c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.6"/></svg> Beca del 100% · USFQ</span>
           <p class="tt-q">Entrar a ELECTI cambió mi trayectoria. Aprendí a estructurar ideas, liderar equipos y ejecutar con criterio. La red que construyes vale más que cualquier título.</p>
           <div class="tt-who">
             <div class="tt-ava">RA</div>
@@ -1956,7 +1970,7 @@ footer{background:#040d24;padding:60px 0 34px}
         </div>
         <div class="tt rv rv-d1">
           <div class="tt-mark">"</div>
-          <span class="tt-win">🎓 Beca del 70% · USFQ</span>
+          <span class="tt-win"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 9 12 4 2 9l10 5 10-5z"/><path d="M6 11.4V16c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.6"/></svg> Beca del 70% · USFQ</span>
           <p class="tt-q">Me dio las herramientas para ejecutar proyectos de verdad, con equipos reales y resultados concretos. Aprendí a liderarme a mí mismo bajo presión. Eso no te lo enseña ningún colegio.</p>
           <div class="tt-who">
             <div class="tt-ava">IS</div>
@@ -1965,7 +1979,7 @@ footer{background:#040d24;padding:60px 0 34px}
         </div>
         <div class="tt rv rv-d2">
           <div class="tt-mark">"</div>
-          <span class="tt-win">💼 Prácticas en 2.º semestre</span>
+          <span class="tt-win"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="2" y1="12.5" x2="22" y2="12.5"/></svg> Prácticas en 2.º semestre</span>
           <p class="tt-q">Estando en segundo semestre de Derecho, ELECTI me abrió las puertas a prácticas en un bufete. Las habilidades que desarrollé me pusieron años adelante de mis compañeros.</p>
           <div class="tt-who">
             <div class="tt-ava">EM</div>
@@ -1985,10 +1999,10 @@ footer{background:#040d24;padding:60px 0 34px}
           <h2 class="h-section rv rv-d1">Todo tu progreso,<br>en un solo lugar.</h2>
           <p class="lead rv rv-d2">Cada alumno de ELECTI recibe acceso a un portal donde ve su avance en tiempo real.</p>
           <div class="pt-feats">
-            <div class="pt-feat rv rv-d3"><div class="pt-fi">📋</div><div><strong>Asistencia y faltas</strong><span>Tu registro actualizado sesión por sesión</span></div></div>
-            <div class="pt-feat rv rv-d3"><div class="pt-fi">💳</div><div><strong>Estado de cuenta</strong><span>Cuotas, becas y pagos siempre claros</span></div></div>
-            <div class="pt-feat rv rv-d4"><div class="pt-fi">📚</div><div><strong>Materiales por fase</strong><span>Todos los recursos del programa, organizados</span></div></div>
-            <div class="pt-feat rv rv-d4"><div class="pt-fi">🎓</div><div><strong>Elegibilidad del certificado</strong><span>Sabes exactamente qué te falta para graduarte</span></div></div>
+            <div class="pt-feat rv rv-d3"><div class="pt-fi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 5h2a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2"/><rect x="8" y="3" width="8" height="4" rx="1"/><polyline points="9.2 13.5 11 15.3 14.8 11.5"/></svg></div><div><strong>Asistencia y faltas</strong><span>Tu registro actualizado sesión por sesión</span></div></div>
+            <div class="pt-feat rv rv-d3"><div class="pt-fi"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div><div><strong>Estado de cuenta</strong><span>Cuotas, becas y pagos siempre claros</span></div></div>
+            <div class="pt-feat rv rv-d4"><div class="pt-fi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div><div><strong>Materiales por fase</strong><span>Todos los recursos del programa, organizados</span></div></div>
+            <div class="pt-feat rv rv-d4"><div class="pt-fi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 9 12 4 2 9l10 5 10-5z"/><path d="M6 11.4V16c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.6"/></svg></div><div><strong>Elegibilidad del certificado</strong><span>Sabes exactamente qué te falta para graduarte</span></div></div>
           </div>
           <div class="rv rv-d5" style="margin-top:30px">
             <a href="/portal" class="btn btn-ghost-d">
@@ -2052,6 +2066,48 @@ footer{background:#040d24;padding:60px 0 34px}
         </div>
         <a class="btn btn-dark btn-lg" onclick="ir('becas')">
           Ver las becas
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ PARA REPRESENTANTES ══ -->
+  <section class="pad-sm rep" id="representantes">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow rv">Para padres y representantes</p>
+        <h2 class="h-section rv rv-d1">Quién responde<br>por su hijo.</h2>
+        <p class="lead rv rv-d2">Usted firma el acuerdo y paga el programa. Estas son las respuestas que le corresponden antes de decidir.</p>
+      </div>
+
+      <div class="rep-grid">
+        <div class="rep-card rv">
+          <div class="rep-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9"/><path d="M16 3.1a4 4 0 0 1 0 7.8"/></svg></div>
+          <h3>Quién dicta las clases</h3>
+          <p>Tres docentes con nombre, cargo y trayectoria pública: el fundador de Unión Estudiantil, un economista de Produbanco y el director ejecutivo del programa. No hay instructores anónimos.</p>
+        </div>
+        <div class="rep-card rv rv-d1">
+          <div class="rep-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5c2.5 0 3-3.5 4.5-8S11.5 4 13 5.5s-1 6-2.5 9-2 5 0 5c2.5 0 4-2 6.5-2s2.5 2 2.5 2"/></svg></div>
+          <h3>Qué se firma</h3>
+          <p>Un Acuerdo de Compromiso que usted suscribe junto al estudiante. Define asistencia, permanencia por el semestre y las causales de fuerza mayor que se evalúan caso por caso.</p>
+        </div>
+        <div class="rep-card rv rv-d2">
+          <div class="rep-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div>
+          <h3>Cómo funciona el dinero</h3>
+          <p>$40 mensuales más $15 de matrícula por única vez. La beca se renueva cada mes con asistencia y compromiso. Las multas por atraso no son ingreso del programa: van a un fondo que la generación gasta en sí misma.</p>
+        </div>
+        <div class="rep-card rv rv-d3">
+          <div class="rep-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="17" rx="2"/><line x1="3" y1="9.5" x2="21" y2="9.5"/><line x1="8" y1="2.5" x2="8" y2="6.5"/><line x1="16" y1="2.5" x2="16" y2="6.5"/><polyline points="8.8 14.4 11 16.6 15.2 12.4"/></svg></div>
+          <h3>Cómo ve el avance</h3>
+          <p>El estudiante tiene un portal con su asistencia sesión por sesión, su estado de cuenta y qué le falta para certificarse. Nada de eso se decide a puerta cerrada.</p>
+        </div>
+      </div>
+
+      <div class="rep-foot rv rv-d4">
+        <p><b>¿Tiene una pregunta que no está aquí?</b> Escríbanos directamente. Respondemos a representantes por WhatsApp o correo antes de que su hijo postule, no después. Puede revisar cómo tratamos los datos personales en nuestra <a href="/privacidad.html" style="color:var(--blue);font-weight:600">política de privacidad</a>.</p>
+        <a class="btn btn-dark" href="https://wa.me/593962893857?text=Hola%2C%20soy%20representante%20y%20tengo%20preguntas%20sobre%20ELECTI%20antes%20de%20que%20mi%20hijo%20postule." target="_blank" rel="noopener" style="white-space:normal">
+          Hablar con el equipo
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
         </a>
       </div>
@@ -2164,16 +2220,16 @@ footer{background:#040d24;padding:60px 0 34px}
       </div>
       <div class="sk-grid">
         <div class="sk sk-big rv">
-          <div class="sk-ico">🎯</div>
+          <div class="sk-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.4"/></svg></div>
           <h4>Gestión de proyectos</h4>
           <p>Del papel a la ejecución: alcance, recursos, cronograma, riesgos y entrega. La habilidad que sostiene todas las demás.</p>
         </div>
-        <div class="sk rv rv-d1"><div class="sk-ico" style="background:#F0FDF4">🧭</div><h4>Liderazgo</h4><p>Dirigir equipos reales, con conflictos reales.</p></div>
-        <div class="sk rv rv-d2"><div class="sk-ico" style="background:#FFF7ED">🎤</div><h4>Oratoria</h4><p>Hablar con autoridad frente a cualquier sala.</p></div>
-        <div class="sk rv rv-d1"><div class="sk-ico" style="background:#EEF3FC">💰</div><h4>Finanzas</h4><p>Presupuestos, costos y sostenibilidad.</p></div>
-        <div class="sk rv rv-d2"><div class="sk-ico" style="background:#FDF2F8">🤝</div><h4>Negociación</h4><p>Conseguir aliados, permisos y recursos.</p></div>
-        <div class="sk rv rv-d3"><div class="sk-ico" style="background:#F5F3FF">📣</div><h4>Comunicación</h4><p>Difusión, medios y marca del proyecto.</p></div>
-        <div class="sk rv rv-d4"><div class="sk-ico" style="background:#ECFEFF">🌐</div><h4>Networking</h4><p>Una red que sigue abriendo puertas después.</p></div>
+        <div class="sk rv rv-d1"><div class="sk-ico" style="background:#F0FDF4;color:#16A34A"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><polygon points="16 8 14 14 8 16 10 10 16 8"/></svg></div><h4>Liderazgo</h4><p>Dirigir equipos reales, con conflictos reales.</p></div>
+        <div class="sk rv rv-d2"><div class="sk-ico" style="background:#FFF7ED;color:#D97706"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><line x1="12" y1="18" x2="12" y2="22"/></svg></div><h4>Oratoria</h4><p>Hablar con autoridad frente a cualquier sala.</p></div>
+        <div class="sk rv rv-d1"><div class="sk-ico" style="background:#EEF3FC;color:var(--blue)"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M14.6 9.2a2.8 2.8 0 0 0-2.6-1.4c-1.6 0-2.6.8-2.6 2s1 1.8 2.6 2.1 2.8.8 2.8 2.2-1.2 2.1-2.8 2.1a3 3 0 0 1-2.8-1.5"/><line x1="12" y1="6" x2="12" y2="18"/></svg></div><h4>Finanzas</h4><p>Presupuestos, costos y sostenibilidad.</p></div>
+        <div class="sk rv rv-d2"><div class="sk-ico" style="background:#FDF2F8;color:#DB2777"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6.5 9.6 4.4a2 2 0 0 0-2.6 0L2.5 8.3"/><path d="M12 6.5l2.4-2.1a2 2 0 0 1 2.6 0l4.5 3.9"/><path d="M21.5 8.2v6.3a2 2 0 0 1-.7 1.5l-3.1 2.7a2 2 0 0 1-2.7-.1L12 15.5"/><path d="M2.5 8.2v6.3c0 .6.3 1.1.7 1.5l3.1 2.7a2 2 0 0 0 2.7-.1"/></svg></div><h4>Negociación</h4><p>Conseguir aliados, permisos y recursos.</p></div>
+        <div class="sk rv rv-d3"><div class="sk-ico" style="background:#F5F3FF;color:#7C3AED"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/><path d="M19.5 6a9 9 0 0 1 0 12"/></svg></div><h4>Comunicación</h4><p>Difusión, medios y marca del proyecto.</p></div>
+        <div class="sk rv rv-d4"><div class="sk-ico" style="background:#ECFEFF;color:#0891B2"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><line x1="3" y1="12" x2="21" y2="12"/><path d="M12 3a14.5 14.5 0 0 1 0 18 14.5 14.5 0 0 1 0-18z"/></svg></div><h4>Networking</h4><p>Una red que sigue abriendo puertas después.</p></div>
       </div>
     </div>
   </section>
@@ -2187,31 +2243,31 @@ footer{background:#040d24;padding:60px 0 34px}
       </div>
       <div class="exp-grid">
         <div class="exp-cell exp-a rv">
-          <span class="exp-emoji">🚀</span>
+          <span class="exp-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5c3 1.6 5 5 5 9.2l-1.8 3.6H8.8L7 11.7C7 7.5 9 4.1 12 2.5z"/><circle cx="12" cy="10" r="1.8"/><path d="M8.8 15.3 7 21l3-1.4M15.2 15.3 17 21l-3-1.4"/></svg></span>
           <div class="exp-txt">
             <span class="exp-k">Proyecto final</span>
             <h4>Tu idea, lanzada de verdad</h4>
-            <p>En noviembre cada equipo ejecuta su proyecto dentro de la red de colegios. No es una presentación: es un lanzamiento.</p>
+            <p>Al cierre del programa cada equipo ejecuta su proyecto dentro de la red de colegios. No es una presentación: es un lanzamiento.</p>
           </div>
         </div>
         <div class="exp-cell exp-b rv rv-d1">
-          <span class="exp-emoji">💻</span>
+          <span class="exp-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="13" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></span>
           <div class="exp-txt"><span class="exp-k">Clases en vivo</span><h4>18:00 – 20:00</h4><p>Costa los martes y jueves; Sierra los miércoles y viernes. Quito, híbrida, tiene una sola sesión virtual.</p></div>
         </div>
         <div class="exp-cell exp-c rv rv-d2">
-          <span class="exp-emoji">🏛</span>
+          <span class="exp-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21h18"/><path d="M4 9.5h16L12 3 4 9.5z"/><line x1="7" y1="12" x2="7" y2="18"/><line x1="12" y1="12" x2="12" y2="18"/><line x1="17" y1="12" x2="17" y2="18"/></svg></span>
           <div class="exp-txt"><span class="exp-k">Presencialidad</span><h4>Sábados en la UMET</h4><p>Cada semana en Quito; una vez al mes en Guayaquil, Cuenca y Santo Domingo.</p></div>
         </div>
         <div class="exp-cell exp-d rv rv-d1">
-          <span class="exp-emoji">👥</span>
+          <span class="exp-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9"/><path d="M16 3.1a4 4 0 0 1 0 7.8"/></svg></span>
           <div class="exp-txt"><span class="exp-k">Equipos</span><h4>Trabajo real en grupo</h4><p>Roles, entregas y responsabilidad compartida</p></div>
         </div>
         <div class="exp-cell exp-e rv rv-d2">
-          <span class="exp-emoji">🎓</span>
-          <div class="exp-txt"><span class="exp-k">Diciembre</span><h4>Graduación oficial</h4><p>Certificado avalado por UMET</p></div>
+          <span class="exp-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 9 12 4 2 9l10 5 10-5z"/><path d="M6 11.4V16c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.6"/></svg></span>
+          <div class="exp-txt"><span class="exp-k">Mes 6</span><h4>Graduación oficial</h4><p>Certificado avalado por UMET</p></div>
         </div>
         <div class="exp-cell exp-f rv rv-d3">
-          <span class="exp-emoji">🌎</span>
+          <span class="exp-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><line x1="3" y1="12" x2="21" y2="12"/><path d="M12 3a14.5 14.5 0 0 1 0 18 14.5 14.5 0 0 1 0-18z"/></svg></span>
           <div class="exp-txt"><span class="exp-k">Cuatro sedes</span><h4>Quito · Guayaquil · Cuenca · Santo Domingo</h4><p>Una sola comunidad, expandiéndose por el país</p></div>
         </div>
       </div>
@@ -2433,7 +2489,7 @@ footer{background:#040d24;padding:60px 0 34px}
             <span class="pr-mat"><b>$15</b> matrícula<small>pago único</small></span>
           </div>
           <p class="pr-sub">Total del programa: <b>$255</b> por estudiante. Las becas se aplican sobre la mensualidad. Descuento adicional por pago único.</p>
-          <div class="pr-cmp">💡 Menos que una academia de inglés</div>
+          <div class="pr-cmp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 18h5"/><path d="M10.5 21.5h3"/><path d="M12 2.5a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2h5c0-.8.4-1.5 1-2A6 6 0 0 0 12 2.5z"/></svg> Menos que una academia de inglés</div>
         </div>
         <a href="https://forms.gle/SdaHtjDcyFuYEa3T7" target="_blank" rel="noopener" class="btn btn-dark btn-lg">
           Postular y aplicar a beca
@@ -2577,7 +2633,7 @@ footer{background:#040d24;padding:60px 0 34px}
       </div>
 
       <div class="aviso" style="max-width:820px;margin:clamp(40px,5vw,60px) auto 0">
-        <span class="aviso-ic">🌐</span>
+        <span class="aviso-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><line x1="3" y1="12" x2="21" y2="12"/><path d="M12 3a14.5 14.5 0 0 1 0 18 14.5 14.5 0 0 1 0-18z"/></svg></span>
         <p>El programa se dicta en <b>dos bloques regionales</b>: la Costa desde octubre de 2026 y la Sierra desde noviembre. Cada bloque comparte su primera sesión semanal, así que estudias con gente de otras ciudades desde el primer día y los equipos de proyecto pueden ser mixtos.</p>
       </div>
 
@@ -2620,7 +2676,7 @@ footer{background:#040d24;padding:60px 0 34px}
           <p class="lead rv rv-d2" style="margin-bottom:30px">Quito pertenece al bloque Sierra, que inicia en noviembre de 2026, y combina lo mejor de los dos mundos: la flexibilidad de una sesión virtual entre semana y el peso de encontrarse cara a cara todos los sábados en una universidad.</p>
           <div class="horario">
             <div class="rv rv-d2"><div class="hr-row">
-            <div class="hr-ic">💻</div>
+            <div class="hr-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="13" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
             <div class="hr-tx">
               <div class="hr-d">Miércoles</div>
               <div class="hr-h">18:00 – 20:00</div>
@@ -2628,7 +2684,7 @@ footer{background:#040d24;padding:60px 0 34px}
             </div>
           </div></div>
             <div class="rv rv-d3"><div class="hr-row destaca">
-            <div class="hr-ic">🏛</div>
+            <div class="hr-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21h18"/><path d="M4 9.5h16L12 3 4 9.5z"/><line x1="7" y1="12" x2="7" y2="18"/><line x1="12" y1="12" x2="12" y2="18"/><line x1="17" y1="12" x2="17" y2="18"/></svg></div>
             <div class="hr-tx">
               <div class="hr-d">Sábados</div>
               <div class="hr-h">11:00 – 13:30</div>
@@ -2687,7 +2743,7 @@ footer{background:#040d24;padding:60px 0 34px}
           <p class="lead rv rv-d2" style="margin-bottom:30px">Dos sesiones virtuales por semana en lugar de una, para compensar la ausencia del presencial semanal. Una vez al mes, la generación se reúne en persona.</p>
           <div class="horario">
             <div class="rv rv-d2"><div class="hr-row">
-            <div class="hr-ic">💻</div>
+            <div class="hr-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="13" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
             <div class="hr-tx">
               <div class="hr-d">Martes</div>
               <div class="hr-h">18:00 – 20:00</div>
@@ -2695,7 +2751,7 @@ footer{background:#040d24;padding:60px 0 34px}
             </div>
           </div></div>
             <div class="rv rv-d3"><div class="hr-row">
-            <div class="hr-ic">💻</div>
+            <div class="hr-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="13" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
             <div class="hr-tx">
               <div class="hr-d">Jueves</div>
               <div class="hr-h">18:00 – 20:00</div>
@@ -2703,7 +2759,7 @@ footer{background:#040d24;padding:60px 0 34px}
             </div>
           </div></div>
             <div class="rv rv-d4"><div class="hr-row destaca">
-            <div class="hr-ic">🤝</div>
+            <div class="hr-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9"/><path d="M16 3.1a4 4 0 0 1 0 7.8"/></svg></div>
             <div class="hr-tx">
               <div class="hr-d">Un sábado al mes</div>
               <div class="hr-h">Encuentro presencial</div>
@@ -2712,7 +2768,7 @@ footer{background:#040d24;padding:60px 0 34px}
           </div></div>
           </div>
           <div class="aviso">
-            <span class="aviso-ic">🌐</span>
+            <span class="aviso-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><line x1="3" y1="12" x2="21" y2="12"/><path d="M12 3a14.5 14.5 0 0 1 0 18 14.5 14.5 0 0 1 0-18z"/></svg></span>
             <p>Guayaquil pertenece al <b>bloque Costa</b>, que inicia en octubre de 2026. La sesión de los martes es compartida con la otra sede de la Costa. Tu equipo de proyecto puede tener compañeros de otra ciudad, y la red que construyes es nacional.</p>
           </div>
         </div>
@@ -2765,7 +2821,7 @@ footer{background:#040d24;padding:60px 0 34px}
           <p class="lead rv rv-d2" style="margin-bottom:30px">Dos sesiones virtuales por semana en lugar de una, para compensar la ausencia del presencial semanal. Una vez al mes, la generación se reúne en persona.</p>
           <div class="horario">
             <div class="rv rv-d2"><div class="hr-row">
-            <div class="hr-ic">💻</div>
+            <div class="hr-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="13" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
             <div class="hr-tx">
               <div class="hr-d">Miércoles</div>
               <div class="hr-h">18:00 – 20:00</div>
@@ -2773,7 +2829,7 @@ footer{background:#040d24;padding:60px 0 34px}
             </div>
           </div></div>
             <div class="rv rv-d3"><div class="hr-row">
-            <div class="hr-ic">💻</div>
+            <div class="hr-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="13" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
             <div class="hr-tx">
               <div class="hr-d">Viernes</div>
               <div class="hr-h">18:00 – 20:00</div>
@@ -2781,7 +2837,7 @@ footer{background:#040d24;padding:60px 0 34px}
             </div>
           </div></div>
             <div class="rv rv-d4"><div class="hr-row destaca">
-            <div class="hr-ic">🤝</div>
+            <div class="hr-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9"/><path d="M16 3.1a4 4 0 0 1 0 7.8"/></svg></div>
             <div class="hr-tx">
               <div class="hr-d">Un sábado al mes</div>
               <div class="hr-h">Encuentro presencial</div>
@@ -2790,7 +2846,7 @@ footer{background:#040d24;padding:60px 0 34px}
           </div></div>
           </div>
           <div class="aviso">
-            <span class="aviso-ic">🌐</span>
+            <span class="aviso-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><line x1="3" y1="12" x2="21" y2="12"/><path d="M12 3a14.5 14.5 0 0 1 0 18 14.5 14.5 0 0 1 0-18z"/></svg></span>
             <p>Cuenca pertenece al <b>bloque Sierra</b>, que inicia en noviembre de 2026. La sesión de los miércoles es compartida con Quito. Tu equipo de proyecto puede tener compañeros de otra ciudad, y la red que construyes es nacional.</p>
           </div>
         </div>
@@ -2843,7 +2899,7 @@ footer{background:#040d24;padding:60px 0 34px}
           <p class="lead rv rv-d2" style="margin-bottom:30px">Dos sesiones virtuales por semana en lugar de una, para compensar la ausencia del presencial semanal. Una vez al mes, la generación se reúne en persona.</p>
           <div class="horario">
             <div class="rv rv-d2"><div class="hr-row">
-            <div class="hr-ic">💻</div>
+            <div class="hr-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="13" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
             <div class="hr-tx">
               <div class="hr-d">Martes</div>
               <div class="hr-h">18:00 – 20:00</div>
@@ -2851,7 +2907,7 @@ footer{background:#040d24;padding:60px 0 34px}
             </div>
           </div></div>
             <div class="rv rv-d3"><div class="hr-row">
-            <div class="hr-ic">💻</div>
+            <div class="hr-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="13" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
             <div class="hr-tx">
               <div class="hr-d">Jueves</div>
               <div class="hr-h">18:00 – 20:00</div>
@@ -2859,7 +2915,7 @@ footer{background:#040d24;padding:60px 0 34px}
             </div>
           </div></div>
             <div class="rv rv-d4"><div class="hr-row destaca">
-            <div class="hr-ic">🤝</div>
+            <div class="hr-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9"/><path d="M16 3.1a4 4 0 0 1 0 7.8"/></svg></div>
             <div class="hr-tx">
               <div class="hr-d">Un sábado al mes</div>
               <div class="hr-h">Encuentro presencial</div>
@@ -2868,7 +2924,7 @@ footer{background:#040d24;padding:60px 0 34px}
           </div></div>
           </div>
           <div class="aviso">
-            <span class="aviso-ic">🌐</span>
+            <span class="aviso-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><line x1="3" y1="12" x2="21" y2="12"/><path d="M12 3a14.5 14.5 0 0 1 0 18 14.5 14.5 0 0 1 0-18z"/></svg></span>
             <p>Santo Domingo pertenece al <b>bloque Costa</b>, que inicia en octubre de 2026. La sesión de los martes es compartida con la otra sede de la Costa. Tu equipo de proyecto puede tener compañeros de otra ciudad, y la red que construyes es nacional.</p>
           </div>
         </div>
@@ -3355,10 +3411,10 @@ footer{background:#040d24;padding:60px 0 34px}
         <h2 class="h-section rv rv-d1">Cuatro frentes.<br>Un mismo propósito.</h2>
       </div>
       <div class="ue-cards">
-        <div class="ue-c rv"><div class="ue-c-i">🏫</div><h4>Red de colegios</h4><p>Convenios con instituciones educativas de todo el país para conectar estudiantes con oportunidades reales.</p></div>
-        <div class="ue-c rv rv-d1"><div class="ue-c-i">🗳</div><h4>Consejos estudiantiles</h4><p>Formación y asesoría directa: campañas, gestión, liderazgo y ejecución de propuestas.</p></div>
-        <div class="ue-c rv rv-d2"><div class="ue-c-i">🎓</div><h4>Formación ejecutiva</h4><p>Programas como ELECTI que enseñan gestión de proyectos, liderazgo y habilidades para toda la vida.</p></div>
-        <div class="ue-c rv rv-d3"><div class="ue-c-i">🎤</div><h4>Eventos y networking</h4><p>Espacios masivos que conectan a cientos de jóvenes con líderes e instituciones.</p></div>
+        <div class="ue-c rv"><div class="ue-c-i"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21h18"/><path d="M5 21V8.5L12 3l7 5.5V21"/><path d="M10 21v-5.5h4V21"/></svg></div><h4>Red de colegios</h4><p>Convenios con instituciones educativas de todo el país para conectar estudiantes con oportunidades reales.</p></div>
+        <div class="ue-c rv rv-d1"><div class="ue-c-i"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6"/><path d="M8.4 14.4 7 22l5-2.4 5 2.4-1.4-7.6"/></svg></div><h4>Consejos estudiantiles</h4><p>Formación y asesoría directa: campañas, gestión, liderazgo y ejecución de propuestas.</p></div>
+        <div class="ue-c rv rv-d2"><div class="ue-c-i"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 9 12 4 2 9l10 5 10-5z"/><path d="M6 11.4V16c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.6"/></svg></div><h4>Formación ejecutiva</h4><p>Programas como ELECTI que enseñan gestión de proyectos, liderazgo y habilidades para toda la vida.</p></div>
+        <div class="ue-c rv rv-d3"><div class="ue-c-i"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><line x1="12" y1="18" x2="12" y2="22"/></svg></div><h4>Eventos y networking</h4><p>Espacios masivos que conectan a cientos de jóvenes con líderes e instituciones.</p></div>
       </div>
     </div>
   </section>
@@ -3397,6 +3453,7 @@ footer{background:#040d24;padding:60px 0 34px}
           <a onclick="irSeccion('equipo')">Docentes</a>
           <a onclick="irSeccion('becas')">Becas</a>
           <a onclick="irSeccion('faq')">Preguntas frecuentes</a>
+          <a onclick="irSeccion('representantes')">Para representantes</a>
         </div>
         <div class="ft-col">
           <h5>Sedes</h5>
