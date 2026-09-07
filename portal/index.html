@@ -1810,7 +1810,8 @@ import { getAuth, signInWithEmailAndPassword, signOut, createUserWithEmailAndPas
          signInWithRedirect, getRedirectResult, sendEmailVerification, fetchSignInMethodsForEmail,
          initializeAuth, inMemoryPersistence, browserPopupRedirectResolver, browserLocalPersistence }
   from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
-import { getFirestore, collection, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc, writeBatch }
+import { getFirestore, collection, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc, writeBatch,
+         query, where, documentId }
   from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -1886,6 +1887,18 @@ window.fb = {
   },
   getDocs: async (col) => {
     const snap = await getDocs(collection(db, col));
+    const out = [];
+    snap.forEach(d => out.push({ _id: d.id, ...d.data() }));
+    return out;
+  },
+  // Trae solo los documentos cuyo ID cae dentro de un rango alfabético.
+  // Las sesiones se llaman 'martes_2026-08-06', así que un rango por ID
+  // equivale a un rango de fechas sin necesidad de índices ni campos extra.
+  getDocsRango: async (col, desde, hasta) => {
+    const q = query(collection(db, col),
+      where(documentId(), '>=', desde),
+      where(documentId(), '<=', hasta));
+    const snap = await getDocs(q);
     const out = [];
     snap.forEach(d => out.push({ _id: d.id, ...d.data() }));
     return out;
@@ -2109,16 +2122,39 @@ function pintarFotoAsync(elId, uid, iniciales, estilo) {
 // la funcion sigue sirviendo por si se llama desde otro sitio.
 function valorPrecargado(v) { return (v && v.__fallo) ? null : v; }
 
+// Primer y último dia del ciclo configurado, con un mes de holgura al final
+// por si quedan sesiones de cierre despues de la ultima cuota.
+function rangoCiclo(cfg) {
+  const c = Object.assign({ inicioAnio: new Date().getFullYear(), inicioMes: 1, numCuotas: 6 }, cfg || {});
+  const ini = new Date(c.inicioAnio, c.inicioMes - 1, 1);
+  const fin = new Date(c.inicioAnio, c.inicioMes - 1 + c.numCuotas + 1, 0);
+  return { desde: fechaISO(ini), hasta: fechaISO(fin) };
+}
+
+// Las sesiones tienen dos prefijos, y un rango por ID no puede abarcar ambos
+// de una vez: 'martes_...' y 'sabado_...' no son contiguos alfabeticamente.
+// Por eso son dos consultas, que igual viajan en paralelo.
+async function asistenciaDelCiclo(cfg) {
+  const r = rangoCiclo(cfg);
+  const partes = await Promise.all(['martes', 'sabado'].map(function(t){
+    return window.fb.getDocsRango('asistencia', t + '_' + r.desde, t + '_' + r.hasta);
+  }));
+  return partes[0].concat(partes[1]);
+}
+
 async function cargarDatosAlumno(uid, previa) {
   const p = previa || precargaComun();
+  // La configuracion define el ciclo, y el ciclo define que sesiones pedir.
+  // Es el unico dato que hay que esperar antes de lanzar el resto.
+  const cfgPrevio = await p.config.then(valorPrecargado);
   const [perfil, misPagos, asistencia, multasD, anunciosD, materialesD, cfg] = await Promise.all([
     window.fb.getDoc('usuarios', uid),
     window.fb.getDoc('pagos', uid).catch(() => null),
-    p.asistencia.then(valorPrecargado).then(function(v){ return v || []; }),
+    asistenciaDelCiclo(cfgPrevio).catch(function(e){ console.error('Fallo al cargar asistencia', e); return []; }),
     window.fb.getDoc('colecciones', 'multas').catch(() => null),
     p.anuncios.then(valorPrecargado),
     p.materiales.then(valorPrecargado),
-    p.config.then(valorPrecargado),
+    Promise.resolve(cfgPrevio),
   ]);
   state.equipo = [];
   state.alumnos = perfil ? [Object.assign({}, perfil, { username: uid })] : [];
@@ -2157,7 +2193,7 @@ async function cargarDatos(rol, previa) {
     critico(window.fb.getDocs('usuarios'), 'alumnos y equipo'),
     // Los profesores no tienen permiso de lectura sobre pagos (por reglas de seguridad)
     esAdministrador ? critico(window.fb.getDocs('pagos'), 'pagos') : Promise.resolve([]),
-    criticoPre(p.asistencia, 'asistencia'),
+    critico(window.fb.getDocs('asistencia'), 'asistencia'),
     esAdministrador ? critico(window.fb.getDoc('colecciones', 'multas'), 'multas') : Promise.resolve(null),
     criticoPre(p.anuncios, 'anuncios'),
     criticoPre(p.materiales, 'materiales'),
@@ -2356,8 +2392,10 @@ function precargaComun() {
   const capturar = function(nombre, promesa) {
     return promesa.catch(function(e){ console.error('Fallo al cargar ' + nombre, e); return { __fallo: nombre }; });
   };
+  // La asistencia no va aquí: el alumno pide solo el ciclo en curso y el
+  // equipo pide el histórico. Lanzarla antes de saber el rol la traería entera
+  // para todos y anularía el ahorro.
   return {
-    asistencia: capturar('asistencia', window.fb.getDocs('asistencia')),
     anuncios:   capturar('anuncios',   window.fb.getDoc('colecciones', 'anuncios')),
     materiales: capturar('materiales', window.fb.getDoc('colecciones', 'materiales')),
     config:     capturar('config',     window.fb.getDoc('config', 'general')),
