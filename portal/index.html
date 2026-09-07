@@ -332,6 +332,88 @@ tbody tr:hover td { background: var(--off); }
 .att-btn.fj { background: #EEF2FF; color: var(--navy); border: 1.5px solid #c7d2fe; }
 .att-btn.selected-fj { background: var(--blue); color: white; border-color: var(--blue); }
 
+/* ══════════════════════════════════════════════════════════
+   CALENDARIO DE SESIONES
+   Cada celda de sesión lleva una barra de relleno cuya altura es
+   el % de asistencia de ese día. Recorriendo el mes con la vista
+   se ve dónde bajó la asistencia sin abrir nada.
+   ══════════════════════════════════════════════════════════ */
+.cal-head { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; margin-bottom: 18px; }
+.cal-mes { font-size: 19px; font-weight: 700; color: var(--text); letter-spacing: -0.4px; text-transform: capitalize; }
+.cal-resumen { font-size: 12.5px; color: var(--gray); margin-top: 3px; }
+.cal-nav { display: flex; gap: 6px; }
+.cal-nav button {
+  width: 34px; height: 34px; border-radius: 9px; border: 1px solid var(--border);
+  background: var(--white); color: var(--text); font-size: 15px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; transition: border-color 0.15s, background 0.15s;
+}
+.cal-nav button:hover { border-color: var(--sky); background: var(--off); }
+.cal-nav .cal-hoy { width: auto; padding: 0 14px; font-size: 13px; font-weight: 600; font-family: 'DM Sans', sans-serif; }
+
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+.cal-dow { font-size: 11px; font-weight: 700; color: var(--gray); text-align: center; padding-bottom: 6px; }
+
+.cal-dia {
+  position: relative; overflow: hidden; min-height: 62px; border-radius: 10px;
+  border: 1px solid transparent; padding: 6px 7px; background: transparent;
+  font-family: 'DM Sans', sans-serif; text-align: left; color: var(--gray);
+}
+.cal-dia .cal-num { position: relative; z-index: 1; font-size: 13px; font-weight: 600; line-height: 1; }
+.cal-dia .cal-info { position: relative; z-index: 1; font-size: 10.5px; font-weight: 700; margin-top: 4px; line-height: 1.25; }
+.cal-dia .cal-tipo { position: relative; z-index: 1; font-size: 9.5px; font-weight: 600; opacity: 0.75; margin-top: 1px; }
+.cal-dia.otro-mes { opacity: 0.32; }
+
+/* Días sin sesión: contexto, no destino. */
+.cal-dia.vacio { background: transparent; }
+
+/* Días con sesión: interactivos. */
+.cal-dia.sesion { cursor: pointer; background: var(--off); border-color: var(--border); color: var(--text); transition: border-color 0.15s, transform 0.1s; }
+.cal-dia.sesion:hover { border-color: var(--sky); }
+.cal-dia.sesion:active { transform: scale(0.97); }
+.cal-dia.sesion:focus-visible { outline: 2px solid var(--sky); outline-offset: 2px; }
+
+/* Barra de relleno = porcentaje de asistencia registrado ese día. */
+.cal-fill { position: absolute; left: 0; right: 0; bottom: 0; z-index: 0; transition: height 0.3s ease; }
+.cal-dia.alta   .cal-fill { background: rgba(34,197,94,0.20); }
+.cal-dia.media  .cal-fill { background: rgba(245,158,11,0.22); }
+.cal-dia.baja   .cal-fill { background: rgba(239,68,68,0.20); }
+.cal-dia.alta   .cal-info { color: #16A34A; }
+.cal-dia.media  .cal-info { color: #92400E; }
+.cal-dia.baja   .cal-info { color: var(--red); }
+
+/* Sesión que ya pasó y nadie registró. */
+.cal-dia.pendiente { background: var(--yellow-bg); border-color: #FDE68A; }
+.cal-dia.pendiente .cal-info { color: #92400E; }
+
+/* Sesión que aún no ocurre. */
+.cal-dia.proxima { background: transparent; border-style: dashed; border-color: var(--sky-light); }
+.cal-dia.proxima .cal-info { color: var(--blue); }
+
+.cal-dia.hoy .cal-num { color: var(--blue); }
+.cal-dia.hoy .cal-num::after {
+  content: ''; display: block; width: 16px; height: 2px; border-radius: 2px;
+  background: var(--blue); margin-top: 2px;
+}
+.cal-dia.activa { border-color: var(--navy); box-shadow: 0 0 0 2px rgba(13,42,110,0.16); }
+
+.cal-leyenda { display: flex; gap: 16px; flex-wrap: wrap; font-size: 11.5px; color: var(--gray); margin-top: 16px; }
+.cal-leyenda span { display: flex; align-items: center; gap: 6px; }
+.cal-leyenda i { width: 11px; height: 11px; border-radius: 3px; display: inline-block; font-style: normal; }
+
+/* Barra de conteo en vivo del pase de lista. */
+.att-marcador { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.att-cuenta { font-size: 12px; font-weight: 700; padding: 4px 11px; border-radius: 100px; }
+.att-sin-guardar { font-size: 12px; font-weight: 700; color: #92400E; background: var(--yellow-bg); padding: 4px 11px; border-radius: 100px; }
+
+@media (max-width: 820px) {
+  .cal-grid { gap: 4px; }
+  .cal-dia { min-height: 54px; padding: 5px; border-radius: 8px; }
+  .cal-dia .cal-num { font-size: 12px; }
+  .cal-dia .cal-info { font-size: 9.5px; }
+  .cal-dia .cal-tipo { display: none; }
+  .cal-head { align-items: flex-start; }
+}
+
 /* pagos */
 .pay-cell { text-align: center; }
 .pay-chip {
@@ -963,36 +1045,51 @@ tbody tr:hover td { background: var(--off); }
     <!-- ASISTENCIA -->
     <div class="page" id="page-asistencia">
       <div class="page-title">Asistencia</div>
-      <div class="page-sub">Registra o consulta la asistencia por sesión</div>
-      <div class="session-selector">
-        <select id="att-session-type">
-          <option value="martes">Sesión martes (virtual)</option>
-          <option value="sabado">Sesión sábado (presencial)</option>
-        </select>
-        <input type="date" id="att-date">
-        <select id="att-sede">
-          <option value="ALL">Todas las sedes</option>
-          <option value="UIO">Solo Quito</option>
-          <option value="GYE">Solo Guayaquil</option>
-          <option value="CUE">Solo Cuenca</option>
-          <option value="SDO">Solo Santo Domingo</option>
-        </select>
-        <button class="btn btn-navy" onclick="loadAttendance()">Cargar sesión</button>
-        <button class="btn btn-sky" onclick="saveAttendance()">Guardar asistencia</button>
-      </div>
+      <div class="page-sub">Toca una sesión del calendario para pasar lista o revisar lo registrado</div>
+
       <div class="card">
-        <div class="card-head">
-          <div class="card-title" id="att-session-label">Selecciona una sesión</div>
-          <div style="display:flex;gap:10px;font-size:12px;color:var(--gray);flex-wrap:wrap;">
-            <span style="color:var(--green);">● Presente</span>
-            <span style="color:var(--yellow);">● Tardanza ($2 c/10 min)</span>
-            <span style="color:var(--blue);">● F. Justificada (½ falta)</span>
-            <span style="color:var(--red);">● F. Injustificada (1 falta)</span>
+        <div class="cal-head">
+          <div>
+            <div class="cal-mes" id="cal-mes"></div>
+            <div class="cal-resumen" id="cal-resumen"></div>
+          </div>
+          <div class="cal-nav">
+            <button type="button" onclick="calMover(-1)" aria-label="Mes anterior">‹</button>
+            <button type="button" class="cal-hoy" onclick="calHoy()">Hoy</button>
+            <button type="button" onclick="calMover(1)" aria-label="Mes siguiente">›</button>
           </div>
         </div>
-        <div class="attendance-grid" id="attendance-grid">
-          <div class="empty"><p>Selecciona una fecha y tipo de sesión para comenzar.</p></div>
+        <div class="cal-grid" id="cal-grid"></div>
+        <div class="cal-leyenda">
+          <span><i style="background:rgba(34,197,94,0.35);"></i>Asistencia alta</span>
+          <span><i style="background:rgba(245,158,11,0.4);"></i>Asistencia media</span>
+          <span><i style="background:rgba(239,68,68,0.35);"></i>Asistencia baja</span>
+          <span><i style="background:var(--yellow-bg);border:1px solid #FDE68A;"></i>Sin registrar</span>
+          <span><i style="border:1px dashed var(--sky-light);"></i>Próxima</span>
         </div>
+      </div>
+
+      <div class="card" id="att-card" style="display:none;">
+        <div class="card-head">
+          <div>
+            <div class="card-title" id="att-session-label"></div>
+            <div style="font-size:12.5px;color:var(--gray);margin-top:3px;" id="att-session-sub"></div>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+            <select id="att-sede" onchange="loadAttendance()"
+              style="padding:9px 14px;border:1px solid var(--border);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--text);background:var(--white);outline:none;">
+              <option value="ALL">Todas las sedes</option>
+              <option value="UIO">Solo Quito</option>
+              <option value="GYE">Solo Guayaquil</option>
+              <option value="CUE">Solo Cuenca</option>
+              <option value="SDO">Solo Santo Domingo</option>
+            </select>
+            <button class="btn btn-ghost" onclick="marcarTodosPresentes()">Marcar todos presentes</button>
+            <button class="btn btn-sky" id="att-guardar" onclick="saveAttendance()">Guardar asistencia</button>
+          </div>
+        </div>
+        <div class="att-marcador" id="att-marcador" style="margin-bottom:18px;"></div>
+        <div class="attendance-grid" id="attendance-grid"></div>
       </div>
     </div>
 
@@ -1208,18 +1305,6 @@ tbody tr:hover td { background: var(--off); }
         <p style="font-size:13px;color:var(--gray);margin-bottom:12px;">Los mensajes que envíen los alumnos desde su portal llegarán a este correo.</p>
         <input type="email" id="cfg-correo" placeholder="mreza@unionestudiantil.org" style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;">
         <div style="margin-top:14px;"><button class="btn btn-navy" onclick="guardarCorreo()">Guardar correo</button></div>
-      </div>
-
-      <div class="card" style="margin-top:20px;">
-        <div class="card-head"><div class="card-title">Mantenimiento</div></div>
-        <div style="font-size:13px;color:var(--gray);line-height:1.6;margin-bottom:14px;">
-          <strong style="color:var(--text);">Migrar fotos de perfil.</strong> Mueve las fotos que todavía estén
-          guardadas dentro del perfil de cada persona a la colección <code>fotos</code>, para que el portal no
-          las descargue todas en cada inicio de sesión. Se ejecuta una sola vez y es seguro repetirla.
-          Ejecútala desde la cuenta de dueño: un administrador no puede tocar los perfiles de su mismo nivel.
-        </div>
-        <div id="migra-estado" style="font-size:13px;margin-bottom:12px;"></div>
-        <button class="btn btn-navy" id="btn-migrar-fotos" onclick="migrarFotos()">Migrar fotos de perfil</button>
       </div>
     </div>
 
@@ -1826,7 +1911,12 @@ async function migrarFotos() {
   if (!soloAdmin()) return;
   const btn = document.getElementById('btn-migrar-fotos');
   const est = document.getElementById('migra-estado');
-  function decir(txt, color) { if (est) { est.textContent = txt; est.style.color = color || 'var(--gray)'; } }
+  // El boton se retiro de Configuracion una vez hecha la migracion. La funcion
+  // sigue disponible desde la consola del navegador: migrarFotos()
+  function decir(txt, color) {
+    console.log('[migrarFotos] ' + txt);
+    if (est) { est.textContent = txt; est.style.color = color || 'var(--gray)'; }
+  }
 
   if (btn) btn.disabled = true;
   decir('Leyendo perfiles...');
@@ -2367,24 +2457,162 @@ function navigate(page) {
   if (page === 'anuncios') renderAnuncios();
   if (page === 'alumno-home') renderAlumnoHome();
   if (page === 'alumno-materiales') renderMateriales('alumno');
-  if (page === 'asistencia') document.getElementById('att-date').value = new Date().toISOString().split('T')[0];
+  if (page === 'asistencia') renderCalendario();
 }
 
 // ─── ASISTENCIA ───
+// ─── CALENDARIO DE SESIONES ───
+// El programa tiene dos sesiones fijas por semana: martes virtual y sabado
+// presencial. El calendario las deriva del dia de la semana, y ademas muestra
+// cualquier fecha que ya tenga registros aunque caiga fuera de ese patron.
+const DOW_SESION = { 2: 'martes', 6: 'sabado' };
+const TIPO_NOMBRE = { martes: 'Sesión virtual', sabado: 'Sesión presencial' };
+const MES_LARGO = ['enero','febrero','marzo','abril','mayo','junio','julio',
+                   'agosto','septiembre','octubre','noviembre','diciembre'];
+
+let calAnio = new Date().getFullYear();
+let calMes  = new Date().getMonth();
+
+function fechaISO(d) {
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+
+// Resumen de una sesion: cuantos registros tiene y que porcentaje asistio.
+function resumenSesion(tipo, fecha) {
+  const reg = state.asistencia[tipo + '_' + fecha];
+  if (!reg) return null;
+  const uids = Object.keys(reg).filter(function(u){ return reg[u]; });
+  if (uids.length === 0) return null;
+  let presentes = 0;
+  uids.forEach(function(u){
+    const v = reg[u];
+    if (v === 'P' || (typeof v === 'string' && v.startsWith('T'))) presentes++;
+  });
+  return { registrados: uids.length, presentes: presentes, pct: Math.round((presentes / uids.length) * 100) };
+}
+
+function calMover(delta) {
+  calMes += delta;
+  if (calMes < 0) { calMes = 11; calAnio--; }
+  if (calMes > 11) { calMes = 0; calAnio++; }
+  renderCalendario();
+}
+
+function calHoy() {
+  const h = new Date();
+  calAnio = h.getFullYear(); calMes = h.getMonth();
+  renderCalendario();
+}
+
+function renderCalendario() {
+  const grid = document.getElementById('cal-grid');
+  if (!grid) return;
+  document.getElementById('cal-mes').textContent = MES_LARGO[calMes] + ' ' + calAnio;
+
+  const hoy = new Date();
+  const hoyISO = fechaISO(hoy);
+  const primero = new Date(calAnio, calMes, 1);
+  // La semana empieza en lunes: getDay() da 0 para domingo, lo movemos al final.
+  const offset = (primero.getDay() + 6) % 7;
+  const inicio = new Date(calAnio, calMes, 1 - offset);
+
+  let html = ['L','M','X','J','V','S','D'].map(function(d){
+    return '<div class="cal-dow">' + d + '</div>';
+  }).join('');
+
+  let tomadas = 0, pendientes = 0, sumaPct = 0;
+
+  for (let i = 0; i < 42; i++) {
+    const d = new Date(inicio.getFullYear(), inicio.getMonth(), inicio.getDate() + i);
+    const iso = fechaISO(d);
+    const delMes = d.getMonth() === calMes;
+    let tipo = DOW_SESION[d.getDay()] || '';
+    // Registro fuera del patron habitual: igual debe poder abrirse.
+    if (!tipo) {
+      if (state.asistencia['martes_' + iso]) tipo = 'martes';
+      else if (state.asistencia['sabado_' + iso]) tipo = 'sabado';
+    }
+
+    const clases = ['cal-dia'];
+    if (!delMes) clases.push('otro-mes');
+    if (iso === hoyISO) clases.push('hoy');
+
+    let interior = '<span class="cal-num">' + d.getDate() + '</span>';
+
+    if (!tipo) {
+      clases.push('vacio');
+      html += '<div class="' + clases.join(' ') + '">' + interior + '</div>';
+      continue;
+    }
+
+    clases.push('sesion');
+    const res = resumenSesion(tipo, iso);
+    const etiquetaTipo = tipo === 'martes' ? 'Virtual' : 'Presencial';
+
+    if (res) {
+      clases.push(res.pct >= 85 ? 'alta' : res.pct >= 70 ? 'media' : 'baja');
+      interior = '<div class="cal-fill" style="height:' + res.pct + '%"></div>' + interior +
+        '<div class="cal-info">' + res.pct + '%</div>' +
+        '<div class="cal-tipo">' + res.registrados + ' registrados</div>';
+      if (delMes) { tomadas++; sumaPct += res.pct; }
+    } else if (iso < hoyISO) {
+      clases.push('pendiente');
+      interior += '<div class="cal-info">Sin registrar</div><div class="cal-tipo">' + etiquetaTipo + '</div>';
+      if (delMes) pendientes++;
+    } else {
+      clases.push('proxima');
+      interior += '<div class="cal-info">' + etiquetaTipo + '</div>';
+    }
+
+    if (state.attSession.key === tipo + '_' + iso) clases.push('activa');
+
+    html += '<button type="button" class="' + clases.join(' ') + '" ' +
+      'onclick="abrirSesion(\'' + tipo + '\',\'' + iso + '\')" ' +
+      'aria-label="' + TIPO_NOMBRE[tipo] + ' del ' + d.getDate() + '">' + interior + '</button>';
+  }
+  grid.innerHTML = html;
+
+  const partes = [];
+  partes.push(tomadas === 1 ? '1 sesión registrada' : tomadas + ' sesiones registradas');
+  if (pendientes > 0) partes.push(pendientes === 1 ? '1 sin registrar' : pendientes + ' sin registrar');
+  if (tomadas > 0) partes.push(Math.round(sumaPct / tomadas) + '% de asistencia promedio');
+  document.getElementById('cal-resumen').textContent = partes.join(' · ');
+}
+
+function abrirSesion(tipo, fecha) {
+  // Aviso si la sesion abierta tiene cambios sin guardar.
+  if (state.attSession.key && state.attSession.key !== tipo + '_' + fecha) {
+    const guardado = JSON.stringify(state.asistencia[state.attSession.key] || {});
+    if (guardado !== JSON.stringify(state.attSession.data)) {
+      if (!confirm('Tienes asistencia sin guardar en la sesión abierta. Si cambias de día se pierde.\n\n¿Cambiar de todos modos?')) return;
+    }
+  }
+  state.attSession = { key: tipo + '_' + fecha, tipo: tipo, fecha: fecha,
+                       data: Object.assign({}, state.asistencia[tipo + '_' + fecha] || {}) };
+  loadAttendance();
+  renderCalendario();
+  const card = document.getElementById('att-card');
+  if (card) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
 function loadAttendance() {
-  const tipo = document.getElementById('att-session-type').value;
-  const fecha = document.getElementById('att-date').value;
-  if (!fecha) { toast('Selecciona una fecha'); return; }
-  const key = `${tipo}_${fecha}`;
-  const saved = state.asistencia[key] || {};
-  state.attSession = { key, tipo, fecha, data: { ...saved } };
-  const label = tipo === 'martes' ? 'Sesión virtual — Martes' : 'Sesión presencial — Sábado';
-  document.getElementById('att-session-label').textContent = `${label} · ${formatDate(fecha)}`;
+  if (!state.attSession.key) return;
+  const tipo = state.attSession.tipo;
+  const fecha = state.attSession.fecha;
+  const key = state.attSession.key;
+  // Se pinta desde attSession.data, no desde lo guardado: cambiar el filtro de
+  // sede no puede descartar las marcas que aún no se han guardado.
+  const saved = state.attSession.data;
+  document.getElementById('att-card').style.display = 'block';
+  document.getElementById('att-session-label').textContent = TIPO_NOMBRE[tipo] + ' · ' + formatDate(fecha);
+  document.getElementById('att-session-sub').textContent =
+    (tipo === 'martes' ? 'Martes' : 'Sábado') +
+    ' · presente y tardanza cuentan como asistencia · la tardanza genera $2 por cada 10 minutos';
   const grid = document.getElementById('attendance-grid');
   if (state.alumnos.length === 0) { grid.innerHTML = '<div class="empty"><p>No hay alumnos registrados aún.</p></div>'; return; }
   const sedeF = document.getElementById('att-sede').value;
   const lista = sedeF === 'ALL' ? state.alumnos : state.alumnos.filter(a => (a.sede||'UIO') === sedeF);
-  if (lista.length === 0) { grid.innerHTML = '<div class="empty"><p>No hay alumnos en esta sede.</p></div>'; return; }
+  if (lista.length === 0) { grid.innerHTML = '<div class="empty"><p>No hay alumnos en esta sede. Cambia el filtro o agrégalos en Alumnos.</p></div>'; pintarMarcador(); return; }
   grid.innerHTML = lista.map(al => {
     const cur = saved[al.username] || '';
     const esT = typeof cur === 'string' && cur.startsWith('T');
@@ -2401,6 +2629,47 @@ function loadAttendance() {
       </div>
     </div>`;
   }).join('');
+  pintarMarcador();
+}
+
+// Conteo en vivo de lo marcado, y aviso de cambios sin guardar.
+function pintarMarcador() {
+  const cont = document.getElementById('att-marcador');
+  if (!cont || !state.attSession.key) return;
+  const sedeF = document.getElementById('att-sede').value;
+  const lista = sedeF === 'ALL' ? state.alumnos : state.alumnos.filter(function(a){ return (a.sede||'UIO') === sedeF; });
+  const d = state.attSession.data;
+  let P = 0, T = 0, FJ = 0, FI = 0, sin = 0;
+  lista.forEach(function(al){
+    const v = d[al.username];
+    if (v === 'P') P++;
+    else if (typeof v === 'string' && v.startsWith('T')) T++;
+    else if (v === 'FJ') FJ++;
+    else if (v === 'FI' || v === 'A') FI++;
+    else sin++;
+  });
+  const chip = function(txt, bg, col){ return '<span class="att-cuenta" style="background:' + bg + ';color:' + col + ';">' + txt + '</span>'; };
+  let h = chip(P + ' presentes', 'var(--green-bg)', '#16A34A') +
+          chip(T + ' con tardanza', 'var(--yellow-bg)', '#92400E') +
+          chip(FJ + ' justificadas', '#EEF2FF', 'var(--navy)') +
+          chip(FI + ' injustificadas', 'var(--red-bg)', 'var(--red)');
+  if (sin > 0) h += chip(sin + ' sin marcar', 'var(--off)', 'var(--gray)');
+
+  const guardado = JSON.stringify(state.asistencia[state.attSession.key] || {});
+  if (guardado !== JSON.stringify(state.attSession.data)) h += '<span class="att-sin-guardar">Cambios sin guardar</span>';
+  cont.innerHTML = h;
+}
+
+function marcarTodosPresentes() {
+  if (!state.attSession.key) { toast('Abre una sesión del calendario primero'); return; }
+  const sedeF = document.getElementById('att-sede').value;
+  const lista = sedeF === 'ALL' ? state.alumnos : state.alumnos.filter(function(a){ return (a.sede||'UIO') === sedeF; });
+  // Solo rellena los vacíos: nunca sobrescribe una falta ya marcada.
+  let n = 0;
+  lista.forEach(function(al){ if (!state.attSession.data[al.username]) { state.attSession.data[al.username] = 'P'; n++; } });
+  if (n === 0) { toast('Ya está marcado todo el grupo'); return; }
+  loadAttendance();
+  toast(n === 1 ? '1 alumno marcado presente' : n + ' alumnos marcados presentes');
 }
 
 function setAtt(username, status, btn) {
@@ -2416,12 +2685,14 @@ function setAtt(username, status, btn) {
     btn.classList.add({ P:'selected-p', FI:'selected-a', FJ:'selected-fj' }[status]);
     state.attSession.data[username] = status;
   }
+  pintarMarcador();
 }
 
 function setMin(username, val) {
   const v = state.attSession.data[username];
   if (typeof v === 'string' && v.startsWith('T'))
     state.attSession.data[username] = 'T:' + (parseInt(val) || 10);
+  pintarMarcador();
 }
 
 function saveAttendance() {
@@ -2430,7 +2701,9 @@ function saveAttendance() {
   state.asistencia[state.attSession.key] = { ...state.attSession.data };
   sincronizarMultas(state.attSession.key);
   save();
-  toast('✓ Asistencia guardada (multas por atraso actualizadas)');
+  pintarMarcador();
+  renderCalendario();
+  toast('✓ Asistencia guardada · multas por atraso actualizadas');
 }
 
 function sincronizarMultas(sessKey) {
@@ -4839,8 +5112,6 @@ function toast(msg) {
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2800);
 }
-document.getElementById('att-date').value = new Date().toISOString().split('T')[0];
-
 // ─── ARRANQUE ───
 async function revisarRetornoGoogle() {
   let esperaba = false;
