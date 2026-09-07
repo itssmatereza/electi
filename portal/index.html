@@ -129,6 +129,44 @@ img, svg, table { max-width: 100%; }
 }
 .modal .pass-eye { color: var(--gray); right: 4px; }
 .modal .pass-eye:hover { color: var(--text); background: rgba(0,0,0,0.05); }
+
+/* ─── Autocompletado del navegador ───
+   Al rellenar desde el gestor de contraseñas, Chrome y Safari pintan el campo
+   con su propio fondo azul claro y el icono del ojo, que es blanco, desaparece.
+   No se puede sobrescribir con background: el unico camino es una sombra
+   interior solida que tape el color del navegador.
+   La transicion larguisima evita el parpadeo azul del primer instante. */
+.field input:-webkit-autofill,
+.field input:-webkit-autofill:hover,
+.field input:-webkit-autofill:focus,
+.field input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #142a52 inset;
+  box-shadow: 0 0 0 1000px #142a52 inset;
+  -webkit-text-fill-color: var(--white);
+  caret-color: var(--white);
+  transition: background-color 100000s ease-in-out 0s;
+}
+.field input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px #142a52 inset, 0 0 0 3px rgba(66,165,245,0.16);
+  box-shadow: 0 0 0 1000px #142a52 inset, 0 0 0 3px rgba(66,165,245,0.16);
+}
+.modal .field input:-webkit-autofill,
+.modal .field input:-webkit-autofill:hover,
+.modal .field input:-webkit-autofill:focus,
+.modal .field input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px var(--white) inset;
+  box-shadow: 0 0 0 1000px var(--white) inset;
+  -webkit-text-fill-color: var(--text);
+  caret-color: var(--text);
+  transition: background-color 100000s ease-in-out 0s;
+}
+/* Red de seguridad: si algun navegador igual impone su fondo claro,
+   el ojo se oscurece para seguir siendo visible. */
+.pass-wrap input:-webkit-autofill ~ .pass-eye { color: rgba(255,255,255,0.75); }
+.pass-wrap input:-webkit-autofill ~ .pass-eye:hover { color: var(--white); }
+/* Firefox usa su propio selector */
+.pass-wrap input:autofill ~ .pass-eye { color: rgba(255,255,255,0.75); }
+.modal .pass-wrap input:autofill ~ .pass-eye { color: var(--gray); }
 .login-err {
   font-size: 13px; color: #FCA5A5; margin-bottom: 12px; display: none; line-height: 1.55;
   background: rgba(239,68,68,0.11); border: 1px solid rgba(239,68,68,0.24);
@@ -1171,6 +1209,18 @@ tbody tr:hover td { background: var(--off); }
         <input type="email" id="cfg-correo" placeholder="mreza@unionestudiantil.org" style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;">
         <div style="margin-top:14px;"><button class="btn btn-navy" onclick="guardarCorreo()">Guardar correo</button></div>
       </div>
+
+      <div class="card" style="margin-top:20px;">
+        <div class="card-head"><div class="card-title">Mantenimiento</div></div>
+        <div style="font-size:13px;color:var(--gray);line-height:1.6;margin-bottom:14px;">
+          <strong style="color:var(--text);">Migrar fotos de perfil.</strong> Mueve las fotos que todavía estén
+          guardadas dentro del perfil de cada persona a la colección <code>fotos</code>, para que el portal no
+          las descargue todas en cada inicio de sesión. Se ejecuta una sola vez y es seguro repetirla.
+          Ejecútala desde la cuenta de dueño: un administrador no puede tocar los perfiles de su mismo nivel.
+        </div>
+        <div id="migra-estado" style="font-size:13px;margin-bottom:12px;"></div>
+        <button class="btn btn-navy" id="btn-migrar-fotos" onclick="migrarFotos()">Migrar fotos de perfil</button>
+      </div>
     </div>
 
     <!-- MENSAJE ALUMNO -->
@@ -1683,6 +1733,7 @@ Object.defineProperty(window, 'MESES', { get: getMeses });
 let state = {
   user: null, equipo: [], alumnos: [], asistencia: {}, materiales: [],
   anuncios: [], pagos: {}, multas: [], config: {}, attSession: {},
+  fotos: {},   // cache en memoria: uid -> dataUrl. Se llena bajo demanda.
 };
 
 // ─── CAPA DE DATOS (Firestore) ───
@@ -1739,8 +1790,93 @@ function save() {
 function limpiarAlumno(a) {
   const o = Object.assign({}, a);
   delete o._id; delete o.pass;
+  // La foto vive en la coleccion 'fotos', nunca dentro del perfil.
+  delete o.fotoUrl;
   o.rol = 'alumno';
   return o;
+}
+
+// ─── FOTOS DE PERFIL (coleccion aparte) ───
+// Una foto comprimida pesa hasta 90 KB. Si viviera dentro del documento del
+// usuario, cada login descargaria la coleccion 'usuarios' entera con todas las
+// fotos: con 100 alumnos son ~9 MB por sesion, y el plan gratuito de Firestore
+// solo da 10 GB de salida al mes. Guardandolas en 'fotos/{uid}' se leen de a
+// una y solo cuando de verdad se ven: la propia y la de la ficha abierta.
+const _fotoPend = {};
+
+// Lectura sincrona: devuelve lo que ya esta en cache, o cadena vacia.
+function fotoCache(uid) { return state.fotos[uid] || ''; }
+
+async function fotoDe(uid) {
+  if (!uid) return '';
+  if (state.fotos[uid] !== undefined) return state.fotos[uid];
+  if (!_fotoPend[uid]) {
+    _fotoPend[uid] = window.fb.getDoc('fotos', uid)
+      .then(function(d){ state.fotos[uid] = (d && d.dataUrl) || ''; return state.fotos[uid]; })
+      .catch(function(){ state.fotos[uid] = ''; return ''; })
+      .then(function(v){ delete _fotoPend[uid]; return v; });
+  }
+  return _fotoPend[uid];
+}
+
+// Migracion unica: las fotos antiguas viven dentro de usuarios/{uid}.fotoUrl.
+// Las copia a fotos/{uid} y reescribe el perfil ya sin ese campo. Es idempotente:
+// si no queda ninguna, no hace nada.
+async function migrarFotos() {
+  if (!soloAdmin()) return;
+  const btn = document.getElementById('btn-migrar-fotos');
+  const est = document.getElementById('migra-estado');
+  function decir(txt, color) { if (est) { est.textContent = txt; est.style.color = color || 'var(--gray)'; } }
+
+  if (btn) btn.disabled = true;
+  decir('Leyendo perfiles...');
+  try {
+    const usuarios = await window.fb.getDocs('usuarios');
+    const conFoto = usuarios.filter(function(u){ return u.fotoUrl; });
+    if (conFoto.length === 0) { decir('No queda ninguna foto por migrar. Todo en orden.', 'var(--green)'); return; }
+
+    let ok = 0; const fallos = [];
+    for (let i = 0; i < conFoto.length; i++) {
+      const u = conFoto[i];
+      decir('Migrando ' + (i + 1) + ' de ' + conFoto.length + '...');
+      try {
+        // Primero se copia la foto. Solo si esa escritura funciona se borra
+        // el campo del perfil, para no perder la imagen a mitad de camino.
+        await window.fb.setDoc('fotos', u._id, { dataUrl: u.fotoUrl });
+        const limpio = Object.assign({}, u);
+        delete limpio._id; delete limpio.fotoUrl;
+        await window.fb.setDoc('usuarios', u._id, limpio);
+        state.fotos[u._id] = u.fotoUrl;
+        delete _escrito['usuarios/' + u._id];
+        ok++;
+      } catch (e) {
+        console.error('No se pudo migrar ' + u._id, e);
+        fallos.push(u.name || u._id);
+      }
+    }
+    if (fallos.length === 0) decir('✓ ' + ok + ' foto(s) migrada(s). Recarga el portal.', 'var(--green)');
+    else decir(ok + ' migrada(s). Fallaron: ' + fallos.join(', ') + '. Reintenta desde la cuenta de dueño.', 'var(--red)');
+  } catch (e) {
+    console.error(e);
+    decir('No se pudo leer la lista de perfiles.', 'var(--red)');
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+}
+
+async function guardarFoto(uid, dataUrl) {
+  if (dataUrl) await window.fb.setDoc('fotos', uid, { dataUrl: dataUrl });
+  else await window.fb.delDoc('fotos', uid).catch(function(){});
+  state.fotos[uid] = dataUrl || '';
+}
+
+// Pinta una foto en un contenedor en cuanto llega, sin bloquear el render.
+function pintarFotoAsync(elId, uid, iniciales, estilo) {
+  fotoDe(uid).then(function(url){
+    const el = document.getElementById(elId);
+    if (!el || !url) return;
+    el.innerHTML = '<img src="' + url + '" alt=""' + (estilo ? ' style="' + estilo + '"' : '') + '>';
+  });
 }
 
 // Carga reducida para alumnos (solo lo que sus permisos alcanzan)
@@ -2088,9 +2224,12 @@ function launchApp() {
   document.getElementById('app').style.display = 'block';
   const av = document.getElementById('sidebar-avatar');
   const ini = state.user.initials || state.user.name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
-  av.innerHTML = state.user.fotoUrl
-    ? '<img src="' + state.user.fotoUrl + '" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">'
+  const estiloAv = 'width:100%;height:100%;object-fit:cover;border-radius:50%;';
+  av.innerHTML = fotoCache(state.user.username)
+    ? '<img src="' + fotoCache(state.user.username) + '" alt="" style="' + estiloAv + '">'
     : ini;
+  // La propia foto es la unica que se carga siempre: es una sola lectura.
+  pintarFotoAsync('sidebar-avatar', state.user.username, ini, estiloAv);
   av.style.overflow = 'hidden';
   av.style.padding = '0';
   document.getElementById('sidebar-uname').textContent = state.user.name;
@@ -2826,9 +2965,11 @@ function toggleSidebar() {
   if (bd) bd.style.display = abrir ? 'block' : 'none';
 }
 
+// El profesor publica materiales, pero no los elimina: eliminar aqui reescribe
+// el documento entero de la coleccion y borraria trabajo de otros.
 function renderMateriales(mode) {
   const grid = document.getElementById(`materials-grid-${mode}`);
-  renderMaterialesAlumno(grid, mode === 'admin');
+  renderMaterialesAlumno(grid, mode === 'admin' && esAdmin());
 }
 
 function renderMaterialesAlumno(cont, conBorrar) {
@@ -2877,7 +3018,7 @@ function renderAnuncios() {
       <div class="anuncio-title">${a.titulo}</div>
       <div style="display:flex;align-items:center;gap:8px;">
         <span class="anuncio-date">${formatDate(a.fecha)}</span>
-        <button class="btn btn-red" style="font-size:11px;padding:4px 10px;" onclick="deleteAnuncio(${state.anuncios.length-1-i})">Eliminar</button>
+        ${esAdmin() ? `<button class="btn btn-red" style="font-size:11px;padding:4px 10px;" onclick="deleteAnuncio(${state.anuncios.length-1-i})">Eliminar</button>` : ''}
       </div>
     </div>
     <div class="anuncio-body">${a.body}</div></div>`).join('');
@@ -2959,7 +3100,8 @@ function renderAlumnoHome() {
   document.getElementById('alumno-welcome').textContent = 'Hola, ' + state.user.name.split(' ')[0] + ' 👋';
   const heroAv = document.getElementById('al-hero-avatar');
   const heroIni = me.initials || (me.name || '?').split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase();
-  heroAv.innerHTML = me.fotoUrl ? '<img src="' + me.fotoUrl + '" alt="">' : heroIni;
+  heroAv.innerHTML = fotoCache(me.username) ? '<img src="' + fotoCache(me.username) + '" alt="">' : heroIni;
+  pintarFotoAsync('al-hero-avatar', me.username, heroIni);
 
   const chips = [];
   chips.push('<span class="al-chip">📍 Sede ' + (me.sede || 'UIO') + '</span>');
@@ -3289,8 +3431,15 @@ function editAlumno(u) {
   document.getElementById('m-cedula').value = a.cedula || '';
   document.getElementById('m-rep-cedula').value = a.repCedula || '';
   document.getElementById('m-acuerdo-url').value = a.acuerdoUrl || '';
-  document.getElementById('m-foto').value = a.fotoUrl || '';
-  pintarPreview('m', a.fotoUrl || '', a.initials || '');
+  document.getElementById('m-foto').value = '';
+  pintarPreview('m', '', a.initials || '');
+  fotoDe(editU).then(function(url){
+    // Si el admin ya eligio otra imagen mientras cargaba, no la pisamos.
+    if (document.getElementById('m-edit').value !== editU) return;
+    if (document.getElementById('m-foto').value) return;
+    document.getElementById('m-foto').value = url || '';
+    pintarPreview('m', url || '', a.initials || '');
+  });
   previewBeca();
   openModal('modal-alumno');
 }
@@ -3316,13 +3465,16 @@ async function addAlumno() {
   const fotoUrl = document.getElementById('m-foto').value;
   const initials = name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
   const datos = { name, colegio, sede, beca, plan, matricula, telefono, correo,
-                  repNombre, repTel, repCorreo, cedula, repCedula, acuerdoUrl, fotoUrl, initials };
+                  repNombre, repTel, repCorreo, cedula, repCedula, acuerdoUrl, initials };
   if (editU) {
     if (!name) { toast('El nombre es obligatorio'); return; }
     const a = state.alumnos.find(x => x.username === editU);
     if (!a) return;
     Object.assign(a, datos);
     save();
+    if (fotoUrl !== fotoCache(editU)) {
+      guardarFoto(editU, fotoUrl).catch(function(){ toast('El alumno se guardo, pero la foto no'); });
+    }
     closeModal('modal-alumno');
     renderAlumnos();
     toast('✓ Alumno actualizado');
@@ -3338,6 +3490,7 @@ async function addAlumno() {
       await window.fb.setDoc('usuarios', uidCreado, limpiarAlumno(nuevo));
       await window.fb.confirmarUsuarioAuth();
       _escrito['usuarios/' + uidCreado] = JSON.stringify(limpiarAlumno(nuevo));
+      if (fotoUrl) await guardarFoto(uidCreado, fotoUrl).catch(function(){});
       state.alumnos.push(nuevo);
       closeModal('modal-alumno');
       renderAlumnos();
@@ -3410,7 +3563,7 @@ function addAnuncio() {
   renderAnuncios(); toast('✓ Anuncio publicado');
 }
 
-function deleteAnuncio(i) { if (!puedeEscribir()) return; state.anuncios.splice(i, 1); save(); renderAnuncios(); toast('Anuncio eliminado'); }
+function deleteAnuncio(i) { if (!soloAdmin()) return; if (!puedeEscribir()) return; state.anuncios.splice(i, 1); save(); renderAnuncios(); toast('Anuncio eliminado'); }
 
 function addMaterial() {
   if (!puedeEscribir()) return;
@@ -3425,7 +3578,7 @@ function addMaterial() {
   renderMateriales('admin'); toast('✓ Material guardado');
 }
 
-function deleteMaterial(i) { if (!puedeEscribir()) return; state.materiales.splice(i, 1); save(); renderMateriales('admin'); toast('Material eliminado'); }
+function deleteMaterial(i) { if (!soloAdmin()) return; if (!puedeEscribir()) return; state.materiales.splice(i, 1); save(); renderMateriales('admin'); toast('Material eliminado'); }
 
 // ─── BACKUP ───
 function exportData() {
@@ -3508,8 +3661,14 @@ function editMiembro(uid) {
   document.getElementById('eq-correo').value = m.email || '';
   document.getElementById('eq-rol').value = m.rol || 'profesor';
   document.getElementById('eq-label').value = m.label || '';
-  document.getElementById('eq-foto').value = m.fotoUrl || '';
-  pintarPreview('eq', m.fotoUrl || '', m.initials || '');
+  document.getElementById('eq-foto').value = '';
+  pintarPreview('eq', '', m.initials || '');
+  fotoDe(uid).then(function(url){
+    if (document.getElementById('eq-edit').value !== uid) return;
+    if (document.getElementById('eq-foto').value) return;
+    document.getElementById('eq-foto').value = url || '';
+    pintarPreview('eq', url || '', m.initials || '');
+  });
   openModal('modal-miembro');
 }
 
@@ -3533,10 +3692,10 @@ async function addMiembro() {
     const rolFinal = yo ? m.rol : (nivelDe(rol) < miNivel() ? rol : m.rol);
     if (!yo && rolFinal !== rol) { toast('No puedes asignar un rol igual o superior al tuyo'); return; }
     const perfilEdit = { name, email: m.email, rol: rolFinal, label: label || NOMBRE_ROL[rolFinal],
-                         fotoUrl: fotoUrl,
                          initials: name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() };
     try {
       await window.fb.setDoc('usuarios', editUid, perfilEdit);
+      if (fotoUrl !== fotoCache(editUid)) await guardarFoto(editUid, fotoUrl).catch(function(){});
       Object.assign(m, perfilEdit);
       closeModal('modal-miembro');
       renderEquipo();
@@ -3553,9 +3712,9 @@ async function addMiembro() {
     uidCreado = await window.fb.crearUsuarioAuth(email, pass);
     if (nivelDe(rol) >= miNivel()) { toast('No puedes crear una cuenta de rol igual o superior al tuyo'); return; }
     const perfil = { name, email, rol, label: label || NOMBRE_ROL[rol],
-                     fotoUrl: fotoUrl,
                      initials: name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() };
     await window.fb.setDoc('usuarios', uidCreado, perfil);
+    if (fotoUrl) await guardarFoto(uidCreado, fotoUrl).catch(function(){});
     await window.fb.confirmarUsuarioAuth();
     state.equipo.push(Object.assign({ username: uidCreado }, perfil));
     closeModal('modal-miembro');
@@ -4408,7 +4567,7 @@ function abrirFicha(uid) {
   let h = '<div class="ficha-head">' +
     '<button class="ficha-close" onclick="cerrarFicha()">✕</button>' +
     '<div class="ficha-id">' +
-      '<div class="ficha-avatar">' + (a.fotoUrl ? '<img src="' + a.fotoUrl + '" alt="">' : ini) + '</div>' +
+      '<div class="ficha-avatar" id="ficha-avatar">' + (fotoCache(uid) ? '<img src="' + fotoCache(uid) + '" alt="">' : ini) + '</div>' +
       '<div><div class="ficha-nombre">' + a.name + '</div>' +
       '<div class="ficha-sub">' + (a.colegio || 'Sin institución registrada') + '</div></div>' +
     '</div>' +
@@ -4527,6 +4686,7 @@ function abrirFicha(uid) {
   document.getElementById('ficha-backdrop').classList.add('open');
   document.getElementById('ficha-panel').classList.add('open');
   document.body.style.overflow = 'hidden';
+  pintarFotoAsync('ficha-avatar', uid, ini);
 }
 
 function cerrarFicha() {
@@ -4536,8 +4696,8 @@ function cerrarFicha() {
 }
 
 // ─── FOTO PROPIA DEL ALUMNO ───
-// Escribe unicamente el campo fotoUrl: las reglas de Firestore impiden
-// que un alumno modifique cualquier otro dato de su perfil.
+// Escribe unicamente el documento fotos/{uid}: las reglas de Firestore impiden
+// que un alumno toque cualquier otro dato de su perfil.
 function subirMiFoto(input) {
   const file = input.files && input.files[0];
   input.value = '';
@@ -4553,11 +4713,7 @@ function subirMiFoto(input) {
       const previo = av ? av.innerHTML : '';
       if (av) av.innerHTML = '<img src="' + dataUrl + '" alt="">';
       try {
-        await window.fb.updateDoc('usuarios', uid, { fotoUrl: dataUrl });
-        state.user.fotoUrl = dataUrl;
-        const yo = state.alumnos.find(function(a) { return a.username === uid; });
-        if (yo) yo.fotoUrl = dataUrl;
-        _escrito['usuarios/' + uid] = null;
+        await guardarFoto(uid, dataUrl);
         const side = document.getElementById('sidebar-avatar');
         if (side) { side.innerHTML = '<img src="' + dataUrl + '" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">'; side.style.overflow = 'hidden'; side.style.padding = '0'; }
         toast('✓ Foto actualizada');
@@ -4627,7 +4783,7 @@ function pintarPreview(prefijo, url, iniciales) {
 function avatarHTML(persona, clase) {
   const ini = persona.initials || (persona.name || '?').split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase();
   return '<div class="' + (clase || 'tbl-avatar') + '">' +
-    (persona.fotoUrl ? '<img src="' + persona.fotoUrl + '" alt="">' : ini) + '</div>';
+    (fotoCache(persona.username) ? '<img src="' + fotoCache(persona.username) + '" alt="">' : ini) + '</div>';
 }
 
 // ─── UTILS ───
