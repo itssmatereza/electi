@@ -333,6 +333,55 @@ tbody tr:hover td { background: var(--off); }
 .att-btn.selected-fj { background: var(--blue); color: white; border-color: var(--blue); }
 
 /* ══════════════════════════════════════════════════════════
+   CENTRO DE AYUDA
+   El tema elegido decide el destinatario, asi que los temas van
+   agrupados por quien los atiende: el agrupamiento es la explicacion.
+   ══════════════════════════════════════════════════════════ */
+.ayuda-paso { font-size: 15px; font-weight: 700; color: var(--text); letter-spacing: -0.2px; margin-bottom: 16px; }
+.ayuda-grupo-tit { font-size: 12.5px; font-weight: 600; color: var(--gray); margin-bottom: 10px; }
+.ayuda-temas { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 8px; }
+.ayuda-tema {
+  display: flex; align-items: center; gap: 10px; text-align: left;
+  padding: 12px 14px; border-radius: 10px; border: 1px solid var(--border);
+  background: var(--white); color: var(--text); cursor: pointer;
+  font-family: 'DM Sans', sans-serif; font-size: 13.5px; font-weight: 600;
+  transition: border-color 0.15s, background 0.15s;
+}
+.ayuda-tema:hover { border-color: var(--sky); background: var(--off); }
+.ayuda-tema:focus-visible { outline: 2px solid var(--sky); outline-offset: 2px; }
+.ayuda-tema.on { border-color: var(--navy); background: #EEF2FF; box-shadow: 0 0 0 2px rgba(13,42,110,0.12); }
+.ayuda-tema .ay-ico { font-size: 17px; line-height: 1; flex-shrink: 0; }
+
+.ayuda-lbl { display: block; font-size: 12px; font-weight: 600; color: var(--gray); margin-bottom: 8px; }
+.ayuda-input {
+  width: 100%; box-sizing: border-box; padding: 11px 14px; border: 1px solid var(--border);
+  border-radius: 8px; font-size: 14px; font-family: 'DM Sans', sans-serif;
+  color: var(--text); background: var(--white); outline: none;
+}
+.ayuda-input:focus { border-color: var(--sky); }
+.ayuda-hint { font-size: 12px; color: var(--gray); margin-top: 8px; line-height: 1.55; }
+
+.ayuda-destino {
+  margin-top: 18px; padding: 14px 16px; border-radius: 10px;
+  background: var(--off); border: 1px solid var(--border);
+  font-size: 13px; color: var(--text); line-height: 1.6;
+}
+.ayuda-destino b { color: var(--navy); }
+.ayuda-destino .ay-adj { display: block; font-size: 12px; color: var(--gray); margin-top: 6px; }
+
+.ayuda-fallback {
+  margin-top: 18px; padding: 16px; border-radius: 10px;
+  background: var(--yellow-bg); border: 1px solid #FDE68A;
+  font-size: 13px; color: #78350F; line-height: 1.6;
+}
+.ayuda-fallback p { margin: 6px 0 10px; }
+.ayuda-dirs { font-family: 'DM Mono', monospace; font-size: 12.5px; color: var(--text); word-break: break-all; }
+
+@media (max-width: 820px) {
+  .ayuda-temas { grid-template-columns: 1fr; }
+}
+
+/* ══════════════════════════════════════════════════════════
    CALENDARIO DE SESIONES
    Cada celda de sesión lleva una barra de relleno cuya altura es
    el % de asistencia de ese día. Recorriendo el mes con la vista
@@ -1310,26 +1359,48 @@ tbody tr:hover td { background: var(--off); }
 
     <!-- MENSAJE ALUMNO -->
     <div class="page" id="page-mensaje">
-      <div class="page-title">Escribir a coordinación</div>
-      <div class="page-sub">Tu mensaje llega directo al equipo de ELECTI con tus datos para darte seguimiento.</div>
-      <div class="card" style="max-width:640px;">
-        <div class="field"><label style="font-size:12px;font-weight:600;color:var(--gray);display:block;margin-bottom:8px;">Asunto</label>
-          <select id="msg-asunto" style="width:100%;padding:11px 14px;border:1px solid var(--border);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;">
-            <option>Consulta sobre pagos</option>
-            <option>Justificar una falta</option>
-            <option>Consulta sobre mi beca</option>
-            <option>Consulta sobre una multa</option>
-            <option>Problema con el portal</option>
-            <option>Consulta sobre el proyecto</option>
-            <option>Otro tema</option>
-          </select></div>
-        <div class="field" style="margin-top:14px;"><label style="font-size:12px;font-weight:600;color:var(--gray);display:block;margin-bottom:8px;">Tu mensaje</label>
-          <textarea id="msg-body" rows="7" placeholder="Escribe aquí tu mensaje..." style="width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;resize:vertical;"></textarea></div>
-        <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;">
-          <button class="btn btn-navy" onclick="enviarMensaje()">✉ Enviar mensaje</button>
-          <button class="btn btn-ghost" onclick="copiarMensaje()">Copiar texto</button>
+      <div class="page-title">Centro de ayuda</div>
+      <div class="page-sub">Elige de qué se trata y lo dirigimos a quien corresponde</div>
+
+      <div class="card" style="max-width:760px;">
+        <div class="ayuda-paso">1 · ¿De qué se trata?</div>
+        <div class="ayuda-grupo-tit">Tu profesor puede resolverlo</div>
+        <div class="ayuda-temas" id="ayuda-temas-profe"></div>
+        <div class="ayuda-grupo-tit" style="margin-top:20px;">Lo ve coordinación</div>
+        <div class="ayuda-temas" id="ayuda-temas-coord"></div>
+      </div>
+
+      <div class="card" id="ayuda-form" style="max-width:760px;display:none;">
+        <div class="ayuda-paso" id="ayuda-paso2">2 · Cuéntanos</div>
+
+        <div id="ayuda-profe-wrap" style="display:none;margin-bottom:16px;">
+          <label class="ayuda-lbl">¿Con qué profesor?</label>
+          <select id="ayuda-profe" class="ayuda-input" onchange="pintarDestino()"></select>
         </div>
-        <p style="margin-top:14px;font-size:12px;color:var(--gray);line-height:1.6;" id="msg-nota"></p>
+
+        <div id="ayuda-extra-wrap" style="display:none;margin-bottom:16px;">
+          <label class="ayuda-lbl" id="ayuda-extra-lbl"></label>
+          <select id="ayuda-extra" class="ayuda-input"></select>
+        </div>
+
+        <label class="ayuda-lbl">Tu mensaje</label>
+        <textarea id="msg-body" rows="7" class="ayuda-input" style="resize:vertical;" oninput="pintarDestino()"></textarea>
+        <div class="ayuda-hint" id="ayuda-hint"></div>
+
+        <div class="ayuda-destino" id="ayuda-destino"></div>
+
+        <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;">
+          <button class="btn btn-navy" onclick="enviarMensaje()">Abrir mi correo y enviar</button>
+          <button class="btn btn-ghost" onclick="copiarMensaje()">Copiar el mensaje</button>
+        </div>
+
+        <div class="ayuda-fallback" id="ayuda-fallback" style="display:none;">
+          <strong>¿No se abrió tu aplicación de correo?</strong>
+          <p>Pasa en computadores compartidos o si usas el correo solo desde el navegador.
+             Copia el mensaje con el botón de arriba y envíalo tú desde donde leas tu correo,
+             a las direcciones que aparecen aquí.</p>
+          <div class="ayuda-dirs" id="ayuda-dirs"></div>
+        </div>
       </div>
     </div>
 
@@ -3871,6 +3942,7 @@ function exportData() {
 
 // ─── EQUIPO ───
 function renderEquipo() {
+  sincronizarDirectorio();
   const tbody = document.getElementById('equipo-table');
   if (!state.equipo.length) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--gray);padding:32px;">Agrega al primer miembro del equipo.</td></tr>'; return; }
   tbody.innerHTML = state.equipo.map(m => `<tr>
@@ -4127,56 +4199,251 @@ function guardarCorreo() {
   toast('✓ Correo guardado');
 }
 
-// ─── MENSAJE DEL ALUMNO ───
+// ─── CENTRO DE AYUDA DEL ALUMNO ───
+// El destino no lo elige el alumno: lo decide el tema. Los temas academicos
+// van al profesor con copia a coordinacion; el resto solo a coordinacion.
+// 'extra' pide un dato concreto segun el tema, para que el mensaje llegue
+// con la sesion, el mes o la multa ya identificados.
+const AYUDA_TEMAS = [
+  { id: 'clase',      ruta: 'profesor',     ico: '📘', label: 'Duda de clase o material' },
+  { id: 'falta',      ruta: 'profesor',     ico: '🗓', label: 'Justificar una falta o atraso', extra: 'sesion' },
+  { id: 'entrega',    ruta: 'profesor',     ico: '📤', label: 'Entrega de trabajo o proyecto' },
+  { id: 'equipo',     ruta: 'profesor',     ico: '👥', label: 'Problema con mi equipo' },
+  { id: 'pagos',      ruta: 'coordinacion', ico: '💳', label: 'Pagos, cuotas o comprobantes', extra: 'mes' },
+  { id: 'beca',       ruta: 'coordinacion', ico: '🎓', label: 'Mi beca' },
+  { id: 'multa',      ruta: 'coordinacion', ico: '⚖', label: 'Una multa', extra: 'multa' },
+  { id: 'sede',       ruta: 'coordinacion', ico: '📍', label: 'Cambio de sede o modalidad' },
+  { id: 'certificado',ruta: 'coordinacion', ico: '📜', label: 'Mi certificado' },
+  { id: 'portal',     ruta: 'coordinacion', ico: '🛠', label: 'Algo no funciona en el portal' },
+  { id: 'delicado',   ruta: 'coordinacion', ico: '🔒', label: 'Una situación delicada' },
+  { id: 'otro',       ruta: 'coordinacion', ico: '💬', label: 'Otra cosa' },
+];
+
+const AYUDA_ASUNTO = {
+  clase: 'Duda de clase o material', falta: 'Justificación de falta o atraso',
+  entrega: 'Entrega de trabajo o proyecto', equipo: 'Problema con el equipo de trabajo',
+  pagos: 'Pagos y cuotas', beca: 'Beca', multa: 'Multa',
+  sede: 'Cambio de sede o modalidad', certificado: 'Certificado',
+  portal: 'Problema técnico del portal', delicado: 'Situación delicada', otro: 'Consulta general',
+};
+
+const AYUDA_HINT = {
+  falta: 'Elige la sesión y cuenta el motivo. Si tienes un justificativo médico o del colegio, adjúntalo al correo antes de enviarlo.',
+  entrega: 'Si vas a mandar un archivo, adjúntalo al correo cuando se abra.',
+  pagos: 'Si ya pagaste, adjunta el comprobante al correo antes de enviarlo.',
+  portal: 'Cuéntanos qué hacías y qué pasó. Si puedes, adjunta una captura de pantalla.',
+  delicado: 'Esto llega solo a coordinación, no a los profesores. Escribe con confianza.',
+};
+
+let ayudaTema = null;
+
+// Directorio de profesores: los alumnos no pueden leer la colección de usuarios,
+// así que los admin lo publican en config, que sí es de lectura general.
+function profesoresDisponibles() {
+  const dir = (state.config && state.config.profesores) || [];
+  return dir.filter(function(p){ return p && p.correo; });
+}
+
+// Mantiene ese directorio al día cada vez que un admin toca el equipo.
+function sincronizarDirectorio() {
+  if (!esAdmin()) return;
+  const dir = state.equipo
+    .filter(function(m){ return m.rol === 'profesor' && m.email; })
+    .map(function(m){ return { nombre: m.name || m.email, correo: m.email }; })
+    .sort(function(a, b){ return a.nombre.localeCompare(b.nombre); });
+  if (JSON.stringify(dir) === JSON.stringify((state.config && state.config.profesores) || [])) return;
+  saveConfig({ profesores: dir });
+}
+
 function renderMensaje() {
-  document.getElementById('msg-nota').innerHTML =
-    'Al enviar se abrirá tu aplicación de correo con el mensaje ya preparado, dirigido a <b>' + correoAdmin() + '</b>. ' +
-    'Si no se abre, usa "Copiar texto" y envíalo manualmente a ese correo.';
+  const pinta = function(cont, ruta) {
+    document.getElementById(cont).innerHTML = AYUDA_TEMAS.filter(function(t){ return t.ruta === ruta; })
+      .map(function(t){
+        return '<button type="button" class="ayuda-tema' + (ayudaTema === t.id ? ' on' : '') + '" ' +
+          'onclick="elegirTema(\'' + t.id + '\')">' +
+          '<span class="ay-ico">' + t.ico + '</span><span>' + t.label + '</span></button>';
+      }).join('');
+  };
+  pinta('ayuda-temas-profe', 'profesor');
+  pinta('ayuda-temas-coord', 'coordinacion');
+
+  const profes = profesoresDisponibles();
+  const sel = document.getElementById('ayuda-profe');
+  sel.innerHTML = profes.length
+    ? profes.map(function(p){ return '<option value="' + p.correo + '">' + p.nombre + '</option>'; }).join('')
+    : '<option value="">— Aún no hay profesores publicados —</option>';
+}
+
+function elegirTema(id) {
+  ayudaTema = id;
+  const t = AYUDA_TEMAS.find(function(x){ return x.id === id; });
+  renderMensaje();
+
+  document.getElementById('ayuda-form').style.display = 'block';
+  document.getElementById('ayuda-paso2').textContent = '2 · ' + t.label;
+  document.getElementById('ayuda-fallback').style.display = 'none';
+  document.getElementById('msg-body').placeholder = 'Escribe aquí con el mayor detalle que puedas...';
+
+  const profeWrap = document.getElementById('ayuda-profe-wrap');
+  profeWrap.style.display = t.ruta === 'profesor' ? 'block' : 'none';
+
+  pintarExtra(t);
+  document.getElementById('ayuda-hint').textContent = AYUDA_HINT[id] || '';
+  pintarDestino();
+  document.getElementById('ayuda-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// Campo contextual: la sesión, el mes o la multa concretos del alumno.
+function pintarExtra(t) {
+  const wrap = document.getElementById('ayuda-extra-wrap');
+  const sel = document.getElementById('ayuda-extra');
+  const lbl = document.getElementById('ayuda-extra-lbl');
+  const uid = state.user.username;
+
+  if (t.extra === 'sesion') {
+    const regs = [];
+    Object.keys(state.asistencia).forEach(function(k){
+      const v = state.asistencia[k][uid];
+      if (!v || v === 'P') return;
+      const pt = k.split('_');
+      regs.push({ fecha: pt[1], txt: (pt[0] === 'martes' ? 'Sesión virtual' : 'Sesión presencial') +
+        ' · ' + formatDate(pt[1]) + ' · ' + estadoAtt(v).label });
+    });
+    regs.sort(function(a, b){ return b.fecha.localeCompare(a.fecha); });
+    lbl.textContent = '¿Qué sesión quieres justificar?';
+    sel.innerHTML = regs.length
+      ? regs.map(function(r){ return '<option>' + r.txt + '</option>'; }).join('')
+      : '<option>No tienes faltas ni atrasos registrados</option>';
+    wrap.style.display = 'block';
+    return;
+  }
+
+  if (t.extra === 'mes') {
+    lbl.textContent = '¿Qué cobro?';
+    const ops = ['Matrícula'].concat(getMeses().map(function(m){ return 'Cuota ' + m.label; }));
+    sel.innerHTML = ops.map(function(o){ return '<option>' + o + '</option>'; }).join('') +
+      '<option>Otro / no estoy seguro</option>';
+    wrap.style.display = 'block';
+    return;
+  }
+
+  if (t.extra === 'multa') {
+    const mias = (state.multas || []).filter(function(m){ return m.username === uid && !m.pagada; });
+    lbl.textContent = '¿Qué multa?';
+    sel.innerHTML = mias.length
+      ? mias.map(function(m){ return '<option>$' + m.monto + ' · ' + (m.motivo || 'Sin motivo') + '</option>'; }).join('')
+      : '<option>No tienes multas pendientes</option>';
+    wrap.style.display = 'block';
+    return;
+  }
+
+  wrap.style.display = 'none';
+}
+
+function destinatarios() {
+  const t = AYUDA_TEMAS.find(function(x){ return x.id === ayudaTema; });
+  if (!t) return null;
+  if (t.ruta === 'profesor') {
+    const sel = document.getElementById('ayuda-profe');
+    const correo = sel.value;
+    const nombre = sel.options[sel.selectedIndex] ? sel.options[sel.selectedIndex].text : '';
+    return { para: correo, paraNombre: nombre, copia: correoAdmin(), tema: t };
+  }
+  return { para: correoAdmin(), paraNombre: 'Coordinación ELECTI', copia: '', tema: t };
+}
+
+function pintarDestino() {
+  const d = destinatarios();
+  const cont = document.getElementById('ayuda-destino');
+  if (!d) { cont.innerHTML = ''; return; }
+  let h = 'Se enviará a <b>' + d.paraNombre + '</b>';
+  if (d.copia) h += ', con copia a coordinación';
+  h += '.<span class="ay-adj">Se adjuntan tus datos, tu sede, tus faltas y tu estado de cuenta ' +
+       'para que no tengas que explicarlos.</span>';
+  cont.innerHTML = h;
 }
 
 function textoMensaje() {
-  const me = state.alumnos.find(a => a.username === state.user.username) || state.user;
-  const asunto = document.getElementById('msg-asunto').value;
+  const me = state.alumnos.find(function(a){ return a.username === state.user.username; }) || state.user;
+  const d = destinatarios();
   const cuerpo = document.getElementById('msg-body').value.trim();
-  const { faltas } = getAlumnoStats(me.username);
+  const extraWrap = document.getElementById('ayuda-extra-wrap');
+  const extra = extraWrap.style.display !== 'none'
+    ? document.getElementById('ayuda-extra-lbl').textContent + ' ' + document.getElementById('ayuda-extra').value
+    : '';
+  const st = getAlumnoStats(me.username);
   const r = resumenPago(me);
   const mu = multasResumen(me.username);
+
   const body =
-    cuerpo + '\n\n' +
+    (extra ? extra + '\n\n' : '') + cuerpo + '\n\n' +
     '───────────────────────\n' +
     'DATOS DEL ALUMNO\n' +
     'Nombre: ' + me.name + '\n' +
-    'Sede: ' + (me.sede || 'UIO') + '\n' +
-    'Usuario: ' + me.username + '\n' +
+    'Sede: ' + nombreSede(me.sede) + '\n' +
     'Colegio/Universidad: ' + (me.colegio || '—') + '\n' +
     'Teléfono: ' + (me.telefono || '—') + '\n' +
-    'Correo: ' + (me.correo || '—') + '\n' +
+    'Correo: ' + (me.correo || me.email || '—') + '\n' +
     'Beca: ' + (me.beca ? me.beca + '%' : 'Sin beca') + '\n' +
     'Plan: ' + (me.plan === 'unico' ? 'Pago único' : 'Mensual') + '\n' +
-    'Faltas acumuladas: ' + faltasTxt(faltas) + ' / 2\n' +
+    'Asistencia: ' + (st.pct !== null ? st.pct + '%' : 'sin sesiones') + '\n' +
+    'Faltas acumuladas: ' + faltasTxt(st.faltas) + ' / 2\n' +
     'Estado de cuenta: ' + (r.alDia ? 'Al día' : 'En mora') + ' — pendiente $' + r.pendiente + '\n' +
     'Multas pendientes: $' + mu.pend + '\n' +
     'Ciclo: ' + getConfig().cicloNombre + '\n' +
     'Enviado: ' + new Date().toLocaleString('es-EC') + '\n' +
     '───────────────────────';
-  return { subject: '[ELECTI · ' + (me.sede || 'UIO') + '] ' + asunto + ' — ' + me.name, body };
+
+  return { subject: '[ELECTI · ' + (me.sede || 'UIO') + '] ' + AYUDA_ASUNTO[d.tema.id] + ' — ' + me.name, body: body };
+}
+
+function validarAyuda() {
+  if (!ayudaTema) { toast('Elige primero de qué se trata'); return null; }
+  const d = destinatarios();
+  if (!d.para) { toast('Todavía no hay profesores publicados. Escribe a coordinación.'); return null; }
+  if (!document.getElementById('msg-body').value.trim()) { toast('Escribe tu mensaje antes de enviar'); return null; }
+  return d;
 }
 
 function enviarMensaje() {
-  const cuerpo = document.getElementById('msg-body').value.trim();
-  if (!cuerpo) { toast('Escribe tu mensaje antes de enviar'); return; }
+  const d = validarAyuda();
+  if (!d) return;
   const m = textoMensaje();
-  window.location.href = 'mailto:' + correoAdmin() + '?subject=' + encodeURIComponent(m.subject) + '&body=' + encodeURIComponent(m.body);
+  const url = 'mailto:' + encodeURIComponent(d.para) +
+    '?subject=' + encodeURIComponent(m.subject) +
+    (d.copia ? '&cc=' + encodeURIComponent(d.copia) : '') +
+    '&body=' + encodeURIComponent(m.body);
+  window.location.href = url;
+  // El navegador no avisa si no hay aplicación de correo: el mensaje se perdería
+  // en silencio. Por eso dejamos a la vista la salida manual.
+  document.getElementById('ayuda-dirs').innerHTML =
+    'Para: ' + d.para + (d.copia ? '<br>Copia: ' + d.copia : '');
+  document.getElementById('ayuda-fallback').style.display = 'block';
   toast('Abriendo tu aplicación de correo...');
 }
 
 function copiarMensaje() {
-  const cuerpo = document.getElementById('msg-body').value.trim();
-  if (!cuerpo) { toast('Escribe tu mensaje primero'); return; }
+  const d = validarAyuda();
+  if (!d) return;
   const m = textoMensaje();
-  const txt = 'Para: ' + correoAdmin() + '\nAsunto: ' + m.subject + '\n\n' + m.body;
-  navigator.clipboard.writeText(txt).then(() => toast('✓ Texto copiado — pégalo en tu correo'))
-    .catch(() => toast('No se pudo copiar automáticamente'));
+  const txt = 'Para: ' + d.para + (d.copia ? '\nCopia: ' + d.copia : '') +
+              '\nAsunto: ' + m.subject + '\n\n' + m.body;
+  const ok = function(){ toast('✓ Mensaje copiado — pégalo en tu correo'); };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(txt).then(ok).catch(function(){ copiaManual(txt, ok); });
+  } else { copiaManual(txt, ok); }
+  document.getElementById('ayuda-dirs').innerHTML =
+    'Para: ' + d.para + (d.copia ? '<br>Copia: ' + d.copia : '');
+  document.getElementById('ayuda-fallback').style.display = 'block';
+}
+
+function copiaManual(txt, ok) {
+  const ta = document.createElement('textarea');
+  ta.value = txt; ta.style.position = 'fixed'; ta.style.opacity = '0';
+  document.body.appendChild(ta); ta.select();
+  try { document.execCommand('copy'); ok(); }
+  catch (e) { toast('No se pudo copiar. Selecciona el texto a mano.'); }
+  document.body.removeChild(ta);
 }
 
 // ─── SUSPENSIÓN Y DÍAS DE MORA ───
