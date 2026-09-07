@@ -3433,9 +3433,9 @@ function editAlumno(u) {
   document.getElementById('m-acuerdo-url').value = a.acuerdoUrl || '';
   document.getElementById('m-foto').value = '';
   pintarPreview('m', '', a.initials || '');
-  fotoDe(editU).then(function(url){
+  fotoDe(u).then(function(url){
     // Si el admin ya eligio otra imagen mientras cargaba, no la pisamos.
-    if (document.getElementById('m-edit').value !== editU) return;
+    if (document.getElementById('m-edit').value !== u) return;
     if (document.getElementById('m-foto').value) return;
     document.getElementById('m-foto').value = url || '';
     pintarPreview('m', url || '', a.initials || '');
