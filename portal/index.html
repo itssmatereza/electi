@@ -232,8 +232,14 @@ img, svg, table { max-width: 100%; }
   border: 2px solid var(--sky); display: flex; align-items: center; justify-content: center;
   font-size: 13px; font-weight: 700; color: var(--sky); flex-shrink: 0;
 }
+/* Un hijo flex no se encoge por debajo de su contenido salvo con min-width:0.
+   Sin esto, un correo largo empuja el bloque fuera del sidebar. */
+.sidebar-utexto { min-width: 0; flex: 1; }
+.sidebar-uname, .sidebar-uemail {
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%;
+}
 .sidebar-uname { font-size: 14px; font-weight: 600; color: var(--white); line-height: 1.2; }
-.sidebar-uemail { font-size: 11px; color: rgba(255,255,255,0.4); }
+.sidebar-uemail { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 2px; }
 .sidebar-nav { padding: 16px 12px; flex: 1; }
 .nav-section { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.25); padding: 0 12px; margin: 16px 0 6px; }
 .nav-item {
@@ -1014,7 +1020,7 @@ tbody tr:hover td { background: var(--off); }
     </div>
     <div class="sidebar-user">
       <div class="sidebar-avatar" id="sidebar-avatar">--</div>
-      <div>
+      <div class="sidebar-utexto">
         <div class="sidebar-uname" id="sidebar-uname">—</div>
         <div class="sidebar-uemail" id="sidebar-uemail">—</div>
       </div>
@@ -2397,7 +2403,10 @@ function launchApp() {
   av.style.overflow = 'hidden';
   av.style.padding = '0';
   document.getElementById('sidebar-uname').textContent = state.user.name;
-  document.getElementById('sidebar-uemail').textContent = state.user.email || '';
+  const em = document.getElementById('sidebar-uemail');
+  em.textContent = state.user.email || '';
+  em.title = state.user.email || '';
+  document.getElementById('sidebar-uname').title = state.user.name || '';
   document.getElementById('sidebar-role').textContent = state.user.label ||
     (NOMBRE_ROL[state.user.role] || 'Alumno');
   document.getElementById('btn-backup').style.display = esAdmin() ? 'block' : 'none';
