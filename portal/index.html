@@ -338,19 +338,25 @@ tbody tr:hover td { background: var(--off); }
    agrupados por quien los atiende: el agrupamiento es la explicacion.
    ══════════════════════════════════════════════════════════ */
 .ayuda-paso { font-size: 15px; font-weight: 700; color: var(--text); letter-spacing: -0.2px; margin-bottom: 16px; }
-.ayuda-grupo-tit { font-size: 12.5px; font-weight: 600; color: var(--gray); margin-bottom: 10px; }
-.ayuda-temas { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 8px; }
+.ayuda-grupo-tit {
+  font-size: 12.5px; font-weight: 700; color: var(--gray);
+  margin: 22px 0 10px; padding-bottom: 7px; border-bottom: 1px solid var(--border);
+}
+.ayuda-grupo-tit:first-child { margin-top: 0; }
+.ayuda-temas { display: grid; grid-template-columns: repeat(auto-fill, minmax(238px, 1fr)); gap: 8px; }
 .ayuda-tema {
-  display: flex; align-items: center; gap: 10px; text-align: left;
-  padding: 12px 14px; border-radius: 10px; border: 1px solid var(--border);
+  display: block; text-align: left;
+  padding: 12px 15px; border-radius: 10px; border: 1px solid var(--border);
   background: var(--white); color: var(--text); cursor: pointer;
-  font-family: 'DM Sans', sans-serif; font-size: 13.5px; font-weight: 600;
+  font-family: 'DM Sans', sans-serif;
   transition: border-color 0.15s, background 0.15s;
 }
 .ayuda-tema:hover { border-color: var(--sky); background: var(--off); }
 .ayuda-tema:focus-visible { outline: 2px solid var(--sky); outline-offset: 2px; }
 .ayuda-tema.on { border-color: var(--navy); background: #EEF2FF; box-shadow: 0 0 0 2px rgba(13,42,110,0.12); }
-.ayuda-tema .ay-ico { font-size: 17px; line-height: 1; flex-shrink: 0; }
+.ayuda-tema .ay-tit { display: block; font-size: 13.5px; font-weight: 700; letter-spacing: -0.1px; }
+.ayuda-tema .ay-des { display: block; font-size: 11.5px; font-weight: 500; color: var(--gray); margin-top: 3px; line-height: 1.45; }
+.ayuda-tema.on .ay-des { color: var(--blue); }
 
 .ayuda-lbl { display: block; font-size: 12px; font-weight: 600; color: var(--gray); margin-bottom: 8px; }
 .ayuda-input {
@@ -1362,12 +1368,9 @@ tbody tr:hover td { background: var(--off); }
       <div class="page-title">Centro de ayuda</div>
       <div class="page-sub">Elige de qué se trata y lo dirigimos a quien corresponde</div>
 
-      <div class="card" style="max-width:760px;">
-        <div class="ayuda-paso">1 · ¿De qué se trata?</div>
-        <div class="ayuda-grupo-tit">Tu profesor puede resolverlo</div>
-        <div class="ayuda-temas" id="ayuda-temas-profe"></div>
-        <div class="ayuda-grupo-tit" style="margin-top:20px;">Lo ve coordinación</div>
-        <div class="ayuda-temas" id="ayuda-temas-coord"></div>
+      <div class="card" style="max-width:820px;">
+        <div class="ayuda-paso">¿En qué te ayudamos?</div>
+        <div id="ayuda-temas"></div>
       </div>
 
       <div class="card" id="ayuda-form" style="max-width:760px;display:none;">
@@ -1375,7 +1378,7 @@ tbody tr:hover td { background: var(--off); }
 
         <div id="ayuda-profe-wrap" style="display:none;margin-bottom:16px;">
           <label class="ayuda-lbl">¿Con qué profesor?</label>
-          <select id="ayuda-profe" class="ayuda-input" onchange="pintarDestino()"></select>
+          <select id="ayuda-profe" class="ayuda-input"></select>
         </div>
 
         <div id="ayuda-extra-wrap" style="display:none;margin-bottom:16px;">
@@ -1384,10 +1387,11 @@ tbody tr:hover td { background: var(--off); }
         </div>
 
         <label class="ayuda-lbl">Tu mensaje</label>
-        <textarea id="msg-body" rows="7" class="ayuda-input" style="resize:vertical;" oninput="pintarDestino()"></textarea>
+        <textarea id="msg-body" rows="7" class="ayuda-input" style="resize:vertical;"></textarea>
         <div class="ayuda-hint" id="ayuda-hint"></div>
 
-        <div class="ayuda-destino" id="ayuda-destino"></div>
+        <div class="ayuda-destino">Tu solicitud llega al equipo de ELECTI junto con tus datos del ciclo,
+          para que nadie tenga que pedirte que expliques tu situación desde cero.</div>
 
         <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;">
           <button class="btn btn-navy" onclick="enviarMensaje()">Abrir mi correo y enviar</button>
@@ -1396,9 +1400,8 @@ tbody tr:hover td { background: var(--off); }
 
         <div class="ayuda-fallback" id="ayuda-fallback" style="display:none;">
           <strong>¿No se abrió tu aplicación de correo?</strong>
-          <p>Pasa en computadores compartidos o si usas el correo solo desde el navegador.
-             Copia el mensaje con el botón de arriba y envíalo tú desde donde leas tu correo,
-             a las direcciones que aparecen aquí.</p>
+          <p>Pasa en computadores compartidos o cuando lees el correo solo desde el navegador.
+             Copia el mensaje con el botón de arriba y envíalo tú mismo a esta dirección:</p>
           <div class="ayuda-dirs" id="ayuda-dirs"></div>
         </div>
       </div>
@@ -4204,74 +4207,122 @@ function guardarCorreo() {
 // van al profesor con copia a coordinacion; el resto solo a coordinacion.
 // 'extra' pide un dato concreto segun el tema, para que el mensaje llegue
 // con la sesion, el mes o la multa ya identificados.
+// Los temas se agrupan por materia, no por destinatario: el alumno no necesita
+// saber quien atiende cada caso. 'ruta' es interno y define a donde va el correo.
 const AYUDA_TEMAS = [
-  { id: 'clase',      ruta: 'profesor',     ico: '📘', label: 'Duda de clase o material' },
-  { id: 'falta',      ruta: 'profesor',     ico: '🗓', label: 'Justificar una falta o atraso', extra: 'sesion' },
-  { id: 'entrega',    ruta: 'profesor',     ico: '📤', label: 'Entrega de trabajo o proyecto' },
-  { id: 'equipo',     ruta: 'profesor',     ico: '👥', label: 'Problema con mi equipo' },
-  { id: 'pagos',      ruta: 'coordinacion', ico: '💳', label: 'Pagos, cuotas o comprobantes', extra: 'mes' },
-  { id: 'beca',       ruta: 'coordinacion', ico: '🎓', label: 'Mi beca' },
-  { id: 'multa',      ruta: 'coordinacion', ico: '⚖', label: 'Una multa', extra: 'multa' },
-  { id: 'sede',       ruta: 'coordinacion', ico: '📍', label: 'Cambio de sede o modalidad' },
-  { id: 'certificado',ruta: 'coordinacion', ico: '📜', label: 'Mi certificado' },
-  { id: 'portal',     ruta: 'coordinacion', ico: '🛠', label: 'Algo no funciona en el portal' },
-  { id: 'delicado',   ruta: 'coordinacion', ico: '🔒', label: 'Una situación delicada' },
-  { id: 'otro',       ruta: 'coordinacion', ico: '💬', label: 'Otra cosa' },
+  { id: 'clase',       g: 'Clases y proyecto', ruta: 'profesor',     label: 'Duda de clase o material',
+    des: 'Contenido visto, lecturas, grabaciones o recursos.' },
+  { id: 'entrega',     g: 'Clases y proyecto', ruta: 'profesor',     label: 'Entrega de trabajo',
+    des: 'Fechas, formato o problemas para entregar.' },
+  { id: 'calificacion',g: 'Clases y proyecto', ruta: 'profesor',     label: 'Calificación o retroalimentación',
+    des: 'Dudas sobre una nota o pedir comentarios de tu avance.' },
+  { id: 'equipo',      g: 'Clases y proyecto', ruta: 'profesor',     label: 'Mi equipo de trabajo',
+    des: 'Conflictos, reparto de tareas o cambio de grupo.' },
+  { id: 'falta',       g: 'Clases y proyecto', ruta: 'profesor',     label: 'Justificar una falta o atraso',
+    des: 'Avisa antes de faltar o justifica algo ya registrado.', extra: 'sesion' },
+
+  { id: 'pagos',       g: 'Pagos y becas',     ruta: 'coordinacion', label: 'Pagos, cuotas y comprobantes',
+    des: 'Enviar un comprobante, corregir un cobro o acordar una fecha.', extra: 'mes' },
+  { id: 'beca',        g: 'Pagos y becas',     ruta: 'coordinacion', label: 'Mi beca',
+    des: 'Renovación, cambio de porcentaje o requisitos.' },
+  { id: 'multa',       g: 'Pagos y becas',     ruta: 'coordinacion', label: 'Una multa',
+    des: 'Consultar, apelar o coordinar el pago.', extra: 'multa' },
+
+  { id: 'certificado', g: 'Mi participación',  ruta: 'coordinacion', label: 'Certificado y requisitos',
+    des: 'Elegibilidad, datos del certificado o su entrega.' },
+  { id: 'sede',        g: 'Mi participación',  ruta: 'coordinacion', label: 'Cambio de sede, horario o modalidad',
+    des: 'Mudanza, cruce de horarios o pasar a otra ciudad.' },
+  { id: 'datos',       g: 'Mi participación',  ruta: 'coordinacion', label: 'Corregir mis datos',
+    des: 'Nombre, cédula, teléfono, correo o datos de tu representante.' },
+  { id: 'acuerdo',     g: 'Mi participación',  ruta: 'coordinacion', label: 'Acuerdo de participación',
+    des: 'Dudas sobre lo que firmaste o enviar el documento firmado.' },
+
+  { id: 'convivencia', g: 'Otros temas',       ruta: 'coordinacion', label: 'Convivencia o situación delicada',
+    des: 'Trato inadecuado, acoso, discriminación o algo que te preocupe.' },
+  { id: 'portal',      g: 'Otros temas',       ruta: 'coordinacion', label: 'Algo no funciona en el portal',
+    des: 'Errores, datos que no cuadran o problemas para entrar.' },
+  { id: 'sugerencia',  g: 'Otros temas',       ruta: 'coordinacion', label: 'Sugerencia o reconocimiento',
+    des: 'Ideas para mejorar el programa o destacar a alguien.' },
+  { id: 'otro',        g: 'Otros temas',       ruta: 'coordinacion', label: 'Otro asunto',
+    des: 'Cualquier cosa que no encaje arriba.' },
 ];
 
+const AYUDA_GRUPOS = ['Clases y proyecto', 'Pagos y becas', 'Mi participación', 'Otros temas'];
+
 const AYUDA_ASUNTO = {
-  clase: 'Duda de clase o material', falta: 'Justificación de falta o atraso',
-  entrega: 'Entrega de trabajo o proyecto', equipo: 'Problema con el equipo de trabajo',
-  pagos: 'Pagos y cuotas', beca: 'Beca', multa: 'Multa',
-  sede: 'Cambio de sede o modalidad', certificado: 'Certificado',
-  portal: 'Problema técnico del portal', delicado: 'Situación delicada', otro: 'Consulta general',
+  clase: 'Duda de clase o material', entrega: 'Entrega de trabajo',
+  calificacion: 'Calificación o retroalimentación', equipo: 'Equipo de trabajo',
+  falta: 'Justificación de falta o atraso', pagos: 'Pagos y cuotas', beca: 'Beca',
+  multa: 'Multa', certificado: 'Certificado', sede: 'Cambio de sede, horario o modalidad',
+  datos: 'Corrección de datos', acuerdo: 'Acuerdo de participación',
+  convivencia: 'Convivencia', portal: 'Problema técnico del portal',
+  sugerencia: 'Sugerencia o reconocimiento', otro: 'Consulta general',
 };
 
 const AYUDA_HINT = {
-  falta: 'Elige la sesión y cuenta el motivo. Si tienes un justificativo médico o del colegio, adjúntalo al correo antes de enviarlo.',
+  falta: 'Puedes avisar de una sesión que aún no ocurre o justificar una ya registrada. Si tienes respaldo médico o del colegio, adjúntalo al correo antes de enviarlo.',
   entrega: 'Si vas a mandar un archivo, adjúntalo al correo cuando se abra.',
   pagos: 'Si ya pagaste, adjunta el comprobante al correo antes de enviarlo.',
-  portal: 'Cuéntanos qué hacías y qué pasó. Si puedes, adjunta una captura de pantalla.',
-  delicado: 'Esto llega solo a coordinación, no a los profesores. Escribe con confianza.',
+  portal: 'Cuéntanos qué hacías y qué pasó. Una captura de pantalla ayuda mucho.',
+  convivencia: 'Este mensaje lo revisa únicamente coordinación. Escribe con confianza y con el detalle que puedas.',
+  datos: 'Escribe el dato como está ahora y como debería quedar.',
 };
 
 let ayudaTema = null;
 
-// Directorio de profesores: los alumnos no pueden leer la colección de usuarios,
-// así que los admin lo publican en config, que sí es de lectura general.
-function profesoresDisponibles() {
-  const dir = (state.config && state.config.profesores) || [];
-  return dir.filter(function(p){ return p && p.correo; });
+// Los alumnos no pueden leer la coleccion de usuarios, asi que el equipo se
+// publica en config, que si es de lectura general para cualquier autenticado.
+function directorio() {
+  const d = (state.config && state.config.directorio) || {};
+  return { profesores: d.profesores || [], coordinacion: d.coordinacion || [] };
 }
 
-// Mantiene ese directorio al día cada vez que un admin toca el equipo.
+function profesoresDisponibles() {
+  return directorio().profesores.filter(function(p){ return p && p.correo; });
+}
+
+// Copia de cada solicitud a todos los administradores y al dueno.
+function correosCoordinacion() {
+  const lista = directorio().coordinacion.slice();
+  const base = correoAdmin();
+  if (base && lista.indexOf(base) === -1) lista.push(base);
+  return lista;
+}
+
+// Mantiene ese directorio al dia cada vez que un admin toca el equipo.
 function sincronizarDirectorio() {
   if (!esAdmin()) return;
-  const dir = state.equipo
+  const profesores = state.equipo
     .filter(function(m){ return m.rol === 'profesor' && m.email; })
     .map(function(m){ return { nombre: m.name || m.email, correo: m.email }; })
     .sort(function(a, b){ return a.nombre.localeCompare(b.nombre); });
-  if (JSON.stringify(dir) === JSON.stringify((state.config && state.config.profesores) || [])) return;
-  saveConfig({ profesores: dir });
+  const coordinacion = state.equipo
+    .filter(function(m){ return (m.rol === 'admin' || m.rol === 'dueno') && m.email; })
+    .map(function(m){ return m.email; })
+    .sort();
+  const nuevo = { profesores: profesores, coordinacion: coordinacion };
+  if (JSON.stringify(nuevo) === JSON.stringify(directorio())) return;
+  saveConfig({ directorio: nuevo });
 }
 
 function renderMensaje() {
-  const pinta = function(cont, ruta) {
-    document.getElementById(cont).innerHTML = AYUDA_TEMAS.filter(function(t){ return t.ruta === ruta; })
-      .map(function(t){
+  document.getElementById('ayuda-temas').innerHTML = AYUDA_GRUPOS.map(function(g){
+    const temas = AYUDA_TEMAS.filter(function(t){ return t.g === g; });
+    if (!temas.length) return '';
+    return '<div class="ayuda-grupo-tit">' + g + '</div><div class="ayuda-temas">' +
+      temas.map(function(t){
         return '<button type="button" class="ayuda-tema' + (ayudaTema === t.id ? ' on' : '') + '" ' +
           'onclick="elegirTema(\'' + t.id + '\')">' +
-          '<span class="ay-ico">' + t.ico + '</span><span>' + t.label + '</span></button>';
-      }).join('');
-  };
-  pinta('ayuda-temas-profe', 'profesor');
-  pinta('ayuda-temas-coord', 'coordinacion');
+          '<span class="ay-tit">' + t.label + '</span>' +
+          '<span class="ay-des">' + t.des + '</span></button>';
+      }).join('') + '</div>';
+  }).join('');
 
   const profes = profesoresDisponibles();
   const sel = document.getElementById('ayuda-profe');
   sel.innerHTML = profes.length
     ? profes.map(function(p){ return '<option value="' + p.correo + '">' + p.nombre + '</option>'; }).join('')
-    : '<option value="">— Aún no hay profesores publicados —</option>';
+    : '<option value="">— Sin profesores disponibles —</option>';
 }
 
 function elegirTema(id) {
@@ -4280,20 +4331,33 @@ function elegirTema(id) {
   renderMensaje();
 
   document.getElementById('ayuda-form').style.display = 'block';
-  document.getElementById('ayuda-paso2').textContent = '2 · ' + t.label;
+  document.getElementById('ayuda-paso2').textContent = t.label;
   document.getElementById('ayuda-fallback').style.display = 'none';
   document.getElementById('msg-body').placeholder = 'Escribe aquí con el mayor detalle que puedas...';
-
-  const profeWrap = document.getElementById('ayuda-profe-wrap');
-  profeWrap.style.display = t.ruta === 'profesor' ? 'block' : 'none';
+  document.getElementById('ayuda-profe-wrap').style.display = t.ruta === 'profesor' ? 'block' : 'none';
 
   pintarExtra(t);
   document.getElementById('ayuda-hint').textContent = AYUDA_HINT[id] || '';
-  pintarDestino();
   document.getElementById('ayuda-form').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-// Campo contextual: la sesión, el mes o la multa concretos del alumno.
+// Sesiones futuras del calendario, para avisar de una ausencia por anticipado.
+function sesionesProximas(semanas) {
+  const out = [];
+  const hoy = new Date();
+  const desde = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
+  for (let i = 0; i <= semanas * 7; i++) {
+    const d = new Date(desde.getFullYear(), desde.getMonth(), desde.getDate() + i);
+    const tipo = DOW_SESION[d.getDay()];
+    if (!tipo) continue;
+    const iso = fechaISO(d);
+    out.push({ fecha: iso, txt: (tipo === 'martes' ? 'Sesión virtual' : 'Sesión presencial') +
+      ' · ' + formatDate(iso) + (i === 0 ? ' · hoy' : '') });
+  }
+  return out;
+}
+
+// Campo contextual: la sesion, el mes o la multa concretos del alumno.
 function pintarExtra(t) {
   const wrap = document.getElementById('ayuda-extra-wrap');
   const sel = document.getElementById('ayuda-extra');
@@ -4301,19 +4365,29 @@ function pintarExtra(t) {
   const uid = state.user.username;
 
   if (t.extra === 'sesion') {
-    const regs = [];
+    // Ya registradas primero y preseleccionada la mas reciente; despues las que
+    // aun no ocurren, para poder avisar antes de faltar.
+    const marcadas = [];
     Object.keys(state.asistencia).forEach(function(k){
       const v = state.asistencia[k][uid];
       if (!v || v === 'P') return;
       const pt = k.split('_');
-      regs.push({ fecha: pt[1], txt: (pt[0] === 'martes' ? 'Sesión virtual' : 'Sesión presencial') +
+      marcadas.push({ fecha: pt[1], txt: (pt[0] === 'martes' ? 'Sesión virtual' : 'Sesión presencial') +
         ' · ' + formatDate(pt[1]) + ' · ' + estadoAtt(v).label });
     });
-    regs.sort(function(a, b){ return b.fecha.localeCompare(a.fecha); });
-    lbl.textContent = '¿Qué sesión quieres justificar?';
-    sel.innerHTML = regs.length
-      ? regs.map(function(r){ return '<option>' + r.txt + '</option>'; }).join('')
-      : '<option>No tienes faltas ni atrasos registrados</option>';
+    marcadas.sort(function(a, b){ return b.fecha.localeCompare(a.fecha); });
+
+    let html = '';
+    if (marcadas.length) {
+      html += '<optgroup label="Ya registradas">' +
+        marcadas.map(function(r){ return '<option>' + r.txt + '</option>'; }).join('') + '</optgroup>';
+    }
+    html += '<optgroup label="Sesiones próximas">' +
+      sesionesProximas(6).map(function(r){ return '<option>' + r.txt + '</option>'; }).join('') + '</optgroup>';
+
+    lbl.textContent = '¿Qué sesión?';
+    sel.innerHTML = html;
+    sel.selectedIndex = 0;   // la falta más reciente si la hay, si no la próxima sesión
     wrap.style.display = 'block';
     return;
   }
@@ -4332,7 +4406,7 @@ function pintarExtra(t) {
     lbl.textContent = '¿Qué multa?';
     sel.innerHTML = mias.length
       ? mias.map(function(m){ return '<option>$' + m.monto + ' · ' + (m.motivo || 'Sin motivo') + '</option>'; }).join('')
-      : '<option>No tienes multas pendientes</option>';
+      : '<option>No tengo multas pendientes registradas</option>';
     wrap.style.display = 'block';
     return;
   }
@@ -4343,24 +4417,13 @@ function pintarExtra(t) {
 function destinatarios() {
   const t = AYUDA_TEMAS.find(function(x){ return x.id === ayudaTema; });
   if (!t) return null;
+  const coord = correosCoordinacion();
   if (t.ruta === 'profesor') {
     const sel = document.getElementById('ayuda-profe');
-    const correo = sel.value;
-    const nombre = sel.options[sel.selectedIndex] ? sel.options[sel.selectedIndex].text : '';
-    return { para: correo, paraNombre: nombre, copia: correoAdmin(), tema: t };
+    return { para: sel.value, copia: coord.join(','), tema: t };
   }
-  return { para: correoAdmin(), paraNombre: 'Coordinación ELECTI', copia: '', tema: t };
-}
-
-function pintarDestino() {
-  const d = destinatarios();
-  const cont = document.getElementById('ayuda-destino');
-  if (!d) { cont.innerHTML = ''; return; }
-  let h = 'Se enviará a <b>' + d.paraNombre + '</b>';
-  if (d.copia) h += ', con copia a coordinación';
-  h += '.<span class="ay-adj">Se adjuntan tus datos, tu sede, tus faltas y tu estado de cuenta ' +
-       'para que no tengas que explicarlos.</span>';
-  cont.innerHTML = h;
+  // A coordinación: el primero como destinatario y el resto en copia.
+  return { para: coord[0] || correoAdmin(), copia: coord.slice(1).join(','), tema: t };
 }
 
 function textoMensaje() {
@@ -4400,7 +4463,7 @@ function textoMensaje() {
 function validarAyuda() {
   if (!ayudaTema) { toast('Elige primero de qué se trata'); return null; }
   const d = destinatarios();
-  if (!d.para) { toast('Todavía no hay profesores publicados. Escribe a coordinación.'); return null; }
+  if (!d.para) { toast('No hay un profesor disponible. Elige otro tema y lo redirigimos.'); return null; }
   if (!document.getElementById('msg-body').value.trim()) { toast('Escribe tu mensaje antes de enviar'); return null; }
   return d;
 }
@@ -4416,8 +4479,7 @@ function enviarMensaje() {
   window.location.href = url;
   // El navegador no avisa si no hay aplicación de correo: el mensaje se perdería
   // en silencio. Por eso dejamos a la vista la salida manual.
-  document.getElementById('ayuda-dirs').innerHTML =
-    'Para: ' + d.para + (d.copia ? '<br>Copia: ' + d.copia : '');
+  document.getElementById('ayuda-dirs').textContent = correoAdmin();
   document.getElementById('ayuda-fallback').style.display = 'block';
   toast('Abriendo tu aplicación de correo...');
 }
@@ -4426,14 +4488,12 @@ function copiarMensaje() {
   const d = validarAyuda();
   if (!d) return;
   const m = textoMensaje();
-  const txt = 'Para: ' + d.para + (d.copia ? '\nCopia: ' + d.copia : '') +
-              '\nAsunto: ' + m.subject + '\n\n' + m.body;
+  const txt = 'Asunto: ' + m.subject + '\n\n' + m.body;
   const ok = function(){ toast('✓ Mensaje copiado — pégalo en tu correo'); };
   if (navigator.clipboard && navigator.clipboard.writeText) {
     navigator.clipboard.writeText(txt).then(ok).catch(function(){ copiaManual(txt, ok); });
   } else { copiaManual(txt, ok); }
-  document.getElementById('ayuda-dirs').innerHTML =
-    'Para: ' + d.para + (d.copia ? '<br>Copia: ' + d.copia : '');
+  document.getElementById('ayuda-dirs').textContent = correoAdmin();
   document.getElementById('ayuda-fallback').style.display = 'block';
 }
 
