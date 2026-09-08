@@ -1117,10 +1117,14 @@ tbody tr:hover td { background: var(--off); }
 .bv-pagos { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
 .bv-marca {
   display: inline-flex; align-items: center; justify-content: center;
-  background: var(--white); border: 1px solid var(--border); border-radius: 7px;
-  padding: 6px 10px; font-size: 11px; font-weight: 800; letter-spacing: .02em;
-  line-height: 1; white-space: nowrap;
+  background: var(--white); border: 1px solid var(--border); border-radius: 8px;
+  padding: 7px 11px; height: 34px; box-sizing: border-box;
+  font-size: 11px; font-weight: 800; letter-spacing: .02em; line-height: 1;
+  white-space: nowrap; color: var(--gray);
 }
+.bv-marca img { display: block; height: 20px; width: auto; }
+.bv-marca.compacta { padding: 5px 7px; }
+.bv-marca.compacta img { height: 24px; }
 .bv-aviso {
   background: var(--off); border: 1px solid var(--border); border-left: 3px solid var(--sky-light);
   border-radius: 9px; padding: 11px 13px; margin-bottom: 16px;
@@ -1328,14 +1332,13 @@ tbody tr:hover td { background: var(--off); }
         entregues el acuerdo firmado. Se acepta tarjeta de crédito o débito, diferidos con
         tarjeta y transferencia bancaria.
         <div class="bv-pagos">
-          <span class="bv-marca" style="color:#1A1F71;">VISA</span>
-          <span class="bv-marca" style="color:#EB001B;">Mastercard</span>
-          <span class="bv-marca" style="color:#006FCF;">American Express</span>
+          <span class="bv-marca"><img src="data:image/png;base64,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" alt="Visa" width="46" height="15" loading="lazy"></span>
+          <span class="bv-marca compacta"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFQAAAA0CAMAAAAjQe+pAAAAP1BMVEXrABr3nhv+XwAAAAD4AAn7pQ7uABr4nxrrABr9fwP2nhn//wCqAAAAAP9//3+qqgAAAAAAAAAAAAAAAAAAAAAfiC4OAAAAEHRSTlP9/f4ADxeenlcDVwEDAQIDUG4awAAAAT1JREFUeNrt2MsSgyAMBdCoBAH7+P+/LamKtWoTWu+umXFRHc+ESJVA3SqckyN4msKH8cx8nYd8cOqbKfrEnK/zWqHXHxdhC1jgwkYhC1hgIfkAlRsD7YUP+erzxrQhn5HGMWzRQ3LKdnA7Wb6ycYu6nYGvWLodk1KEuJSAFpOUaJTgkivNZtDMttXUNOdKdtOixgU1muZcyVbPtrWpY11J5qfZNKgyXwXtvB3V1F4KQDWDtxWABa0ydTXGjsxP3ormeZXROlNXM9q5s1Gpqa9F9QlA1YkaHhUCZQrno4nqS6oXlb4w1VT/6B89G4VMfsjfFPJCgaCQlzTkcwL58EE+0ZDFBGbZA1mgYZaSkEUvZnmOaSQwLY+lrr6vbc4MbeSVPreRvG0jMQ3vz625O38T4X64M/Htdsfwtt3xAJVmFjKuEFDPAAAAAElFTkSuQmCC" alt="Mastercard" width="36" height="22" loading="lazy"></span>
+          <span class="bv-marca compacta"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADQAAAA0CAMAAADypuvZAAAAP1BMVEXT5vZ0sOU5j9oie9MAbc8Jc9LW5/fy+PyXxOtKmN0shtez1PFop+KHuuilzO4AWskAAAAAAAAAAAAAAAAAAAC0AgOjAAAAEHRSTlP//////v7+/v7+/v/+/v/+AEu7DQAAAetJREFUeNrtVe2S2zAIBIcPCQnp/d+2K9nJJdeZXvOz0zAOQfauELBxSN42FfqQPqT/gKRv2iLp24l2ptFaVLi+Ilzt7gvuBVwZbRxADCxG3ccr1rGmnjass2eHOcOR83DD2oEgIJp5J97H85iC1ZS2I5UjqomGStPqKOGgO8Jtjk1i5NLuXeGAdK1m5pJuktHLJPd2IkSqS9skr+qHgtSVlcVj1Yp8qjfT3tV9IepCpPBFst2+xgvIRZDJsbn0ihMpMjW/EInN5SJVadQ0Vo5pOTGC0LCZflPDeXT2PseFMLlqKs0rWWnFbV8jM4sX1IV2NqdiYzwQlH6SSp1RYHm/zhhNgNX96EIwfMalPf0Lub0YbTV9U9dPevxSudoywifaGbqvr9Pfv30BnkgYhmoULU63XHF1vuEOFXgpFBgd8br/RCJd5TrPoQFxJAuzlCI14ct6mm1MLuU5EwWACQFI+JqxCQRhpiBxpmEbDGF2DOSFpBGHI1X1S00MH5YSEfj9LA1zoOcvx4OCyAcUtrRLKL3GUgVDUbsrY2LAVudz9/buA6icBdX2StApTc4pMvNYWcdC9ufu2dXbviJvc4mVCBkfvb63/YsU9bSQHaGCWL5+t0PpZ9H8bvT8mnm8pP6sps8fwIf0b5F+ASETNghmrbaxAAAAAElFTkSuQmCC" alt="American Express" width="24" height="24" loading="lazy"></span>
         </div>
         <div class="bv-pagos">
-          <span class="bv-marca" style="color:#FFD100;background:#0B2B5B;border-color:#0B2B5B;">Banco Pichincha</span>
-          <span class="bv-marca" style="color:#00539B;">Banco Guayaquil</span>
-          <span class="bv-marca" style="color:#00A94F;">Produbanco</span>
+          <span class="bv-marca"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOsAAAA0CAMAAABcvD8dAAAAP1BMVEX7/PwMIVz+3wBfapKyt8mRmbQzRnf+62S9wNH997t7haRmaTxET3XPuRaFfjSGgS8AAAAAAAAAAAAAAAAAAADGO/FaAAAAEHRSTlP/////////////////////zSGylAAABBxJREFUeNrtmm1joyAMgPXyUsq82///t1etYBKixRY3eze+rKJmPgRCXui6/6pdu2t9uz19UEO6tarO59vl1752sZ/TL41B3Rq7wnIJ4zXIm4uQIUkQZAGczm9lDb1qaNjYXPfksIIQAF4nn5K112qV16A6zM9CAqyJ/W7WAW6Np4+KZnKDZQXLOqsuUhwWzaeHiaAdbBNWoaBiDlrWeZrnWyDnPsyDhXK+T08MJ2MlubTS7KNiAWpWPSCzLeNylPBcrFHodfpNVtGc6dNr5E5QNUhmwhzA+lu3ClaydhYLawsx9aS/4GHYAaA2K3aN9Y+xjh91dhikZdIk99/pofT1rDUopoDV8+lYlRIzsuiiee1J/bqscHrWwfhM2saOALPZeVtWiGMTTmC2yOKrQcxeUnM4vtMcLkzIpLzsYGjW+w4ibRM/sk3xfKx5xpqJTXpiqsVN7t5pNpmD95zPV1jBc3EzKxVOhXQbpj+DGoEv8yWGelaQBqeIfpaly5I1WndwsXjkBYNHsn5UsPLUMgA5u48yU2qDmt+DOEcPvIxAn0OKr/H9P3btOZMKWeoBHQ9Jxy7shcDfEtM9YEXHDJVxLJlNs3Q8irCcvAD+PHqdczDGE0h7LVgXsozj+4G6shOwOwdry+Qa1nW+P+sXtFf3nH+Kddbr5//A+iAv8cP6w/r2rBjuDXWfjtFu0a2sXgR1P11glqGkoRJ924YiGGHqtvm4o+o5ELzwMztA7NU3srsvfA2VVAcvoS4cDF/Yci8ew1pkJex9cD5PBTxQepClu7UuDHXgb72zxvUcMKzGXeYdrFywkpez3GAFXXVpwzpmW+bZFTRrKsvgXJfZwWrTGblCRLQmzLDaGKlh3h/TYC+sLKOUoajlbLO6y3gWhixLXz4r2Tpp6xoHS1b0A7JaVihTN3FTmGYtIsJrQ1YUeQlWSZn9rFyE+OwXnaWwIB8JKl/ZmpWsXtmPs6fFiPdGK6zINux1s+ZKWIiS9f6iqqEcUH/NrCv5P5t681gzm2LtHgtjndRUe/2lAes4rrQUjRVr9xwrpgWQWHEna/oIeULleuD++hLrPE2eZWUnzbVTsdusxm/aWGKQ2gprSK5mrJjDUhhbm6Xea8dK5izBhm16ZIdDxpCssdoO3w9ZDDywGvBrA79pjD3QZg5f2XOCdDChUhhah608IHVpZIcLVlOsGfp9rEvW1HFMJFTJalxncX7uchSrPNAz7pi8j7VTZmCajYz5X2z5/kPvn23YBbuPNX8syJNc9axUhG9jxj0Jo3VWubPbau71INauPqYjh7VTrKE6poPCMVbbwfWFWH2D1TtYWaNXlPEvVApD/xSGV7u/XJ7INz1iFRYmbNphfwmSXm0IdgF6erUKaFbpqyrWILYUFrqfttn+AkiKLYyMzZwJAAAAAElFTkSuQmCC" alt="Banco Pichincha" width="68" height="15" loading="lazy"></span>
+          <span class="bv-marca"><img src="data:image/png;base64,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" alt="Banco Guayaquil" width="62" height="17" loading="lazy"></span>
         </div>
       </div>
 
@@ -1773,21 +1776,18 @@ tbody tr:hover td { background: var(--off); }
       <div class="page-sub">Define el ciclo activo y los valores. Aplica a todo el portal.</div>
       <div class="card" style="max-width:620px;">
         <div class="card-head"><div class="card-title">Ciclo activo</div></div>
-        <div class="field"><label style="font-size:12px;font-weight:600;color:var(--gray);display:block;margin-bottom:8px;">Nombre del ciclo</label>
-          <input type="text" id="cfg-nombre" placeholder="Ej: Generación 2026-A" style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;"></div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px;">
-          <div><label style="font-size:12px;font-weight:600;color:var(--gray);display:block;margin-bottom:8px;">Mes de inicio</label>
-            <select id="cfg-mes" style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;"></select></div>
-          <div><label style="font-size:12px;font-weight:600;color:var(--gray);display:block;margin-bottom:8px;">Año de inicio</label>
-            <input type="number" id="cfg-anio" min="2024" max="2100" style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;"></div>
-        </div>
+        <div><label style="font-size:12px;font-weight:600;color:var(--gray);display:block;margin-bottom:8px;">Nombre del ciclo</label>
+          <input type="text" id="cfg-nombre" placeholder="Ej: Generación 2026-A" style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--text);background:var(--white);"></div>
+        <p style="font-size:12.5px;color:var(--gray);margin-top:12px;line-height:1.55;">
+          Las fechas de arranque se definen abajo, en <b>Calendario por región</b>. Aquí van los valores
+          que comparten las cuatro sedes.</p>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:14px;">
           <div><label style="font-size:12px;font-weight:600;color:var(--gray);display:block;margin-bottom:8px;">N.º de cuotas</label>
-            <input type="number" id="cfg-cuotas" min="1" max="12" style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;"></div>
+            <input type="number" id="cfg-cuotas" min="1" max="12" style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--text);background:var(--white);"></div>
           <div><label style="font-size:12px;font-weight:600;color:var(--gray);display:block;margin-bottom:8px;">Matrícula $</label>
-            <input type="number" id="cfg-matricula" min="0" style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;"></div>
+            <input type="number" id="cfg-matricula" min="0" style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--text);background:var(--white);"></div>
           <div><label style="font-size:12px;font-weight:600;color:var(--gray);display:block;margin-bottom:8px;">Cuota mensual $</label>
-            <input type="number" id="cfg-cuota" min="0" style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;"></div>
+            <input type="number" id="cfg-cuota" min="0" style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--text);background:var(--white);"></div>
         </div>
         <div style="margin-top:18px;padding:14px;background:var(--off);border-radius:10px;font-size:13px;color:var(--gray);" id="cfg-preview"></div>
         <div style="margin-top:18px;"><button class="btn btn-navy" onclick="guardarConfig()">Guardar configuración</button></div>
@@ -2001,7 +2001,7 @@ tbody tr:hover td { background: var(--off); }
 <div class="modal-bg" id="modal-alumno">
   <div class="modal">
     <div class="modal-title" id="modal-alumno-title">Agregar alumno</div>
-    <div class="field">
+    <div id="m-avanzado-foto" class="field">
       <label>Foto del alumno</label>
       <div class="foto-uploader">
         <div class="foto-preview" id="m-foto-preview">—</div>
@@ -2015,10 +2015,8 @@ tbody tr:hover td { background: var(--off); }
       <input type="hidden" id="m-foto" value="">
     </div>
     <div class="field"><label>Nombre completo</label><input type="text" id="m-nombre" placeholder="Ej: Ana García"></div>
-    <div class="field"><label>Cédula / Documento</label><input type="text" id="m-cedula" placeholder="Ej: 1712345678"></div>
     <div class="field"><label>Correo (con este inicia sesión)</label><input type="email" id="m-user" placeholder="alumno@correo.com"></div>
     <div class="field"><label>Contraseña inicial (mínimo 6 caracteres)</label><input type="text" id="m-pass" placeholder="Ej: electi2026"></div>
-    <div class="field"><label>Colegio / Universidad</label><input type="text" id="m-colegio" placeholder="Ej: Colegio San Gabriel"></div>
     <div class="field"><label>Sede</label>
       <select id="m-sede">
         <option value="UIO">Quito (UIO)</option>
@@ -2027,15 +2025,29 @@ tbody tr:hover td { background: var(--off); }
         <option value="SDO">Santo Domingo (SDO)</option>
       </select>
     </div>
-    <div class="field"><label>Teléfono del alumno</label><input type="text" id="m-tel" placeholder="Ej: 0991234567"></div>
-    <div class="field"><label>Correo del alumno</label><input type="text" id="m-correo" placeholder="correo@ejemplo.com"></div>
-    <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--sky);margin:18px 0 10px;">Datos del representante</div>
-    <div class="field"><label>Nombre del representante</label><input type="text" id="m-rep-nombre" placeholder="Ej: María Pérez"></div>
-    <div class="field"><label>Cédula del representante</label><input type="text" id="m-rep-cedula" placeholder="Ej: 1798765432"></div>
-    <div class="field"><label>Teléfono del representante</label><input type="text" id="m-rep-tel" placeholder="Ej: 0998765432"></div>
-    <div class="field"><label>Correo del representante</label><input type="text" id="m-rep-correo" placeholder="correo@ejemplo.com"></div>
-    <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--sky);margin:18px 0 10px;">Documentos</div>
-    <div class="field"><label>URL del acuerdo firmado (Google Drive)</label><input type="url" id="m-acuerdo-url" placeholder="https://drive.google.com/..."></div>
+
+    <div id="m-avanzado" style="display:none;">
+      <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--sky);margin:18px 0 10px;">Datos del alumno</div>
+      <div class="field"><label>Cédula / Documento</label><input type="text" id="m-cedula" placeholder="Ej: 1712345678"></div>
+      <div class="field"><label>Colegio / Universidad</label><input type="text" id="m-colegio" placeholder="Ej: Colegio San Gabriel"></div>
+      <div class="field"><label>Teléfono del alumno</label><input type="text" id="m-tel" placeholder="Ej: 0991234567"></div>
+      <div class="field"><label>Correo del alumno</label><input type="text" id="m-correo" placeholder="correo@ejemplo.com"></div>
+      <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--sky);margin:18px 0 10px;">Datos del representante</div>
+      <div class="field"><label>Nombre del representante</label><input type="text" id="m-rep-nombre" placeholder="Ej: María Pérez"></div>
+      <div class="field"><label>Cédula del representante</label><input type="text" id="m-rep-cedula" placeholder="Ej: 1798765432"></div>
+      <div class="field"><label>Teléfono del representante</label><input type="text" id="m-rep-tel" placeholder="Ej: 0998765432"></div>
+      <div class="field"><label>Correo del representante</label><input type="text" id="m-rep-correo" placeholder="correo@ejemplo.com"></div>
+      <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--sky);margin:18px 0 10px;">Documentos</div>
+      <div class="field"><label>URL del acuerdo firmado (Google Drive)</label><input type="url" id="m-acuerdo-url" placeholder="https://drive.google.com/..."></div>
+    </div>
+
+    <button type="button" id="m-avanzado-btn" onclick="toggleAvanzado()"
+      style="width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.14);border-radius:11px;padding:11px;color:rgba(255,255,255,0.72);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;margin:4px 0 16px;">
+      ▾ Llenar los datos manualmente
+    </button>
+    <div id="m-avanzado-nota" style="font-size:12px;color:rgba(255,255,255,0.42);line-height:1.55;margin:-10px 0 16px;">
+      El alumno completa su cédula, colegio, contactos y representante al activar su cuenta. No hace falta llenarlos aquí.
+    </div>
     <input type="hidden" id="m-edit" value="">
     <div class="field"><label>Beca — porcentaje de descuento</label>
       <div class="beca-input-row">
@@ -2045,7 +2057,7 @@ tbody tr:hover td { background: var(--off); }
       </div>
       <div class="beca-preview" id="m-beca-preview"></div>
     </div>
-    <div class="field"><label>Plan de pago</label>
+    <div class="field"><label>Plan de pago <span style="font-weight:400;text-transform:none;letter-spacing:0;opacity:.6;">— lo elige el alumno al activar</span></label>
       <select id="m-plan" onchange="previewBeca()">
         <option value="mensual">Mensual (cuotas)</option>
         <option value="unico">Pago único (10% dcto.)</option>
@@ -2437,11 +2449,19 @@ function getConfig(sede) {
   if (!sede) return base;
   const b = bloqueDe(sede);
   const o = ((cfg.bloques || {})[b]) || {};
+  // El primer dia de clases es el unico dato de fecha que se configura:
+  // el mes de la primera cuota sale de ahi. Un solo campo, una sola verdad.
+  let mes = o.inicioMes || base.inicioMes;
+  let anio = o.inicioAnio || base.inicioAnio;
+  if (o.fechaInicio) {
+    const d = new Date(o.fechaInicio + 'T00:00:00');
+    if (!isNaN(d.getTime())) { mes = d.getMonth() + 1; anio = d.getFullYear(); }
+  }
   return Object.assign(base, {
     bloque: b,
     cicloNombre: o.cicloNombre || base.cicloNombre,
-    inicioAnio:  o.inicioAnio  || base.inicioAnio,
-    inicioMes:   o.inicioMes   || base.inicioMes,
+    inicioAnio:  anio,
+    inicioMes:   mes,
     numCuotas:   o.numCuotas   || base.numCuotas,
     fechaInicio: o.fechaInicio || '',
   });
@@ -4559,6 +4579,21 @@ function previewBeca() {
 }
 
 // ─── CRUD ───
+// Al crear un alumno casi todo queda vacio a proposito: el propio alumno
+// completa cedula, colegio, contactos y representante al activar su cuenta.
+// Pedir esos campos aqui invita a llenarlos con datos de segunda mano.
+function toggleAvanzado(forzar) {
+  const box = document.getElementById('m-avanzado');
+  const btn = document.getElementById('m-avanzado-btn');
+  const nota = document.getElementById('m-avanzado-nota');
+  const foto = document.getElementById('m-avanzado-foto');
+  const abrir = forzar !== undefined ? forzar : box.style.display === 'none';
+  box.style.display = abrir ? 'block' : 'none';
+  foto.style.display = abrir ? 'block' : 'none';
+  nota.style.display = abrir ? 'none' : 'block';
+  btn.textContent = abrir ? '▴ Ocultar datos manuales' : '▾ Llenar los datos manualmente';
+}
+
 function abrirNuevoAlumno() {
   if (!soloAdmin()) return;
   document.getElementById('m-edit').value = '';
@@ -4572,6 +4607,7 @@ function abrirNuevoAlumno() {
   previewBeca();
   document.getElementById('m-user').disabled = false;
   document.getElementById('m-pass').disabled = false;
+  toggleAvanzado(false);
   openModal('modal-alumno');
 }
 
@@ -4609,6 +4645,7 @@ function editAlumno(u) {
     pintarPreview('m', url || '', a.initials || '');
   });
   previewBeca();
+  toggleAvanzado(true);
   openModal('modal-alumno');
 }
 
@@ -5022,10 +5059,7 @@ function correoAdmin() { return (state.config && state.config.correo) || 'mreza@
 
 function renderConfig() {
   const cfg = getConfig();
-  const sel = document.getElementById('cfg-mes');
-  sel.innerHTML = MES_NOMBRES.map((m, i) => `<option value="${i+1}" ${cfg.inicioMes === i+1 ? 'selected' : ''}>${m}</option>`).join('');
   document.getElementById('cfg-nombre').value = cfg.cicloNombre;
-  document.getElementById('cfg-anio').value = cfg.inicioAnio;
   document.getElementById('cfg-cuotas').value = cfg.numCuotas;
   document.getElementById('cfg-matricula').value = cfg.matricula;
   document.getElementById('cfg-cuota').value = cfg.cuotaBase;
@@ -5033,7 +5067,7 @@ function renderConfig() {
   const pf = document.getElementById('cfg-purga-fecha');
   if (pf) { pf.onchange = previewPurga; previewPurga(); }
   previewConfig();
-  ['cfg-mes','cfg-anio','cfg-cuotas','cfg-matricula','cfg-cuota'].forEach(id => {
+  ['cfg-cuotas','cfg-matricula','cfg-cuota'].forEach(id => {
     document.getElementById(id).onchange = previewConfig;
   });
   renderBloques();
@@ -5048,32 +5082,25 @@ function renderBloques() {
   if (!cont) return;
   cont.innerHTML = Object.keys(BLOQUES).map(function(b){
     const o = guardado[b] || {};
-    const meses = MES_NOMBRES.map(function(m, i){
-      return '<option value="' + (i+1) + '"' + (o.inicioMes === i+1 ? ' selected' : '') + '>' + m + '</option>';
-    }).join('');
     return '' +
       '<div style="border:1px solid var(--border);border-radius:11px;padding:15px 16px;margin-bottom:13px;">' +
         '<div style="font-size:14px;font-weight:800;margin-bottom:12px;">' + nombreBloque(b) + '</div>' +
         '<div style="LBL">Nombre del ciclo</div>' +
         '<input type="text" id="cfgb-' + b + '-nombre" placeholder="Hereda del ciclo activo" value="' + (o.cicloNombre || '') + '" style="INP margin-bottom:12px;">' +
-        '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:11px;">' +
-          '<div><div style="LBL">Mes de inicio</div>' +
-            '<select id="cfgb-' + b + '-mes" style="INP"><option value="">—</option>' + meses + '</select></div>' +
-          '<div><div style="LBL">Año</div>' +
-            '<input type="number" id="cfgb-' + b + '-anio" min="2024" max="2100" placeholder="—" value="' + (o.inicioAnio || '') + '" style="INP"></div>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:11px;">' +
+          '<div><div style="LBL">Primer día de clases</div>' +
+            '<input type="date" id="cfgb-' + b + '-fecha" value="' + (o.fechaInicio || '') + '" style="INP"></div>' +
           '<div><div style="LBL">N.º de cuotas</div>' +
-            '<input type="number" id="cfgb-' + b + '-cuotas" min="1" max="12" placeholder="—" value="' + (o.numCuotas || '') + '" style="INP"></div>' +
+            '<input type="number" id="cfgb-' + b + '-cuotas" min="1" max="12" placeholder="Hereda" value="' + (o.numCuotas || '') + '" style="INP"></div>' +
         '</div>' +
-        '<div style="margin-top:12px;"><div style="LBL">Primer día de clases</div>' +
-          '<input type="date" id="cfgb-' + b + '-fecha" value="' + (o.fechaInicio || '') + '" style="INP"></div>' +
-        '<div style="font-size:11.5px;color:var(--gray);margin-top:6px;line-height:1.5;">' +
-          'Antes de esta fecha nadie figura en mora. Si la dejas vacía, se asume el día 1 del mes de inicio.</div>' +
+        '<div style="font-size:11.5px;color:var(--gray);margin-top:8px;line-height:1.5;">' +
+          'La primera cuota corresponde al mes de esta fecha. Antes de ella nadie figura en mora.</div>' +
       '</div>';
   }).join('').split('INP').join('INPUTSTYLE').split('LBL').join('LABELSTYLE')
     .split('INPUTSTYLE').join(INPUT_ESTILO).split('LABELSTYLE').join(LABEL_ESTILO);
 
   Object.keys(BLOQUES).forEach(function(b){
-    ['nombre','mes','anio','cuotas','fecha'].forEach(function(f){
+    ['nombre','cuotas','fecha'].forEach(function(f){
       const el = document.getElementById('cfgb-' + b + '-' + f);
       if (el) { el.onchange = previewBloques; el.oninput = previewBloques; }
     });
@@ -5085,14 +5112,10 @@ function leerBloquesUI() {
   const out = {};
   Object.keys(BLOQUES).forEach(function(b){
     const nom = (document.getElementById('cfgb-' + b + '-nombre').value || '').trim();
-    const mes = parseInt(document.getElementById('cfgb-' + b + '-mes').value);
-    const anio = parseInt(document.getElementById('cfgb-' + b + '-anio').value);
     const cuo = parseInt(document.getElementById('cfgb-' + b + '-cuotas').value);
     const fec = (document.getElementById('cfgb-' + b + '-fecha').value || '').trim();
     const o = {};
     if (nom) o.cicloNombre = nom;
-    if (mes) o.inicioMes = mes;
-    if (anio) o.inicioAnio = anio;
     if (cuo) o.numCuotas = cuo;
     if (fec) o.fechaInicio = fec;
     out[b] = o;
@@ -5105,16 +5128,17 @@ function previewBloques() {
   const base = getConfig();
   const txt = Object.keys(BLOQUES).map(function(b){
     const o = bl[b];
-    const mes = o.inicioMes || base.inicioMes;
-    const anio = o.inicioAnio || base.inicioAnio;
     const n = o.numCuotas || base.numCuotas;
-    const ini = new Date(anio, mes - 1, 1);
-    const fin = new Date(anio, mes - 2 + n, 1);
-    const arranque = o.fechaInicio ? new Date(o.fechaInicio + 'T00:00:00') : new Date(anio, mes - 1, 1);
+    const arranque = o.fechaInicio ? new Date(o.fechaInicio + 'T00:00:00')
+                                   : new Date(base.inicioAnio, base.inicioMes - 1, 1);
+    const labels = [];
+    for (let i = 0; i < n; i++) {
+      const d = new Date(arranque.getFullYear(), arranque.getMonth() + i, 1);
+      labels.push(MES_NOMBRES[d.getMonth()].slice(0, 3) + ' ' + String(d.getFullYear()).slice(2));
+    }
     const yaVa = new Date() >= arranque;
     return '<b>' + nombreBloque(b) + '</b> · ' + (o.cicloNombre || base.cicloNombre) + '<br>' +
-      MES_NOMBRES[ini.getMonth()] + ' ' + ini.getFullYear() + ' → ' +
-      MES_NOMBRES[fin.getMonth()] + ' ' + fin.getFullYear() + ' · ' + n + ' cuotas<br>' +
+      'Cuotas: ' + labels.join(' · ') + '<br>' +
       '<span style="color:' + (yaVa ? 'var(--green)' : 'var(--blue)') + ';font-weight:700;">' +
       (yaVa ? 'En curso desde el ' : 'Inicia el ') + fechaLarga(arranque) + '</span>';
   }).join('<div style="height:9px"></div>');
@@ -5178,24 +5202,19 @@ function guardarBloques() {
 
 function previewConfig() {
   const nc = parseInt(document.getElementById('cfg-cuotas').value) || 6;
-  const mes = parseInt(document.getElementById('cfg-mes').value) || 1;
-  const anio = parseInt(document.getElementById('cfg-anio').value) || 2026;
   const mat = parseFloat(document.getElementById('cfg-matricula').value) || 0;
   const cu = parseFloat(document.getElementById('cfg-cuota').value) || 0;
-  const labels = [];
-  for (let i = 0; i < nc; i++) { const d = new Date(anio, mes - 1 + i, 1); labels.push(MES_NOMBRES[d.getMonth()] + ' ' + String(d.getFullYear()).slice(2)); }
+  const dto = getConfig().dtoAdelanto;
   document.getElementById('cfg-preview').innerHTML =
-    '<b style="color:var(--text);">Cuotas del ciclo:</b> ' + labels.join(' · ') +
-    '<br><b style="color:var(--text);">Valor total regular:</b> $' + (mat + cu * nc) +
-    ' &nbsp;·&nbsp; <b style="color:var(--text);">Pago único (10% dcto.):</b> $' + Math.round((mat + cu * nc) * 0.9);
+    '<b style="color:var(--text);">Valor total regular:</b> $' + (mat + cu * nc) +
+    ' &nbsp;·&nbsp; <b style="color:var(--text);">Pago adelantado (' + dto + '% dcto.):</b> $' +
+    (mat + Math.round(cu * nc * (1 - dto / 100)));
 }
 
 function guardarConfig() {
   saveConfig({
     correo: (state.config && state.config.correo) || '',
     cicloNombre: document.getElementById('cfg-nombre').value.trim() || 'Ciclo actual',
-    inicioMes: parseInt(document.getElementById('cfg-mes').value),
-    inicioAnio: parseInt(document.getElementById('cfg-anio').value),
     numCuotas: parseInt(document.getElementById('cfg-cuotas').value),
     matricula: parseFloat(document.getElementById('cfg-matricula').value),
     cuotaBase: parseFloat(document.getElementById('cfg-cuota').value),
