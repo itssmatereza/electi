@@ -108,41 +108,59 @@ img, svg, table { max-width: 100%; }
 .login-title { font-size: 15px; font-weight: 700; color: #fff; margin-bottom: 3px; text-align: center; }
 .login-desc { font-size: 13px; color: rgba(255,255,255,0.45); margin-bottom: 24px; text-align: center; }
 
+/* ─── Campos de formulario ───
+   Por defecto viven sobre fondo claro: modales, tarjetas, configuración.
+   La unica superficie oscura del portal es la pantalla de acceso, y ahi se
+   aplica la variante .oscuro. Antes era al reves y cada campo nuevo fuera de
+   un modal salia con texto blanco sobre blanco. */
+
 .field { margin-bottom: 15px; }
 .field label {
-  display: block; font-size: 10.5px; font-weight: 700; color: rgba(255,255,255,0.5);
+  display: block; font-size: 10.5px; font-weight: 700; color: var(--gray);
   letter-spacing: 1px; margin-bottom: 7px; text-transform: uppercase;
 }
-.field input, .field select {
-  width: 100%; padding: 13px 15px; background: rgba(255,255,255,0.07);
-  border: 1px solid rgba(255,255,255,0.14); border-radius: 11px; color: var(--white);
-  font-size: 15px; font-family: 'DM Sans', sans-serif; outline: none;
+.field input, .field select, .field textarea {
+  width: 100%; padding: 10px 14px; background: var(--white);
+  border: 1px solid var(--border); border-radius: 8px; color: var(--text);
+  font-size: 14px; font-family: 'DM Sans', sans-serif; outline: none;
   transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
 }
-.field input::placeholder { color: rgba(255,255,255,0.28); }
-.field input:focus, .field select:focus {
+.field input::placeholder, .field textarea::placeholder { color: var(--gray); opacity: 0.55; }
+.field input:focus, .field select:focus, .field textarea:focus { border-color: var(--sky); }
+.field select option { background: var(--white); color: var(--text); }
+
+/* Variante sobre fondo oscuro */
+.oscuro .field label { color: rgba(255,255,255,0.5); }
+.oscuro .field input, .oscuro .field select, .oscuro .field textarea {
+  padding: 13px 15px; background: rgba(255,255,255,0.07);
+  border-color: rgba(255,255,255,0.14); border-radius: 11px; color: var(--white);
+  font-size: 15px;
+}
+.oscuro .field input::placeholder, .oscuro .field textarea::placeholder { color: rgba(255,255,255,0.28); opacity: 1; }
+.oscuro .field input:focus, .oscuro .field select:focus, .oscuro .field textarea:focus {
   border-color: var(--sky); background: rgba(255,255,255,0.1);
   box-shadow: 0 0 0 3px rgba(66,165,245,0.16);
 }
-.field select option { background: var(--navy); color: var(--white); }
+.oscuro .field select option { background: var(--navy); color: var(--white); }
 
 /* ─── Campo de contraseña con botón de ojo ─── */
 .pass-wrap { position: relative; }
 .pass-wrap input { padding-right: 48px; }
 .pass-eye {
-  position: absolute; top: 50%; right: 7px; transform: translateY(-50%);
+  position: absolute; top: 50%; right: 4px; transform: translateY(-50%);
   width: 34px; height: 34px; display: flex; align-items: center; justify-content: center;
   padding: 0; background: none; border: 0; border-radius: 8px; cursor: pointer;
-  color: rgba(255,255,255,0.45); transition: color 0.2s, background 0.2s;
+  color: var(--gray); transition: color 0.2s, background 0.2s;
 }
-.pass-eye:hover { color: var(--white); background: rgba(255,255,255,0.09); }
+.pass-eye:hover { color: var(--text); background: rgba(0,0,0,0.05); }
+.oscuro .pass-eye { right: 7px; color: rgba(255,255,255,0.45); }
+.oscuro .pass-eye:hover { color: var(--white); background: rgba(255,255,255,0.09); }
 .pass-eye:focus-visible { outline: 2px solid var(--sky); outline-offset: 1px; }
 .pass-eye svg {
   width: 19px; height: 19px; fill: none; stroke: currentColor;
   stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round;
 }
-.modal .pass-eye { color: var(--gray); right: 4px; }
-.modal .pass-eye:hover { color: var(--text); background: rgba(0,0,0,0.05); }
+
 
 /* ─── Autocompletado del navegador ───
    Al rellenar desde el gestor de contraseñas, Chrome y Safari pintan el campo
@@ -154,32 +172,30 @@ img, svg, table { max-width: 100%; }
 .field input:-webkit-autofill:hover,
 .field input:-webkit-autofill:focus,
 .field input:-webkit-autofill:active {
-  -webkit-box-shadow: 0 0 0 1000px #142a52 inset;
-  box-shadow: 0 0 0 1000px #142a52 inset;
-  -webkit-text-fill-color: var(--white);
-  caret-color: var(--white);
-  transition: background-color 100000s ease-in-out 0s;
-}
-.field input:-webkit-autofill:focus {
-  -webkit-box-shadow: 0 0 0 1000px #142a52 inset, 0 0 0 3px rgba(66,165,245,0.16);
-  box-shadow: 0 0 0 1000px #142a52 inset, 0 0 0 3px rgba(66,165,245,0.16);
-}
-.modal .field input:-webkit-autofill,
-.modal .field input:-webkit-autofill:hover,
-.modal .field input:-webkit-autofill:focus,
-.modal .field input:-webkit-autofill:active {
   -webkit-box-shadow: 0 0 0 1000px var(--white) inset;
   box-shadow: 0 0 0 1000px var(--white) inset;
   -webkit-text-fill-color: var(--text);
   caret-color: var(--text);
   transition: background-color 100000s ease-in-out 0s;
 }
-/* Red de seguridad: si algun navegador igual impone su fondo claro,
-   el ojo se oscurece para seguir siendo visible. */
-.pass-wrap input:-webkit-autofill ~ .pass-eye { color: rgba(255,255,255,0.75); }
-.pass-wrap input:-webkit-autofill ~ .pass-eye:hover { color: var(--white); }
-/* Firefox usa su propio selector */
-.pass-wrap input:autofill ~ .pass-eye { color: rgba(255,255,255,0.75); }
+.oscuro .field input:-webkit-autofill,
+.oscuro .field input:-webkit-autofill:hover,
+.oscuro .field input:-webkit-autofill:focus,
+.oscuro .field input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #142a52 inset;
+  box-shadow: 0 0 0 1000px #142a52 inset;
+  -webkit-text-fill-color: var(--white);
+  caret-color: var(--white);
+}
+.oscuro .field input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px #142a52 inset, 0 0 0 3px rgba(66,165,245,0.16);
+  box-shadow: 0 0 0 1000px #142a52 inset, 0 0 0 3px rgba(66,165,245,0.16);
+}
+/* Red de seguridad: si algun navegador impone igual su propio fondo,
+   el ojo cambia de color para seguir siendo visible. */
+.oscuro .pass-wrap input:-webkit-autofill ~ .pass-eye,
+.oscuro .pass-wrap input:autofill ~ .pass-eye { color: rgba(255,255,255,0.75); }
+.oscuro .pass-wrap input:-webkit-autofill ~ .pass-eye:hover { color: var(--white); }
 .modal .pass-wrap input:autofill ~ .pass-eye { color: var(--gray); }
 .login-err {
   font-size: 13px; color: #FCA5A5; margin-bottom: 12px; display: none; line-height: 1.55;
@@ -904,13 +920,6 @@ tbody tr:hover td { background: var(--off); }
 .modal-bg.open { display: flex; }
 .modal { background: var(--white); border-radius: 20px; padding: 36px; width: 100%; max-width: 480px; box-shadow: 0 24px 64px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; }
 .modal-title { font-size: 20px; font-weight: 800; color: var(--text); margin-bottom: 20px; letter-spacing: -0.5px; }
-.modal .field label { color: var(--gray); }
-.modal .field input, .modal .field select, .modal .field textarea {
-  width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px;
-  font-size: 14px; font-family: 'DM Sans', sans-serif; color: var(--text); background: var(--white);
-  outline: none; transition: border-color 0.2s;
-}
-.modal .field input:focus, .modal .field select:focus, .modal .field textarea:focus { border-color: var(--sky); }
 .modal .field textarea { resize: vertical; min-height: 80px; }
 .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 24px; }
 
@@ -1006,7 +1015,7 @@ tbody tr:hover td { background: var(--off); }
 <body>
 
 <!-- LOGIN -->
-<div id="login-screen">
+<div id="login-screen" class="oscuro">
   <div class="login-box">
 
     <div class="login-barra" id="login-barra"></div>
@@ -1222,7 +1231,7 @@ tbody tr:hover td { background: var(--off); }
         <input type="text" id="bv-colegio" placeholder="Nombre de tu institución">
       </div>
       <button class="bv-btn" onclick="bvIr(3)">Continuar →</button>
-      <button class="bv-btn-sec" onclick="bvIr(1)">← Volver</button>
+      <button class="bv-btn-sec" id="bv-volver-2" onclick="bvIr(1)">← Volver</button>
     </div>
 
     <!-- 3 · Representante -->
@@ -3004,7 +3013,7 @@ async function entrarConPerfil(uid, email, err, esGoogle) {
   if (onboardingPendiente(perfil) && !esGoogle) { abrirBienvenida(); return true; }
   if (onboardingPendiente(perfil) && esGoogle) {
     // Con Google no hay contrasena temporal que cambiar: se salta el paso 1.
-    abrirBienvenida(); bvMostrar(2); return true;
+    abrirBienvenida(); _bvSinPass = true; bvMostrar(2); return true;
   }
   // Equipo: contrasena temporal obligatoria de cambiar. Con Google no aplica.
   if (clavePendiente(perfil) && !esGoogle) { abrirCambioObligatorio(perfil); return true; }
@@ -3019,31 +3028,10 @@ async function loginGoogle() {
   btn.disabled = true;
   try {
     const cred = await window.fb.signInGoogle();
-    let perfil = null;
-    try { perfil = await window.fb.getDoc('usuarios', cred.user.uid); } catch (e0) { perfil = null; }
-
-    if (!perfil) {
-      // Nunca borramos cuentas automáticamente: solo cerramos sesión y avisamos.
-      await window.fb.signOut();
-      err.textContent = 'Esta cuenta de Google no está registrada en el portal. Pide a un administrador que te agregue con tu correo, o entra con correo y contraseña y usa "Vincular con Google" desde tu perfil.';
-      err.style.display = 'block';
-      return;
-    }
-
-    if (perfil.rol === 'alumno' && perfil.suspendido) {
-      await window.fb.signOut();
-      err.textContent = '⛔ Tu acceso está suspendido por valores pendientes. Comunícate con la coordinación de ELECTI.';
-      err.style.display = 'block';
-      return;
-    }
-
-    state.user = Object.assign({}, perfil, { username: cred.user.uid, role: perfil.rol, email: cred.user.email });
-    faseLogin('Cargando tu portal...');
-    const previaG = precargaComun();
-    if (perfil.rol === 'alumno') await cargarDatosAlumno(cred.user.uid, previaG);
-    else await cargarDatos(perfil.rol, previaG);
-    faseLogin('');
-    launchApp();
+    // Todo pasa por entrarConPerfil: es donde viven las comprobaciones de perfil,
+    // suspension y activacion de cupo. Duplicarlas aqui hacia que un alumno nuevo
+    // entrando con Google se saltara la pantalla de admision.
+    await entrarConPerfil(cred.user.uid, cred.user.email, err, true);
   } catch (e) {
     const c = e && e.code ? e.code : '';
     if (c.includes('popup-closed-by-user') || c.includes('cancelled-popup-request')) {
@@ -6537,24 +6525,7 @@ async function revisarRetornoGoogle() {
       return;
     }
     const err = document.getElementById('login-err');
-    let perfil = null;
-    try { perfil = await window.fb.getDoc('usuarios', cred.user.uid); } catch (e) { perfil = null; }
-    if (!perfil) {
-      await window.fb.signOut();
-      err.textContent = 'Esta cuenta de Google no está registrada en el portal. Pide a un administrador que te agregue con tu correo.';
-      err.style.display = 'block';
-      return;
-    }
-    if (perfil.rol === 'alumno' && perfil.suspendido) {
-      await window.fb.signOut();
-      err.textContent = '⛔ Tu acceso está suspendido por valores pendientes. Comunícate con la coordinación de ELECTI.';
-      err.style.display = 'block';
-      return;
-    }
-    state.user = Object.assign({}, perfil, { username: cred.user.uid, role: perfil.rol, email: cred.user.email });
-    if (perfil.rol === 'alumno') await cargarDatosAlumno(cred.user.uid);
-    else await cargarDatos(perfil.rol);
-    launchApp();
+    await entrarConPerfil(cred.user.uid, cred.user.email, err, true);
   } catch (e) { /* sin redirección pendiente */ }
 }
 
@@ -6570,6 +6541,7 @@ const BV_VERSION = 'v1';   // subir si cambia el texto de condiciones
 let _bvPasoActual = 0;
 let _bvPlan = null;
 let _bvModo = 'alumno';   // 'alumno' = activacion completa · 'clave' = solo cambio de contrasena
+let _bvSinPass = false;   // entro con Google: no hay contrasena temporal que cambiar
 
 // Todo el equipo (profesor, admin, dueno) recibe una contrasena temporal creada
 // por coordinacion. Mientras no la cambie, no entra al portal.
@@ -6593,8 +6565,9 @@ function bvError(n, msg) {
 
 function bvPintarPasos() {
   const cont = bvEl('bv-pasos');
+  const desde = _bvSinPass ? 2 : 1;
   let h = '';
-  for (let i = 1; i <= 5; i++) h += '<i class="' + (i <= _bvPasoActual ? 'on' : '') + '"></i>';
+  for (let i = desde; i <= 5; i++) h += '<i class="' + (i <= _bvPasoActual ? 'on' : '') + '"></i>';
   cont.innerHTML = h;
   cont.style.visibility = (_bvModo === 'clave' || _bvPasoActual === 0 || _bvPasoActual === 6) ? 'hidden' : 'visible';
 }
@@ -6605,6 +6578,17 @@ function bvMostrar(n) {
     if (p) p.classList.toggle('on', i === n);
   }
   _bvPasoActual = n;
+  // Sin paso de contrasena, volver desde el paso 2 llevaria a una pantalla
+  // que el alumno no puede completar.
+  const v2 = bvEl('bv-volver-2');
+  if (v2) v2.style.display = _bvSinPass ? 'none' : '';
+  const total = _bvSinPass ? 4 : 5;
+  [2,3,4,5].forEach(function(i){
+    const el = bvEl('bv-p' + i);
+    if (!el) return;
+    const kick = el.querySelector('.bv-kicker');
+    if (kick) kick.textContent = 'Paso ' + (i - (_bvSinPass ? 1 : 0)) + ' de ' + total;
+  });
   bvPintarPasos();
   bvEl('bienvenida').scrollTop = 0;
 }
@@ -6656,6 +6640,7 @@ function abrirCambioObligatorio(perfil) {
 
 function abrirBienvenida() {
   _bvModo = 'alumno';
+  _bvSinPass = false;
   document.getElementById('bv-p1-kicker').textContent = 'Paso 1 de 5';
   document.getElementById('bv-p1-titulo').textContent = 'Crea tu contraseña';
   document.getElementById('bv-p1-texto').textContent =
