@@ -1122,11 +1122,14 @@ tbody tr:hover td { background: var(--off); }
   line-height: 1; white-space: nowrap;
 }
 .bv-aviso {
-  background: #F5F9FF; border: 1px solid var(--sky-light); border-radius: 12px;
-  padding: 14px 16px; margin-bottom: 16px; font-size: 13px; line-height: 1.6; color: var(--text);
+  background: var(--off); border: 1px solid var(--border); border-left: 3px solid var(--sky-light);
+  border-radius: 9px; padding: 11px 13px; margin-bottom: 16px;
+  font-size: 12.2px; line-height: 1.55; color: var(--gray);
 }
-.bv-aviso b { font-weight: 800; }
-.bv-aviso-tit { font-size: 13px; font-weight: 800; margin-bottom: 5px; display: flex; gap: 7px; align-items: center; }
+.bv-aviso b { font-weight: 700; color: var(--text); }
+.bv-aviso-tit { font-size: 12.2px; font-weight: 800; color: var(--text); margin-bottom: 4px; }
+.bv-marca { font-size: 10px; padding: 4px 8px; opacity: .85; }
+.bv-pagos { gap: 5px; margin-top: 7px; }
 .bv-sub { font-size: 11px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: var(--gray); margin: 13px 0 0; }
 .bv-etq { display: inline-block; font-size: 10.5px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase;
   background: var(--green-bg); color: #15803D; border-radius: 100px; padding: 3px 9px; margin-left: 7px; }
@@ -1202,9 +1205,13 @@ tbody tr:hover td { background: var(--off); }
           <input type="text" id="bv-cedula" inputmode="numeric" placeholder="1712345678">
         </div>
         <div class="bv-campo">
-          <label>Tu celular</label>
-          <input type="tel" id="bv-tel" inputmode="tel" placeholder="0991234567">
+          <label>Fecha de nacimiento</label>
+          <input type="date" id="bv-nacimiento">
         </div>
+      </div>
+      <div class="bv-campo">
+        <label>Tu celular</label>
+        <input type="tel" id="bv-tel" inputmode="tel" placeholder="0991234567">
       </div>
       <div class="bv-campo">
         <label>Colegio</label>
@@ -1217,9 +1224,22 @@ tbody tr:hover td { background: var(--off); }
     <!-- 3 · Representante -->
     <div class="bv-paso" id="bv-p3">
       <div class="bv-kicker">Paso 3 de 5</div>
-      <div class="bv-h2">Tu representante</div>
-      <div class="bv-p">Es la persona adulta que responde por tu participación y por el compromiso económico. <b>Debe estar contigo para completar este paso.</b></div>
+      <div class="bv-h2" id="bv-p3-titulo">Tu representante</div>
+      <div class="bv-p" id="bv-p3-texto">Es la persona adulta que responde por tu participación y por el compromiso económico. <b>Debe estar contigo para completar este paso.</b></div>
       <div class="bv-err" id="bv-err3"></div>
+
+      <div id="bv-quien" style="display:none;margin-bottom:16px;">
+        <div class="bv-opcion" id="bv-op-yo" onclick="bvSetResponsable(true)">
+          <div class="bv-opcion-tit">Yo asumo el compromiso</div>
+          <div class="bv-opcion-des">Eres mayor de edad y firmas el acuerdo a tu nombre.</div>
+        </div>
+        <div class="bv-opcion" id="bv-op-rep" onclick="bvSetResponsable(false)">
+          <div class="bv-opcion-tit">Lo asume mi representante</div>
+          <div class="bv-opcion-des">Otra persona responde por el pago y firma contigo.</div>
+        </div>
+      </div>
+
+      <div id="bv-rep-campos">
       <div class="bv-campo">
         <label>Nombre completo del representante</label>
         <input type="text" id="bv-rep-nombre">
@@ -1253,6 +1273,43 @@ tbody tr:hover td { background: var(--off); }
           <input type="email" id="bv-rep-correo" inputmode="email">
         </div>
       </div>
+      </div>
+
+      <div class="bv-sub" style="margin-top:20px;">Datos de facturación</div>
+      <div class="bv-p" style="font-size:13px;margin:6px 0 12px;">A nombre de quién emitimos la factura del programa.</div>
+      <label class="bv-check" style="margin-bottom:12px;">
+        <input type="checkbox" id="bv-fac-mismo" checked onchange="bvToggleFacturacion()">
+        <span id="bv-fac-mismo-lbl">Facturar con los datos de mi representante</span>
+      </label>
+      <div id="bv-fac-otros" style="display:none;">
+        <div class="bv-campo">
+          <label>Nombre o razón social</label>
+          <input type="text" id="bv-fac-nombre">
+        </div>
+      </div>
+      <div class="bv-2col">
+        <div class="bv-campo">
+          <label>Tipo de identificación</label>
+          <select id="bv-fac-tipo" onchange="bvSyncFacturacion()">
+            <option value="cedula">Cédula</option>
+            <option value="ruc">RUC</option>
+            <option value="pasaporte">Pasaporte</option>
+          </select>
+        </div>
+        <div class="bv-campo">
+          <label id="bv-fac-id-lbl">Número de cédula</label>
+          <input type="text" id="bv-fac-id" inputmode="numeric">
+        </div>
+      </div>
+      <div class="bv-campo">
+        <label>Dirección</label>
+        <input type="text" id="bv-fac-dir" placeholder="Calle principal, número y referencia">
+      </div>
+      <div class="bv-campo">
+        <label>Correo donde llega la factura</label>
+        <input type="email" id="bv-fac-correo" inputmode="email">
+      </div>
+
       <button class="bv-btn" onclick="bvIr(4)">Continuar →</button>
       <button class="bv-btn-sec" onclick="bvIr(2)">← Volver</button>
     </div>
@@ -1266,12 +1323,10 @@ tbody tr:hover td { background: var(--off); }
       <div id="bv-planes"></div>
 
       <div class="bv-aviso">
-        <div class="bv-aviso-tit">🗓 Todavía no tienes que pagar nada</div>
-        Elegir aquí tu modalidad no genera ningún cobro. El pago se coordina
-        <b>después</b> de que firmes el acuerdo y lo entregues a coordinación, que te indicará
-        el monto exacto y la forma de hacerlo.
-        <div class="bv-sub">Formas de pago disponibles</div>
-        <div style="margin-top:6px;">Tarjeta de crédito o débito, <b>diferidos con tarjeta</b> y transferencia bancaria.</div>
+        <div class="bv-aviso-tit">Todavía no tienes que pagar nada</div>
+        Elegir tu modalidad no genera ningún cobro. El pago se coordina <b>después</b> de que
+        entregues el acuerdo firmado. Se acepta tarjeta de crédito o débito, diferidos con
+        tarjeta y transferencia bancaria.
         <div class="bv-pagos">
           <span class="bv-marca" style="color:#1A1F71;">VISA</span>
           <span class="bv-marca" style="color:#EB001B;">Mastercard</span>
@@ -1298,14 +1353,14 @@ tbody tr:hover td { background: var(--off); }
       <div class="bv-err" id="bv-err5"></div>
       <label class="bv-check">
         <input type="checkbox" id="bv-ok1">
-        <span>Confirmo que los datos que registré son verdaderos y que mi representante conoce y autoriza mi participación en el programa.</span>
+        <span id="bv-ok1-lbl">Confirmo que los datos que registré son verdaderos y que mi representante conoce y autoriza mi participación en el programa.</span>
       </label>
       <label class="bv-check">
         <input type="checkbox" id="bv-ok2">
         <span>Acepto la modalidad de pago elegida y las condiciones económicas del ciclo, incluida la <a href="/privacidad.html" target="_blank" rel="noopener" style="color:var(--blue);font-weight:700;">política de privacidad</a>.</span>
       </label>
       <div class="bv-campo">
-        <label>Escribe el nombre completo del representante para firmar</label>
+        <label id="bv-firma-lbl">Escribe el nombre completo del representante para firmar</label>
         <input type="text" id="bv-firma" placeholder="Nombre y apellido">
       </div>
       <button class="bv-btn" id="bv-btn5" onclick="bvConfirmar()">Confirmar mi cupo</button>
@@ -5349,6 +5404,9 @@ function generarAcuerdo(u) {
   const esc = s => String(s == null ? '' : s)
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   const nom    = esc(a.name);
+  // Mayor de edad que responde por si mismo: el acuerdo pierde la figura del
+  // responsable solidario en vez de dejar lineas de firma en blanco.
+  const autonomo = !!a.mayorAutonomo;
   const repNom = esc(a.repNombre) || '________________________________';
   const ced    = esc(a.cedula)    || '____________________';
   const repCed = esc(a.repCedula) || '____________________';
@@ -5363,11 +5421,14 @@ function generarAcuerdo(u) {
   const ficha = '<div class="ficha">' +
     filaFicha('Participante', nom, 'Documento de identidad', ced) +
     filaFicha('Institución educativa', esc(a.colegio), 'Sede', ciudad) +
-    filaFicha('Representante legal', repNom, 'Documento del representante', repCed) +
+    (autonomo
+      ? filaFicha('Responsable del compromiso', nom + ' (mayor de edad)', 'Documento del responsable', ced)
+      : filaFicha('Representante legal', repNom, 'Documento del representante', repCed)) +
     filaFicha('Contacto ' + (esBecado ? 'de la persona participante' : 'del participante'),
               (esc(a.telefono) || '—') + ' · ' + (esc(a.correo || a.email) || '—'),
-              'Contacto del representante',
-              (esc(a.repTel) || '—') + ' · ' + (esc(a.repCorreo) || '—')) +
+              autonomo ? 'Fecha de nacimiento' : 'Contacto del representante',
+              autonomo ? (esc(a.fechaNacimiento) || '—')
+                       : ((esc(a.repTel) || '—') + ' · ' + (esc(a.repCorreo) || '—'))) +
     '</div>';
 
   // ── Condiciones económicas ──
@@ -5459,8 +5520,10 @@ function generarAcuerdo(u) {
       '<p>La beca del <b>' + beca + '%</b> otorgada a <b>' + nom + '</b> representa un aporte de la Fundación Unión ' +
       'Latinoamericana de Líderes Estudiantiles por el Futuro equivalente a <b>USD $' + valorBeca + '</b> durante el ciclo. ' +
       'No es un descuento comercial: es una plaza financiada que deja de estar disponible para otra persona.</p>' +
-      '<p>Yo, <b>' + nom + '</b>, con documento de identidad ' + ced + ', conjuntamente con mi representante legal ' +
-      '<b>' + repNom + '</b>, con documento ' + repCed + ', suscribimos el presente pagaré a favor de la Fundación por el ' +
+      '<p>Yo, <b>' + nom + '</b>, con documento de identidad ' + ced +
+      (autonomo ? ', mayor de edad, suscribo el presente pagaré a favor de la Fundación por el '
+                : ', conjuntamente con mi representante legal <b>' + repNom + '</b>, con documento ' + repCed +
+                  ', suscribimos el presente pagaré a favor de la Fundación por el ') +
       'valor de <b>USD $' + valorBeca + '</b>, correspondiente al monto de la beca recibida.</p>' +
       '<p>Este pagaré es un respaldo, no un cobro anticipado: <b>se extingue automáticamente al culminar el ciclo cumpliendo ' +
       'este acuerdo</b>. Solo se hace exigible si la coordinación retira la beca por incumplimiento, en cuyo caso el valor ' +
@@ -5483,8 +5546,10 @@ function generarAcuerdo(u) {
       'o parcialmente este pagaré.</p>'
     : '<div class="doc-tit" style="font-size:13.5pt">Anexo — Compromiso de Pago del Ciclo</div>' +
       '<div class="doc-tit-sub" style="margin-bottom:16px">Aplica a participantes bajo tarifa regular</div>' +
-      '<p>Yo, <b>' + nom + '</b>, con documento de identidad ' + ced + ', conjuntamente con mi representante legal ' +
-      '<b>' + repNom + '</b>, con documento ' + repCed + ', declaramos conocer y aceptar que la inscripción en el programa ' +
+      '<p>Yo, <b>' + nom + '</b>, con documento de identidad ' + ced +
+      (autonomo ? ', mayor de edad, declaro conocer y aceptar que la inscripción en el programa '
+                : ', conjuntamente con mi representante legal <b>' + repNom + '</b>, con documento ' + repCed +
+                  ', declaramos conocer y aceptar que la inscripción en el programa ') +
       'ELECTI compromete el <b>ciclo completo ' + esc(cfg.cicloNombre) + '</b>, por un valor de <b>USD $' + r.total + '</b> ' +
       'bajo la modalidad de ' + (esUnico ? 'pago único' : 'pago mensual') + '.</p>' +
       '<p>Este compromiso opera como en cualquier institución de educación superior: el valor corresponde al cupo reservado ' +
@@ -5583,9 +5648,11 @@ function generarAcuerdo(u) {
     '<p>Con su firma, las partes confirman haber leído, comprendido y aceptado este acuerdo para todo el ciclo ' +
     esc(cfg.cicloNombre) + '.</p>' +
 
-    '<div class="firmas">' +
-    '<div class="firma"><div class="firma-linea"></div><div class="firma-nom">' + nom + '</div><div class="firma-rol">Participante</div></div>' +
-    '<div class="firma"><div class="firma-linea"></div><div class="firma-nom">' + repNom + '</div><div class="firma-rol">Representante legal</div></div>' +
+    '<div class="firmas' + (autonomo ? ' dos' : '') + '">' +
+    '<div class="firma"><div class="firma-linea"></div><div class="firma-nom">' + nom + '</div><div class="firma-rol">' +
+      (autonomo ? 'Participante · responsable del compromiso' : 'Participante') + '</div></div>' +
+    (autonomo ? '' :
+      '<div class="firma"><div class="firma-linea"></div><div class="firma-nom">' + repNom + '</div><div class="firma-rol">Representante legal</div></div>') +
     '<div class="firma"><div class="firma-linea"></div><div class="firma-nom">' + esc(cfg.firmante) + '</div><div class="firma-rol">' + esc(cfg.firmanteRol) + ' · ELECTI</div></div>' +
     '</div>' +
 
@@ -5595,9 +5662,11 @@ function generarAcuerdo(u) {
     '<div class="hoja"><div class="agua"><img src="' + ISO + '" alt=""></div><div class="contenido">' +
     encabezado('<b>' + esc(cfg.cicloNombre) + '</b><br>Anexo — ' + (esBecado ? 'Pagaré por el valor de la beca' : 'Compromiso de pago')) +
     '<div class="anexo anexo-solo">' + anexo +
-    '<div class="firmas dos" style="margin-top:40px">' +
+    '<div class="firmas' + (autonomo ? '' : ' dos') + '" style="margin-top:40px' +
+      (autonomo ? ';grid-template-columns:1fr;max-width:300px;margin-left:auto;margin-right:auto' : '') + '">' +
     '<div class="firma"><div class="firma-linea"></div><div class="firma-nom">' + nom + '</div><div class="firma-rol">' + rolResp + '</div></div>' +
-    '<div class="firma"><div class="firma-linea"></div><div class="firma-nom">' + repNom + '</div><div class="firma-rol">Responsable solidario · fecha y firma</div></div>' +
+    (autonomo ? '' :
+      '<div class="firma"><div class="firma-linea"></div><div class="firma-nom">' + repNom + '</div><div class="firma-rol">Responsable solidario · fecha y firma</div></div>') +
     '</div></div>' +
 
     '</div><div class="pie"><span>Un programa de Unión Estudiantil</span><span>Página 3 de 3</span></div></div>' +
@@ -6277,10 +6346,21 @@ function abrirBienvenida() {
   bvEl('bv-cedula').value     = a.cedula || '';
   bvEl('bv-tel').value        = a.telefono || '';
   bvEl('bv-colegio').value    = a.colegio || '';
+  bvEl('bv-nacimiento').value = a.fechaNacimiento || '';
+  _bvAutonomo = !!a.mayorAutonomo;
   bvEl('bv-rep-nombre').value = a.repNombre || '';
   bvEl('bv-rep-cedula').value = a.repCedula || '';
   bvEl('bv-rep-tel').value    = a.repTel || '';
   bvEl('bv-rep-correo').value = a.repCorreo || '';
+
+  const f = a.facturacion || {};
+  bvEl('bv-fac-mismo').checked = f.mismoRepresentante !== false;
+  bvEl('bv-fac-nombre').value  = f.nombre || '';
+  bvEl('bv-fac-tipo').value    = f.tipo || 'cedula';
+  bvEl('bv-fac-id').value      = f.identificacion || '';
+  bvEl('bv-fac-dir').value     = f.direccion || '';
+  bvEl('bv-fac-correo').value  = f.correo || '';
+  bvToggleFacturacion();
 
   bvPintarPlanes();
   bvMostrar(0);
@@ -6332,6 +6412,85 @@ function bvPintarPlanes() {
   bvSetPlan(_bvPlan || 'mensual');
 }
 
+// La factura casi siempre va al representante. El caso distinto existe
+// (empresa del padre, abuelo que paga), pero es la excepcion: por eso el
+// camino corto es el marcado por defecto y el otro solo pide el nombre extra.
+// Mayoria de edad calculada, no declarada: la fecha de nacimiento es un dato
+// que hace falta igual para certificados, y evita que el flujo dependa de que
+// alguien marque honestamente una casilla.
+function bvEdad(iso) {
+  if (!iso) return null;
+  const n = new Date(iso + 'T00:00:00');
+  if (isNaN(n.getTime())) return null;
+  const h = new Date();
+  let e = h.getFullYear() - n.getFullYear();
+  const m = h.getMonth() - n.getMonth();
+  if (m < 0 || (m === 0 && h.getDate() < n.getDate())) e--;
+  return e;
+}
+
+let _bvAutonomo = false;   // el alumno mayor de edad responde por si mismo
+
+function bvPrepararPaso3() {
+  const edad = bvEdad(document.getElementById('bv-nacimiento').value);
+  const mayor = edad !== null && edad >= 18;
+  document.getElementById('bv-quien').style.display = mayor ? 'block' : 'none';
+  if (!mayor) { bvSetResponsable(false); return; }
+  bvSetResponsable(_bvAutonomo);
+}
+
+function bvSetResponsable(yo) {
+  _bvAutonomo = !!yo;
+  const opYo = document.getElementById('bv-op-yo');
+  const opRep = document.getElementById('bv-op-rep');
+  if (opYo) opYo.classList.toggle('sel', _bvAutonomo);
+  if (opRep) opRep.classList.toggle('sel', !_bvAutonomo);
+  document.getElementById('bv-rep-campos').style.display = _bvAutonomo ? 'none' : 'block';
+  document.getElementById('bv-p3-titulo').textContent = _bvAutonomo ? 'Tu compromiso' : 'Tu representante';
+  document.getElementById('bv-p3-texto').innerHTML = _bvAutonomo
+    ? 'Como eres mayor de edad, firmas el acuerdo a tu nombre y respondes por el compromiso económico.'
+    : 'Es la persona adulta que responde por tu participación y por el compromiso económico. <b>Debe estar contigo para completar este paso.</b>';
+  document.getElementById('bv-fac-mismo-lbl').textContent = _bvAutonomo
+    ? 'Facturar a mi nombre'
+    : 'Facturar con los datos de mi representante';
+  bvError(3, '');
+  bvSyncFacturacion();
+}
+
+function bvToggleFacturacion() {
+  const mismo = document.getElementById('bv-fac-mismo').checked;
+  document.getElementById('bv-fac-otros').style.display = mismo ? 'none' : 'block';
+  bvSyncFacturacion();
+}
+
+function bvSyncFacturacion() {
+  const tipo = document.getElementById('bv-fac-tipo').value;
+  document.getElementById('bv-fac-id-lbl').textContent =
+    tipo === 'ruc' ? 'Número de RUC' : tipo === 'pasaporte' ? 'Número de pasaporte' : 'Número de cédula';
+  const mismo = document.getElementById('bv-fac-mismo').checked;
+  // Prellenar solo si esta vacio: nunca pisamos lo que el usuario ya escribio.
+  if (mismo) {
+    const id = document.getElementById('bv-fac-id');
+    const co = document.getElementById('bv-fac-correo');
+    const ced = _bvAutonomo ? document.getElementById('bv-cedula').value.trim()
+                            : document.getElementById('bv-rep-cedula').value.trim();
+    const cor = _bvAutonomo ? (state.user && state.user.email) || ''
+                            : document.getElementById('bv-rep-correo').value.trim();
+    if (!id.value && tipo === 'cedula') id.value = ced;
+    if (!co.value) co.value = cor;
+  }
+  bvError(3, '');
+}
+
+function bvNombreFacturacion() {
+  if (!document.getElementById('bv-fac-mismo').checked) {
+    return document.getElementById('bv-fac-nombre').value.trim();
+  }
+  return _bvAutonomo
+    ? document.getElementById('bv-nombre').value.trim()
+    : document.getElementById('bv-rep-nombre').value.trim();
+}
+
 function bvSetPlan(p) {
   _bvPlan = p;
   const m = bvEl('bv-op-mensual'), u = bvEl('bv-op-unico');
@@ -6369,29 +6528,92 @@ async function bvGuardarPass() {
   }
 }
 
-// Validación mínima de cédula ecuatoriana: 10 dígitos y provincia válida.
-// No aplicamos el dígito verificador para no rechazar pasaportes o extranjeros.
+// ─── Validación de identidad y teléfono (Ecuador) ───
+
+function soloDigitos(v) { return String(v || '').replace(/\D/g, ''); }
+
+// Algoritmo oficial del décimo dígito de la cédula ecuatoriana (módulo 10).
+// Atrapa dígitos transpuestos y números inventados, que es justo lo que pasa
+// cuando alguien escribe de memoria el número de su representante.
 function bvCedulaOk(v) {
-  const s = String(v || '').replace(/\D/g, '');
-  return s.length >= 9 && s.length <= 13;
+  const d = soloDigitos(v);
+  if (d.length !== 10) return false;
+  const prov = parseInt(d.slice(0, 2), 10);
+  if (!((prov >= 1 && prov <= 24) || prov === 30)) return false;
+  if (parseInt(d[2], 10) > 5) return false;   // 6 y 9 son entidades, no personas
+  let suma = 0;
+  for (let i = 0; i < 9; i++) {
+    let n = parseInt(d[i], 10) * (i % 2 === 0 ? 2 : 1);
+    if (n > 9) n -= 9;
+    suma += n;
+  }
+  return ((10 - (suma % 10)) % 10) === parseInt(d[9], 10);
+}
+
+// RUC: 13 dígitos. Persona natural = cédula válida + '001'.
+// Sociedades (tercer dígito 9) y sector público (6) usan otro verificador;
+// ahí solo comprobamos la forma, que es lo que el portal necesita saber.
+function bvRucOk(v) {
+  const d = soloDigitos(v);
+  if (d.length !== 13) return false;
+  const prov = parseInt(d.slice(0, 2), 10);
+  if (!((prov >= 1 && prov <= 24) || prov === 30)) return false;
+  const tercero = parseInt(d[2], 10);
+  if (tercero < 6) return bvCedulaOk(d.slice(0, 10)) && d.slice(10) === '001';
+  if (tercero === 6 || tercero === 9) return /^\d{3}$/.test(d.slice(10)) && d.slice(10) !== '000';
+  return false;
+}
+
+// Celular ecuatoriano: 09 + 8 dígitos. Fijo: 0 + código de provincia + 7.
+// Acepta que lo escriban con +593 o con espacios y lo normaliza a formato local.
+function bvTelefonoNormalizado(v) {
+  let d = soloDigitos(v);
+  if (d.indexOf('593') === 0) d = '0' + d.slice(3);
+  if (d.length === 9 && d[0] === '9') d = '0' + d;        // escribió 9xxxxxxxx
+  if (/^09\d{8}$/.test(d)) return d;                      // celular
+  if (/^0[2-7]\d{7}$/.test(d)) return d;                  // fijo
+  return null;
 }
 
 function bvIr(n) {
   if (n === 3) {
     bvError(2, '');
-    if (!bvEl('bv-nombre').value.trim()) { bvError(2, 'Escribe tu nombre completo.'); return; }
-    if (!bvCedulaOk(bvEl('bv-cedula').value)) { bvError(2, 'Revisa tu número de cédula.'); return; }
-    if (bvEl('bv-tel').value.replace(/\D/g, '').length < 9) { bvError(2, 'Escribe un número de celular válido.'); return; }
+    if (bvEl('bv-nombre').value.trim().split(/\s+/).length < 2) { bvError(2, 'Escribe tu nombre y apellido completos.'); return; }
+    if (!bvCedulaOk(bvEl('bv-cedula').value)) { bvError(2, 'Esa cédula no es válida. Revisa que estén los 10 dígitos y en el orden correcto.'); return; }
+    const edad = bvEdad(bvEl('bv-nacimiento').value);
+    if (edad === null) { bvError(2, 'Escribe tu fecha de nacimiento.'); return; }
+    if (edad < 10 || edad > 90) { bvError(2, 'Revisa tu fecha de nacimiento.'); return; }
+    const t = bvTelefonoNormalizado(bvEl('bv-tel').value);
+    if (!t) { bvError(2, 'El teléfono debe ser un celular (09 + 8 dígitos) o un fijo (0 + 8 dígitos).'); return; }
+    bvEl('bv-tel').value = t;
     if (!bvEl('bv-colegio').value.trim()) { bvError(2, 'Indica tu colegio.'); return; }
+    bvPrepararPaso3();
   }
   if (n === 4) {
     bvError(3, '');
-    const rn = bvEl('bv-rep-nombre').value.trim();
-    if (rn.split(/\s+/).length < 2) { bvError(3, 'Escribe el nombre y apellido de tu representante.'); return; }
-    if (!bvCedulaOk(bvEl('bv-rep-cedula').value)) { bvError(3, 'Revisa la cédula del representante.'); return; }
-    if (!bvEl('bv-rep-parentesco').value) { bvError(3, 'Indica el parentesco.'); return; }
-    if (bvEl('bv-rep-tel').value.replace(/\D/g, '').length < 9) { bvError(3, 'Escribe un celular válido del representante.'); return; }
-    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(bvEl('bv-rep-correo').value.trim())) { bvError(3, 'Escribe un correo válido del representante.'); return; }
+    if (!_bvAutonomo) {
+      const rn = bvEl('bv-rep-nombre').value.trim();
+      if (rn.split(/\s+/).length < 2) { bvError(3, 'Escribe el nombre y apellido de tu representante.'); return; }
+      if (!bvCedulaOk(bvEl('bv-rep-cedula').value)) { bvError(3, 'La cédula del representante no es válida. Revisa los 10 dígitos.'); return; }
+      if (soloDigitos(bvEl('bv-rep-cedula').value) === soloDigitos(bvEl('bv-cedula').value)) {
+        bvError(3, 'La cédula del representante no puede ser la misma que la tuya.'); return;
+      }
+      if (!bvEl('bv-rep-parentesco').value) { bvError(3, 'Indica el parentesco.'); return; }
+      const rt = bvTelefonoNormalizado(bvEl('bv-rep-tel').value);
+      if (!rt) { bvError(3, 'El celular del representante no tiene un formato válido (09 + 8 dígitos).'); return; }
+      bvEl('bv-rep-tel').value = rt;
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(bvEl('bv-rep-correo').value.trim())) { bvError(3, 'Escribe un correo válido del representante.'); return; }
+    }
+
+    // Facturación
+    if (!bvNombreFacturacion()) { bvError(3, 'Escribe el nombre o razón social para la factura.'); return; }
+    const tipo = bvEl('bv-fac-tipo').value;
+    const idFac = bvEl('bv-fac-id').value.trim();
+    if (tipo === 'cedula' && !bvCedulaOk(idFac)) { bvError(3, 'La cédula de facturación no es válida.'); return; }
+    if (tipo === 'ruc' && !bvRucOk(idFac)) { bvError(3, 'El RUC no es válido. Son 13 dígitos y normalmente terminan en 001.'); return; }
+    if (tipo === 'pasaporte' && idFac.length < 5) { bvError(3, 'Escribe el número de pasaporte.'); return; }
+    if (bvEl('bv-fac-dir').value.trim().length < 8) { bvError(3, 'Escribe la dirección de facturación con calle y número.'); return; }
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(bvEl('bv-fac-correo').value.trim())) { bvError(3, 'Escribe un correo válido para la factura.'); return; }
   }
   if (n === 5) {
     if (!_bvPlan) { bvError(4, 'Elige una modalidad de pago.'); return; }
@@ -6412,13 +6634,17 @@ function bvPintarConfirmacion() {
 
   bvEl('bv-confirma').innerHTML =
     '<div class="bv-fila"><span>Alumno</span><b>' + bvEl('bv-nombre').value.trim() + '</b></div>' +
-    '<div class="bv-fila"><span>Representante</span><b>' + bvEl('bv-rep-nombre').value.trim() + '</b></div>' +
+    (_bvAutonomo
+      ? '<div class="bv-fila"><span>Responsable</span><b>Tú mismo (mayor de edad)</b></div>'
+      : '<div class="bv-fila"><span>Representante</span><b>' + bvEl('bv-rep-nombre').value.trim() + '</b></div>') +
+    '<div class="bv-fila"><span>Factura a</span><b>' + bvNombreFacturacion() + '</b></div>' +
     '<div class="bv-fila"><span>Sede</span><b>' + nombreSede(a.sede) + '</b></div>' +
     '<div class="bv-fila"><span>Periodo</span><b>' + rango + '</b></div>' +
     '<div class="bv-fila"><span>Modalidad</span><b>' + (cuota === 0 ? 'Beca completa' : esUnico ? 'Pago por adelantado' : 'Pago mensual') + '</b></div>' +
     '<div class="bv-fila"><span>Total del ciclo</span><b>$' + total + '</b></div>' +
     '<div class="bv-fila"><span>Primer pago</span><b>Se coordina tras entregar el acuerdo</b></div>';
 
+  const quien = _bvAutonomo ? 'El participante que suscribe' : 'El representante que suscribe';
   const compromiso = cuota === 0
     ? '<p>Al no existir cuotas mensuales, el compromiso del alumno con el programa no es económico sino de ' +
       'asistencia, participación y cumplimiento académico. La beca se mantiene vigente mientras se cumplan estas condiciones.</p>'
@@ -6431,8 +6657,9 @@ function bvPintarConfirmacion() {
   bvEl('bv-legal').innerHTML =
     '<p><b>Condiciones de participación · ' + cfg.cicloNombre + '</b></p>' +
     compromiso +
-    '<p>El representante que suscribe declara conocer la naturaleza del programa, autorizar la participación del alumno ' +
-    'y responder solidariamente por las obligaciones económicas derivadas de esta inscripción.</p>' +
+    '<p>' + quien + ' declara conocer la naturaleza del programa' +
+    (_bvAutonomo ? ' y asumir las obligaciones económicas derivadas de esta inscripción.'
+                 : ', autorizar la participación del alumno y responder solidariamente por las obligaciones económicas derivadas de esta inscripción.') + '</p>' +
     '<p>La certificación al término del ciclo está condicionada al cumplimiento del porcentaje mínimo de asistencia, ' +
     'a la aprobación de los componentes del programa y a encontrarse al día en los valores acordados.</p>' +
     '<p>El alumno y su representante autorizan el tratamiento de los datos registrados con fines académicos y administrativos ' +
@@ -6440,6 +6667,12 @@ function bvPintarConfirmacion() {
     '<p>La reserva del cupo se perfecciona con la aceptación de estas condiciones y el pago del valor inicial correspondiente ' +
     'a la modalidad elegida.</p>';
 
+  document.getElementById('bv-ok1-lbl').textContent = _bvAutonomo
+    ? 'Confirmo que los datos que registré son verdaderos y que participo en el programa por decisión propia.'
+    : 'Confirmo que los datos que registré son verdaderos y que mi representante conoce y autoriza mi participación en el programa.';
+  document.getElementById('bv-firma-lbl').textContent = _bvAutonomo
+    ? 'Escribe tu nombre completo para firmar'
+    : 'Escribe el nombre completo del representante para firmar';
   bvError(5, '');
 }
 
@@ -6447,9 +6680,10 @@ async function bvConfirmar() {
   bvError(5, '');
   if (!bvEl('bv-ok1').checked || !bvEl('bv-ok2').checked) { bvError(5, 'Debes aceptar ambas declaraciones para continuar.'); return; }
   const firma = bvEl('bv-firma').value.trim();
-  const rep = bvEl('bv-rep-nombre').value.trim();
-  if (norm(firma) !== norm(rep)) {
-    bvError(5, 'La firma debe coincidir exactamente con el nombre del representante: ' + rep);
+  const rep = _bvAutonomo ? '' : bvEl('bv-rep-nombre').value.trim();
+  const debeFirmar = _bvAutonomo ? bvEl('bv-nombre').value.trim() : rep;
+  if (norm(firma) !== norm(debeFirmar)) {
+    bvError(5, 'La firma debe coincidir exactamente con: ' + debeFirmar);
     return;
   }
 
@@ -6460,21 +6694,33 @@ async function bvConfirmar() {
     cedula:    bvEl('bv-cedula').value.trim(),
     telefono:  bvEl('bv-tel').value.trim(),
     colegio:   bvEl('bv-colegio').value.trim(),
-    repNombre: rep,
-    repCedula: bvEl('bv-rep-cedula').value.trim(),
-    repTel:    bvEl('bv-rep-tel').value.trim(),
-    repCorreo: bvEl('bv-rep-correo').value.trim().toLowerCase(),
+    fechaNacimiento: bvEl('bv-nacimiento').value,
+    mayorAutonomo:   _bvAutonomo,
+    repNombre: _bvAutonomo ? '' : rep,
+    repCedula: _bvAutonomo ? '' : bvEl('bv-rep-cedula').value.trim(),
+    repTel:    _bvAutonomo ? '' : bvEl('bv-rep-tel').value.trim(),
+    repCorreo: _bvAutonomo ? '' : bvEl('bv-rep-correo').value.trim().toLowerCase(),
     plan:      cuota === 0 ? 'mensual' : _bvPlan,
     claveCambiada: true,
+    facturacion: {
+      mismoRepresentante: bvEl('bv-fac-mismo').checked,
+      nombre:         bvNombreFacturacion(),
+      tipo:           bvEl('bv-fac-tipo').value,
+      identificacion: bvEl('bv-fac-id').value.trim(),
+      direccion:      bvEl('bv-fac-dir').value.trim(),
+      correo:         bvEl('bv-fac-correo').value.trim().toLowerCase(),
+      telefono:       (_bvAutonomo ? bvEl('bv-tel') : bvEl('bv-rep-tel')).value.trim(),
+    },
     initials:  bvEl('bv-nombre').value.trim().split(' ').map(function(x){ return x[0]; }).join('').slice(0,2).toUpperCase(),
     onboarding: {
       hecho: true,
       version: BV_VERSION,
       fecha: new Date().toISOString(),
       plan: cuota === 0 ? 'mensual' : _bvPlan,
-      parentesco: bvEl('bv-rep-parentesco').value,
-      firmante: rep,
-      firmanteCedula: bvEl('bv-rep-cedula').value.trim(),
+      parentesco: _bvAutonomo ? 'El propio participante' : bvEl('bv-rep-parentesco').value,
+      autonomo: _bvAutonomo,
+      firmante: debeFirmar,
+      firmanteCedula: (_bvAutonomo ? bvEl('bv-cedula') : bvEl('bv-rep-cedula')).value.trim(),
       dispositivo: String(navigator.userAgent || '').slice(0, 180),
     },
   };
