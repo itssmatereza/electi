@@ -1089,7 +1089,17 @@ tbody tr:hover td { background: var(--off); }
 .bv-paso.on { display: block; animation: bvIn .28s ease; }
 @keyframes bvIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 .bv-kicker { font-size: 11.5px; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; color: var(--blue); margin-bottom: 8px; }
-.bv-h1 { font-size: 27px; font-weight: 800; line-height: 1.2; letter-spacing: -.02em; margin-bottom: 10px; }
+.bv-eyebrow { font-size: 11.5px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--blue); margin-bottom: 12px; }
+.bv-h1 { font-size: 31px; font-weight: 800; line-height: 1.06; letter-spacing: -.035em; margin-bottom: 13px; }
+.bv-iso { display: flex; justify-content: center; margin-bottom: 20px; }
+.bv-iso img { height: 70px; width: auto; display: block; }
+.bv-intro { font-size: 13.5px; line-height: 1.65; color: var(--gray); margin-bottom: 22px; }
+.bv-intro b { color: var(--text); font-weight: 700; }
+.bv-beca-caja { background: var(--navy); border-radius: 14px; padding: 17px 18px; text-align: center; margin-bottom: 11px; }
+.bv-beca-lbl { font-size: 10.5px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--sky); margin-bottom: 7px; }
+.bv-beca-num { font-size: 27px; font-weight: 800; color: #fff; letter-spacing: -.03em; line-height: 1.1; }
+.bv-beca-sub { font-size: 13px; color: rgba(255,255,255,.6); margin-top: 3px; }
+.bv-beca-nota { font-size: 11.5px; line-height: 1.55; color: var(--gray); text-align: center; margin-bottom: 24px; }
 .bv-h2 { font-size: 20px; font-weight: 800; line-height: 1.25; margin-bottom: 6px; }
 .bv-p { font-size: 14.5px; line-height: 1.6; color: var(--gray); margin-bottom: 18px; }
 .bv-p b { color: var(--text); }
@@ -1174,15 +1184,15 @@ tbody tr:hover td { background: var(--off); }
 
     <!-- 0 · Felicitación -->
     <div class="bv-paso on" id="bv-p0">
-      <div class="bv-sello">✓</div>
+      <div class="bv-iso"><img id="bv-iso-img" alt="ELECTI"></div>
       <div style="text-align:center;">
-        <div class="bv-kicker" id="bv-ciclo">ELECTI</div>
-        <div class="bv-h1" id="bv-titulo">¡Felicitaciones!</div>
-        <div class="bv-p" id="bv-intro"></div>
+        <div class="bv-eyebrow">Admisión confirmada</div>
+        <div class="bv-h1" id="bv-titulo">Estás dentro</div>
+        <div class="bv-intro" id="bv-intro"></div>
       </div>
-      <div class="bv-tarjeta" id="bv-resumen"></div>
-      <button class="bv-btn" onclick="bvIr(_bvSinPass ? 2 : 1)">Activar mi cupo →</button>
-      <div class="bv-nota">Toma unos 3 minutos. Necesitas los datos de tu representante.</div>
+      <div id="bv-beca"></div>
+      <button class="bv-btn" onclick="bvIr(_bvSinPass ? 2 : 1)">Activar mi cupo</button>
+      <div class="bv-nota">Toma unos 5 minutos · necesitas a tu representante</div>
     </div>
 
     <!-- 1 · Contraseña -->
@@ -1397,11 +1407,7 @@ tbody tr:hover td { background: var(--off); }
         <div style="font-size:13.5px;line-height:1.7;color:var(--gray);">
           <b style="color:var(--text);">1.</b> Ábrelo con el botón de arriba y guárdalo en PDF.<br>
           <b style="color:var(--text);">2.</b> Fírmalo tú y tu representante — a mano sobre el papel, o con firma digital.<br>
-          <b style="color:var(--text);">3.</b> Envía el PDF firmado a coordinación por cualquiera de estas vías:
-        </div>
-        <div style="margin-top:12px;display:flex;gap:9px;flex-wrap:wrap;">
-          <a class="btn btn-sky" id="bv-mail" href="#" style="font-size:13px;text-decoration:none;">✉ Por correo</a>
-          <a class="btn btn-ghost" id="bv-wa" href="#" target="_blank" rel="noopener" style="font-size:13px;text-decoration:none;">💬 Por WhatsApp</a>
+          <b style="color:var(--text);">3.</b> Hazlo llegar a coordinación por el mismo medio por el que te contactamos.
         </div>
       </div>
 
@@ -1889,13 +1895,12 @@ tbody tr:hover td { background: var(--off); }
           <div style="flex:1;min-width:220px;">
             <div style="font-size:15px;font-weight:800;margin-bottom:4px;">Falta tu acuerdo firmado</div>
             <div style="font-size:13.5px;line-height:1.6;color:#78350F;">
-              Descarga el acuerdo de compromiso, fírmalo junto a tu representante y envíalo a coordinación.
-              Cuando lo recibamos y quede firmado por el programa, este aviso desaparece.
+              Descarga el acuerdo de compromiso, fírmalo junto a tu representante y hazlo llegar a coordinación
+              por el mismo medio por el que te contactamos. Cuando lo recibamos y quede firmado por el programa,
+              este aviso desaparece.
             </div>
             <div style="margin-top:12px;display:flex;gap:9px;flex-wrap:wrap;">
               <button class="btn btn-sky" style="font-size:13px;" onclick="generarAcuerdo(state.user.username)">Descargar acuerdo</button>
-              <a class="btn btn-ghost" style="font-size:13px;text-decoration:none;" id="al-acuerdo-mail" href="#">✉ Por correo</a>
-              <a class="btn btn-ghost" style="font-size:13px;text-decoration:none;" id="al-acuerdo-wa" href="#" target="_blank" rel="noopener">💬 Por WhatsApp</a>
             </div>
           </div>
         </div>
@@ -4293,13 +4298,6 @@ function renderAlumnoHome() {
     alertaAc.style.display = yaEsta ? 'none' : 'block';
     okAc.style.display = yaEsta ? 'block' : 'none';
     if (yaEsta) document.getElementById('al-acuerdo-link').href = me.acuerdoUrl;
-    else {
-      const asunto = encodeURIComponent('Acuerdo firmado — ' + (me.name || ''));
-      const cuerpo = encodeURIComponent('Hola, adjunto mi acuerdo de compromiso firmado.\n\n' + (me.name || '') + '\n' + nombreSede(me.sede));
-      document.getElementById('al-acuerdo-mail').href = 'mailto:' + correoAdmin() + '?subject=' + asunto + '&body=' + cuerpo;
-      document.getElementById('al-acuerdo-wa').href = 'https://wa.me/' + cfg.whatsapp + '?text=' +
-        encodeURIComponent('Hola, soy ' + (me.name || '') + ' (' + nombreSede(me.sede) + '). Les envío mi acuerdo de compromiso firmado.');
-    }
   }
 
   const chips = [];
@@ -6677,27 +6675,50 @@ function abrirBienvenida(sinPass) {
   const cfg = getConfig(a.sede);
   const cuota = cuotaDe(a), mat = matriculaDe(a), beca = a.beca || 0;
 
-  bvEl('bv-ciclo').textContent = cfg.cicloNombre;
-  bvEl('bv-titulo').textContent = '¡Felicitaciones, ' + (a.name || '').split(' ')[0] + '!';
-  bvEl('bv-intro').innerHTML =
-    'Quedaste dentro de <b>ELECTI</b>, la Escuela de Liderazgo y Gestión de Proyectos. ' +
-    (beca > 0
-      ? 'El comité te otorgó además una <b>beca del ' + beca + '%</b> sobre el valor de las cuotas. '
-      : '') +
-    'Tu cupo en la sede de <b>' + nombreSede(a.sede) + '</b> está reservado a tu nombre — ' +
-    'solo falta que lo actives.';
+  bvEl('bv-iso-img').src = ISO_ACUERDO;
+  bvEl('bv-titulo').innerHTML = (a.name || '').split(' ')[0] + ',<br>estás dentro';
 
-  // El porcentaje de beca no se muestra: el alumno ve el valor que le toca pagar,
-  // no la tabla interna de descuentos.
-  let res = '<div class="bv-fila"><span>Programa</span><b>ELECTI · ' + cfg.cicloNombre + '</b></div>' +
-            '<div class="bv-fila"><span>Sede</span><b>' + nombreSede(a.sede) + '</b></div>' +
-            '<div class="bv-fila"><span>Duración</span><b>' + cfg.numCuotas + ' meses</b></div>';
-  if (beca > 0) {
-    res += '<div class="bv-fila"><span>Beca otorgada</span><b style="color:var(--green);">' + beca + '% sobre las cuotas</b></div>';
+  // El parrafo introduce; el bloque de abajo entrega el numero. Repetir el
+  // porcentaje en los dos lugares lo vuelve ruido.
+  const conBeca = beca > 0;
+  bvEl('bv-intro').innerHTML =
+    (conBeca
+      ? 'El comité revisó tu entrevista y decidió otorgarte una beca. '
+      : 'El comité revisó tu entrevista y confirmó tu admisión. ') +
+    'Tu cupo en la sede de <b>' + nombreSede(a.sede) + '</b> queda reservado a tu nombre.';
+
+  let cajaBeca = '';
+  if (beca >= 100) {
+    // Con beca total el porcentaje sobra: lo que importa es que no hay mensualidades.
+    cajaBeca =
+      '<div class="bv-beca-caja">' +
+        '<div class="bv-beca-lbl">Beca otorgada</div>' +
+        '<div class="bv-beca-num">Completa</div>' +
+        '<div class="bv-beca-sub">sin mensualidades durante el ciclo</div>' +
+      '</div>' +
+      (mat > 0
+        ? '<div class="bv-beca-nota">Solo cubres la matrícula de inscripción, de $' + dinero(mat) + '.</div>'
+        : '<div class="bv-beca-nota">La matrícula de inscripción también está exenta en tu caso.</div>');
+  } else if (conBeca) {
+    cajaBeca =
+      '<div class="bv-beca-caja">' +
+        '<div class="bv-beca-lbl">Beca otorgada</div>' +
+        '<div class="bv-beca-num">' + beca + ' %</div>' +
+        '<div class="bv-beca-sub">sobre el valor del programa</div>' +
+      '</div>' +
+      (mat > 0
+        ? '<div class="bv-beca-nota">Cubre las mensualidades. La matrícula de inscripción se paga aparte.</div>'
+        : '<div class="bv-beca-nota">Cubre las mensualidades. La matrícula de inscripción está exenta en tu caso.</div>');
+  } else {
+    cajaBeca =
+      '<div class="bv-beca-caja">' +
+        '<div class="bv-beca-lbl">Tu programa</div>' +
+        '<div class="bv-beca-num">' + cfg.numCuotas + ' meses</div>' +
+        '<div class="bv-beca-sub">' + nombreSede(a.sede) + ' · ' + cfg.cicloNombre + '</div>' +
+      '</div>' +
+      '<div class="bv-beca-nota">En los siguientes pasos eliges cómo pagar.</div>';
   }
-  res += '<div class="bv-fila"><span>Matrícula</span><b>' + (mat === 0 ? 'Exenta' : '$' + dinero(mat)) + '</b></div>' +
-         '<div class="bv-fila"><span>Cuota mensual</span><b>' + (cuota === 0 ? 'Cubierta por tu beca' : '$' + dinero(cuota)) + '</b></div>';
-  bvEl('bv-resumen').innerHTML = res;
+  bvEl('bv-beca').innerHTML = cajaBeca;
 
   bvEl('bv-nombre').value     = a.name || '';
   bvEl('bv-cedula').value     = a.cedula || '';
@@ -7091,7 +7112,7 @@ async function bvConfirmar() {
     bvEl('bv-final').innerHTML =
       'Tu cupo quedó confirmado, <b>' + campos.name.split(' ')[0] + '</b>. ' +
       'Queda un último paso para dejar todo en regla.';
-    bvPrepararEntrega(campos.name, a.sede);
+
     bvMostrar(6);
   } catch (e) {
     const c = (e && e.code) || '';
@@ -7100,18 +7121,6 @@ async function bvConfirmar() {
       : 'No se pudo confirmar. Revisa tu conexión e intenta de nuevo.');
     btn.disabled = false; btn.textContent = 'Confirmar mi cupo';
   }
-}
-
-// Prepara los enlaces de entrega y bloquea la salida hasta que confirmen el compromiso.
-function bvPrepararEntrega(nombre, sede) {
-  const cfg = getConfig();
-  const asunto = encodeURIComponent('Acuerdo firmado — ' + nombre);
-  const cuerpo = encodeURIComponent(
-    'Hola, adjunto mi acuerdo de compromiso firmado.\n\n' + nombre + '\n' + nombreSede(sede));
-  bvEl('bv-mail').href = 'mailto:' + correoAdmin() + '?subject=' + asunto + '&body=' + cuerpo;
-  bvEl('bv-wa').href = 'https://wa.me/' + cfg.whatsapp + '?text=' +
-    encodeURIComponent('Hola, soy ' + nombre + ' (' + nombreSede(sede) + '). Les envío mi acuerdo de compromiso firmado.');
-  bvEl('bv-ok3').checked = false;
 }
 
 function bvDescargarAcuerdo() {
