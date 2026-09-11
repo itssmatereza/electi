@@ -1,5 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://electi.pages.dev/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
-  <url><loc>https://electi.pages.dev/privacidad.html</loc><changefreq>yearly</changefreq><priority>0.2</priority></url>
+  <url><loc>https://electi.unionestudiantil.org/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://electi.unionestudiantil.org/becas/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://electi.unionestudiantil.org/colegios/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://electi.unionestudiantil.org/cuenca/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://electi.unionestudiantil.org/docentes/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://electi.unionestudiantil.org/guayaquil/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://electi.unionestudiantil.org/institucional/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://electi.unionestudiantil.org/preguntas/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://electi.unionestudiantil.org/privacidad.html</loc><changefreq>yearly</changefreq><priority>0.2</priority></url>
+  <url><loc>https://electi.unionestudiantil.org/programa/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://electi.unionestudiantil.org/quito/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://electi.unionestudiantil.org/santodomingo/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://electi.unionestudiantil.org/sedes/</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
 </urlset>

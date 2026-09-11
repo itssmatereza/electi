@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ELECTI — Escuela de liderazgo y gestión de proyectos | Quito · Guayaquil · Cuenca · Santo Domingo</title>
+<meta name="description" content="Escuela de liderazgo y gestión de proyectos para jóvenes, con sedes en Quito, Guayaquil, Cuenca y Santo Domingo. Quito en modalidad híbrida; el resto, virtual con encuentros presenciales mensuales.">
+<meta property="og:title" content="ELECTI — No aprendas sobre liderazgo. Ejecuta.">
+<meta property="og:description" content="Escuela de liderazgo y gestión de proyectos para jóvenes, con sedes en Quito, Guayaquil, Cuenca y Santo Domingo. Quito en modalidad híbrida; el resto, virtual con encuentros presenciales mensuales.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://electi.unionestudiantil.org/">
+<meta property="og:image" content="https://electi.unionestudiantil.org/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="ELECTI — No aprendas sobre liderazgo. Ejecuta.">
+<meta property="og:locale" content="es_EC">
+<meta property="og:site_name" content="ELECTI">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="ELECTI — No aprendas sobre liderazgo. Ejecuta.">
+<meta name="twitter:description" content="Escuela de liderazgo y gestión de proyectos para jóvenes, con sedes en Quito, Guayaquil, Cuenca y Santo Domingo. Quito en modalidad híbrida; el resto, virtual con encuentros presenciales mensuales.">
+<meta name="twitter:image" content="https://electi.unionestudiantil.org/og.jpg">
+<link rel="canonical" href="https://electi.unionestudiantil.org/">
+<link rel="icon" type="image/jpeg" href="/assets/logo-electi.jpg">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="theme-color" content="#0D2A6E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/electi.css">
+<noscript><style>.rv{opacity:1!important;transform:none!important}</style></noscript>
+<script>
+/* Compatibilidad con los enlaces antiguos que llevaban # (QR, bios, mensajes ya enviados).
+   Se ejecuta antes de dibujar la página, así que el visitante no ve el salto.
+   Cuando esos enlaces dejen de circular, este bloque se puede borrar. */
+(function(){
+  if (location.pathname !== '/' || !location.hash) return;
+  var M = {'home':'/','programa':'/programa/','docentes':'/docentes/','becas':'/becas/',
+           'preguntas':'/preguntas/','sedes':'/sedes/','sede-quito':'/quito/',
+           'sede-guayaquil':'/guayaquil/','sede-cuenca':'/cuenca/',
+           'sede-santo-domingo':'/santodomingo/','instituciones':'/colegios/',
+           'ue':'/institucional/','uide':'/uide/'};
+  var p = location.hash.replace('#','').split('/');
+  var destino = M[p[0]];
+  if (destino && destino !== '/') location.replace(destino + (p[1] ? '#' + p[1] : ''));
+})();
+</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "EducationalOrganization", "name": "ELECTI", "alternateName": "ELECTI — Escuela de liderazgo y gestión de proyectos", "url": "https://electi.unionestudiantil.org/", "logo": "https://electi.unionestudiantil.org/icon-512.png", "image": "https://electi.unionestudiantil.org/og.jpg", "description": "Escuela de liderazgo y gestión de proyectos para jóvenes, programa de Fundación Unión Estudiantil en alianza académica con la Universidad Metropolitana del Ecuador (UMET).", "email": "mreza@unionestudiantil.org", "telephone": "+593962893857", "sameAs": ["https://instagram.com/electi.ec", "https://instagram.com/estudiantil_union"], "parentOrganization": {"@type": "Organization", "name": "Fundación Unión Estudiantil"}, "areaServed": [{"@type": "City", "name": "Quito"}, {"@type": "City", "name": "Guayaquil"}, {"@type": "City", "name": "Cuenca"}, {"@type": "City", "name": "Santo Domingo de los Tsáchilas"}], "address": {"@type": "PostalAddress", "addressCountry": "EC", "addressLocality": "Quito", "addressRegion": "Pichincha"}}</script>
+</head>
+<body>
+
+<!-- ══════ NAV ══════ -->
+<nav id="nav">
+  <a class="nav-brand" href="/">
+    <img src="/assets/logo-electi.jpg" alt="ELECTI" width="36" height="36">
+    <span class="nav-brand-txt">
+      <span class="nav-brand-name">ELECTI</span>
+    </span>
+  </a>
+  <ul class="nav-links">
+    <li class="nav-item" data-dd>
+      <button class="nav-trigger" onclick="abrirDD(this)">
+        El programa
+        <svg class="nav-caret" viewBox="0 0 12 12"><path d="M2 4.5L6 8.5L10 4.5"/></svg>
+      </button>
+      <div class="dd">
+        <a class="dd-link" href="/programa/">
+          <span class="dd-ic">01</span>
+          <span class="dd-tx"><strong>Metodología</strong><span>Las seis fases del programa</span></span>
+        </a>
+        <a class="dd-link" href="/programa/#aprendes">
+          <span class="dd-ic">02</span>
+          <span class="dd-tx"><strong>Qué aprenderás</strong><span>Habilidades y contenidos</span></span>
+        </a>
+        <a class="dd-link" href="/programa/#proceso">
+          <span class="dd-ic">03</span>
+          <span class="dd-tx"><strong>Proceso de admisión</strong><span>De postular a graduarte</span></span>
+        </a>
+        <div class="dd-sep"></div>
+        <a class="dd-link" href="/docentes/">
+          <span class="dd-ic">04</span>
+          <span class="dd-tx"><strong>Docentes</strong><span>Quién imparte las clases</span></span>
+        </a>
+      </div>
+    </li>
+    <li class="nav-item" data-dd>
+      <button class="nav-trigger" onclick="abrirDD(this)">
+        Sedes
+        <svg class="nav-caret" viewBox="0 0 12 12"><path d="M2 4.5L6 8.5L10 4.5"/></svg>
+      </button>
+      <div class="dd">
+        <a class="dd-link" href="/quito/">
+          <span class="dd-ic">Q</span>
+          <span class="dd-tx"><strong>Quito</strong><span>Híbrida · presencial en la UMET</span></span>
+        </a>
+        <a class="dd-link" href="/guayaquil/">
+          <span class="dd-ic">G</span>
+          <span class="dd-tx"><strong>Guayaquil</strong><span>Virtual + encuentro mensual</span></span>
+        </a>
+        <a class="dd-link" href="/cuenca/">
+          <span class="dd-ic">C</span>
+          <span class="dd-tx"><strong>Cuenca</strong><span>Virtual + encuentro mensual</span></span>
+        </a>
+        <a class="dd-link" href="/santodomingo/">
+          <span class="dd-ic">S</span>
+          <span class="dd-tx"><strong>Santo Domingo</strong><span>Virtual + encuentro mensual</span></span>
+        </a>
+        <div class="dd-sep"></div>
+        <a class="dd-link" href="/sedes/">
+          <span class="dd-ic" style="line-height:0"><svg viewBox="0 0 24 24" aria-hidden="true" style="width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.1;stroke-linecap:round;stroke-linejoin:round"><polyline points="16 3 20 7 16 11"/><line x1="20" y1="7" x2="4" y2="7"/><polyline points="8 13 4 17 8 21"/><line x1="4" y1="17" x2="20" y2="17"/></svg></span>
+          <span class="dd-tx"><strong>Comparar sedes</strong><span>Ver las cuatro juntas</span></span>
+        </a>
+      </div>
+    </li>
+    <li><a href="/becas/">Becas</a></li>
+    <li><a class="nav-colegios" href="/colegios/">Para colegios</a></li>
+    <li><a href="/institucional/">Institución</a></li>
+    <li><a href="/preguntas/">Preguntas</a></li>
+    <li><a href="/portal" class="nav-portal">Portal alumnos</a></li>
+    <li><a href="https://forms.gle/SdaHtjDcyFuYEa3T7" target="_blank" rel="noopener" class="nav-cta">Postular</a></li>
+  </ul>
+  <button class="burger" id="burger" onclick="menuMovil()" aria-label="Menú">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="mob-menu" id="mobMenu">
+  <div class="mob-group">
+    <button class="mob-group-t" onclick="grupoMovil(this)">
+      El programa
+      <svg class="nav-caret" viewBox="0 0 12 12"><path d="M2 4.5L6 8.5L10 4.5"/></svg>
+    </button>
+    <div class="mob-sub">
+      <a href="/programa/">Metodología</a>
+      <a href="/programa/#aprendes">Qué aprenderás</a>
+      <a href="/programa/#proceso">Proceso de admisión</a>
+      <a href="/docentes/">Docentes</a>
+    </div>
+  </div>
+  <div class="mob-group">
+    <button class="mob-group-t" onclick="grupoMovil(this)">
+      Sedes
+      <svg class="nav-caret" viewBox="0 0 12 12"><path d="M2 4.5L6 8.5L10 4.5"/></svg>
+    </button>
+    <div class="mob-sub">
+      <a href="/quito/">Quito · híbrida</a>
+      <a href="/guayaquil/">Guayaquil · virtual</a>
+      <a href="/cuenca/">Cuenca · virtual</a>
+      <a href="/santodomingo/">Santo Domingo · virtual</a>
+      <a href="/sedes/">Comparar las cuatro</a>
+    </div>
+  </div>
+  <a href="/becas/">Becas</a>
+  <a href="/preguntas/">Preguntas frecuentes</a>
+  <a href="/colegios/">Para colegios · ELECTI Instituciones</a>
+  <a href="/institucional/">Institucional · Unión Estudiantil</a>
+  <a href="https://instagram.com/electi.ec" target="_blank" rel="noopener">Instagram · @electi.ec</a>
+  <a href="/portal" class="mob-portal"><svg viewBox="0 0 24 24" aria-hidden="true" style="width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-2px;margin-right:7px"><rect x="4" y="10.5" width="16" height="10.5" rx="2"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></svg> Portal de alumnos</a>
+  <a href="https://forms.gle/SdaHtjDcyFuYEa3T7" target="_blank" rel="noopener" class="mob-cta">Postular ahora →</a>
+</div>
+
+
+
+
+
+<div class="pg" id="pg-home">
+
+<!-- ══ HERO ══ -->
+  <section class="hero">
+    <div class="hero-grid-bg"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="wrap hero-inner">
+      <div class="pill rv"><span class="pill-dot"></span> Postulaciones abiertas · Generación 2026 · 4 sedes</div>
+      <h1 class="h-display rv rv-d1">
+        No aprendas sobre<br>liderazgo.<br><span class="grad">Ejecuta.</span>
+      </h1>
+      <p class="hero-sub rv rv-d2">
+        <b>Escuela de liderazgo y gestión de proyectos</b> para estudiantes de colegio y primeros años de universidad.
+        Seis meses para lanzar un proyecto real dentro de la red estudiantil más grande del Ecuador.
+      </p>
+      <div class="hero-btns rv rv-d3">
+        <a href="https://forms.gle/SdaHtjDcyFuYEa3T7" target="_blank" rel="noopener" class="btn btn-primary btn-lg">
+          Postular ahora
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+        <a class="btn btn-ghost-d btn-lg" href="/#programa">Ver el programa</a>
+      </div>
+      <!-- PENDIENTE: añadir fecha de cierre de postulaciones. Sin deadline, "cupos limitados" no genera urgencia. -->
+      <p class="hero-note rv rv-d4">Costa inicia en octubre · Sierra en noviembre de 2026<br>Postular toma 5 minutos · Becas disponibles hasta del 100%</p>
+
+      <!-- Franja de credibilidad. Reemplazó al mockup del portal, que ahora vive
+           solo en la sección "Tu portal privado". Aquí debería ir una foto real
+           de generación cuando la tengas. -->
+      <div class="hero-proof rv rv-d5">
+        <div class="hp"><div class="hp-n">6</div><div class="hp-l">meses de programa</div></div>
+        <div class="hp"><div class="hp-n">4</div><div class="hp-l">sedes en Ecuador</div></div>
+        <div class="hp"><div class="hp-n">+150</div><div class="hp-l">colegios en la red</div></div>
+        <div class="hp"><div class="hp-n">100%</div><div class="hp-l">beca máxima disponible</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ ALIADOS ══ -->
+  <section class="allies">
+    <div class="wrap">
+      <p class="allies-lbl rv">Un programa respaldado por</p>
+      <div class="allies-row rv rv-d1">
+        <div class="ally">
+          <div class="ally-mark"><img src="/assets/logo-electi.jpg" alt="" width="38" height="38" loading="lazy"></div>
+          <div class="ally-txt"><strong>Unión Estudiantil</strong><span>9 años · +150 colegios</span></div>
+        </div>
+        <div class="ally">
+          <div class="ally-mark"><img src="/assets/logo-umet.png" alt="UMET" width="160" height="160" loading="lazy"></div>
+          <div class="ally-txt"><strong>UMET</strong><span>Aval universitario</span></div>
+        </div>
+        <div class="ally">
+          <div class="ally-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="9" r="6"/><polyline points="9.2 9 11.2 11 14.8 7.2"/><path d="M8.4 14.4 L7 22 L12 19.6 L17 22 L15.6 14.4"/></svg></div>
+          <div class="ally-txt"><strong>Certificación oficial</strong><span>Al completar el programa</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ PROBLEMA ══ -->
+  <section class="pad problem">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow rv">El problema real</p>
+        <h2 class="h-section rv rv-d1">Sales del colegio sabiendo<br>resolver integrales.</h2>
+        <p class="lead rv rv-d2">Pero nadie te enseñó a liderar un equipo, sostener una idea bajo presión, ni convertir un plan en algo que exista de verdad.</p>
+      </div>
+      <div class="p-grid">
+        <div class="p-card rv">
+          <div class="p-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
+          <h3>Teoría sin práctica</h3>
+          <p>Cursos de liderazgo que terminan en un certificado y un cuaderno lleno de apuntes que nadie vuelve a abrir.</p>
+        </div>
+        <div class="p-card rv rv-d1">
+          <div class="p-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21h18"/><path d="M6 21V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v17"/><circle cx="14.6" cy="12.2" r=".9"/></svg></div>
+          <h3>Ideas sin puerta</h3>
+          <p>Tienes el proyecto en la cabeza, pero no la red, el presupuesto ni el permiso para llevarlo a algún lado.</p>
+        </div>
+        <div class="p-card rv rv-d2">
+          <div class="p-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15.5 14"/></svg></div>
+          <h3>Experiencia que llega tarde</h3>
+          <p>Descubres cómo funciona el mundo real a los 22, compitiendo contra quienes empezaron a los 16.</p>
+        </div>
+      </div>
+      <p class="p-punch rv rv-d3">Los que destacan no son los que más saben.<br>Son los que <em>ya ejecutaron algo</em>.</p>
+    </div>
+  </section>
+
+  <!-- ══ SOLUCIÓN ══ -->
+  <section class="pad solution on-dark" id="programa">
+    <div class="wrap sol-inner">
+      <div class="sol-split">
+        <div class="sol-copy">
+          <p class="eyebrow on-dark rv">La solución</p>
+          <h2 class="h-section rv rv-d1">ELECTI no es un curso.<br>Es un campo de juego.</h2>
+          <p class="lead rv rv-d2">Entras con una idea. Sales con un proyecto ejecutado, un equipo que dirigiste y una red que abre puertas.</p>
+          <div class="sol-list">
+            <div class="sol-item rv rv-d3">
+              <span class="sol-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+              <div><strong>Ejecución real, no simulaciones</strong><span>Tu proyecto se lanza dentro de la red de +150 colegios de Unión Estudiantil.</span></div>
+            </div>
+            <div class="sol-item rv rv-d4">
+              <span class="sol-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+              <div><strong>Docentes que ya lo hicieron</strong><span>No profesores de teoría: un fundador, un economista de banca y un director ejecutivo.</span></div>
+            </div>
+            <div class="sol-item rv rv-d5">
+              <span class="sol-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+              <div><strong>Una red que sigue después</strong><span>Becas universitarias, prácticas desde segundo semestre, y la posibilidad de dirigir la red de consejos de Unión Estudiantil.</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="sol-visual rv rv-d3">
+          <div class="glass">
+            <div class="glass-row"><div class="glass-n">01</div><div><div class="glass-t">Bienvenida</div><div class="glass-s">Contexto, equipo y primeras herramientas</div></div></div>
+            <div class="glass-row"><div class="glass-n">02</div><div><div class="glass-t">Somos</div><div class="glass-s">Identidad, mindset y liderazgo personal</div></div></div>
+            <div class="glass-row"><div class="glass-n">03</div><div><div class="glass-t">Trabajamos</div><div class="glass-s">Gestión de proyectos, ventas y decisiones</div></div></div>
+            <div class="glass-row"><div class="glass-n">04</div><div><div class="glass-t">Planificamos</div><div class="glass-s">Estrategia, oratoria y plan de acción</div></div></div>
+            <div class="glass-row"><div class="glass-n">05</div><div><div class="glass-t">Organizamos</div><div class="glass-s">Finanzas, procesos y manejo de equipos</div></div></div>
+            <div class="glass-row"><div class="glass-n">06</div><div><div class="glass-t">Ejecutamos</div><div class="glass-s">Lanzamiento, resultados y graduación</div></div></div>
+          </div>
+        </div>
+          <div class="rv rv-d5" style="margin-top:32px">
+            <a class="btn btn-ghost-d" href="/programa/">Ver la metodología completa
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </a>
+          </div>
+      </div>
+    </div>
+  </section>
+
+    <!-- ══ METODOLOGÍA POR SEDE ══ -->
+  <section class="pad" style="background:var(--paper)" id="metodologia">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow rv">Metodología</p>
+        <h2 class="h-section rv rv-d1">Cuatro sedes.<br>Un mismo estándar.</h2>
+        <p class="lead rv rv-d2">El contenido, los docentes y la exigencia son idénticos en todo el país. Lo que cambia es el formato de las clases y el calendario: la Costa inicia en octubre y la Sierra en noviembre. Elige tu ciudad para ver cómo se cursa.</p>
+      </div>
+
+      <div class="rv rv-d2">
+        <div class="met-tabs">
+          <button class="met-tab on" data-sede="UIO" onclick="verSede('UIO')"><b>Quito</b><i>UIO</i></button>
+          <button class="met-tab" data-sede="GYE" onclick="verSede('GYE')"><b>Guayaquil</b><i>GYE</i></button>
+          <button class="met-tab" data-sede="CUE" onclick="verSede('CUE')"><b>Cuenca</b><i>CUE</i></button>
+          <button class="met-tab" data-sede="SDO" onclick="verSede('SDO')"><b>Santo Domingo</b><i>SDO</i></button>
+        </div>
+        <label class="met-lbl" for="selSede">Elige tu sede</label>
+        <select class="met-select" id="selSede" aria-label="Elige tu sede" onchange="verSede(this.value)">
+          <option value="UIO">Quito — híbrida</option>
+          <option value="GYE">Guayaquil — virtual</option>
+          <option value="CUE">Cuenca — virtual</option>
+          <option value="SDO">Santo Domingo — virtual</option>
+        </select>
+      </div>
+
+        <div class="met-panel on" id="met-UIO">
+          <div class="met-grid">
+            <div>
+              <span class="mod-badge mod-hib">Modalidad híbrida</span>
+              <h3 class="met-h">Quito combina virtualidad entre semana y campus universitario el sábado.</h3>
+              <p class="met-p">Es la sede fundacional y la única con presencialidad semanal. La sesión del miércoles se dicta por Zoom junto a Cuenca, la otra sede de la Sierra; el sábado la generación se reúne en la Universidad Metropolitana del Ecuador.</p>
+              <div class="horario">
+              <div class="hr-row">
+                <div class="hr-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="13" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+                <div class="hr-tx">
+                  <div class="hr-d">Miércoles</div>
+                  <div class="hr-h">18:00 – 20:00</div>
+                  <div class="hr-s">Virtual por Zoom · compartida con Cuenca</div>
+                </div>
+              </div>
+              <div class="hr-row destaca">
+                <div class="hr-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21h18"/><path d="M4 9.5h16L12 3 4 9.5z"/><line x1="7" y1="12" x2="7" y2="18"/><line x1="12" y1="12" x2="12" y2="18"/><line x1="17" y1="12" x2="17" y2="18"/></svg></div>
+                <div class="hr-tx">
+                  <div class="hr-d">Sábados</div>
+                  <div class="hr-h">11:00 – 13:30</div>
+                  <div class="hr-s">Presencial en el campus de la UMET</div>
+                </div>
+              </div>
+              </div>
+              <a class="met-link" href="/quito/">Ver la ficha completa de la sede Quito
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </a>
+            </div>
+            <div class="sede-panel">
+              <div class="sp-in">
+                <div class="sp-lbl">Sede UIO</div>
+                <h3 class="sp-titulo">Quito</h3>
+              <div class="sp-dato"><div class="sp-k">Bloque</div><div class="sp-v">Sierra<small>Inicio: noviembre de 2026</small></div></div>
+              <div class="sp-dato"><div class="sp-k">Modalidad</div><div class="sp-v">Híbrida<small>Miércoles virtual + sábado presencial</small></div></div>
+              <div class="sp-dato"><div class="sp-k">Presencialidad</div><div class="sp-v">Semanal<small>Todos los sábados durante el ciclo</small></div></div>
+              <div class="sp-dato"><div class="sp-k">Sede física</div><div class="sp-v">Universidad Metropolitana del Ecuador<small>UMET · Quito</small></div></div>
+              <div class="sp-dato"><div class="sp-k">Certificación</div><div class="sp-v">Avalada por Unión Estudiantil y la UMET</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="met-panel" id="met-GYE">
+          <div class="met-grid">
+            <div>
+              <span class="mod-badge mod-vir">100% virtual + encuentro mensual</span>
+              <h3 class="met-h">Guayaquil cursa el programa en línea, con un encuentro presencial cada mes.</h3>
+              <p class="met-p">Dos sesiones en vivo por semana en lugar de una, para sostener el mismo ritmo de trabajo que la sede presencial. Guayaquil pertenece al bloque Costa, que inicia en octubre de 2026. Una vez al mes, la generación se reúne cara a cara en la ciudad.</p>
+              <div class="horario">
+              <div class="hr-row">
+                <div class="hr-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="13" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+                <div class="hr-tx">
+                  <div class="hr-d">Martes</div>
+                  <div class="hr-h">18:00 – 20:00</div>
+                  <div class="hr-s">Virtual por Zoom · compartida con la Costa</div>
+                </div>
+              </div>
+              <div class="hr-row">
+                <div class="hr-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="13" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+                <div class="hr-tx">
+                  <div class="hr-d">Jueves</div>
+                  <div class="hr-h">18:00 – 20:00</div>
+                  <div class="hr-s">Virtual por Zoom · sesión de sede</div>
+                </div>
+              </div>
+              <div class="hr-row destaca">
+                <div class="hr-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9"/><path d="M16 3.1a4 4 0 0 1 0 7.8"/></svg></div>
+                <div class="hr-tx">
+                  <div class="hr-d">Un sábado al mes</div>
+                  <div class="hr-h">Encuentro presencial</div>
+                  <div class="hr-s">Lugar confirmado al inicio del ciclo</div>
+                </div>
+              </div>
+              </div>
+              <a class="met-link" href="/guayaquil/">Ver la ficha completa de la sede Guayaquil
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </a>
+            </div>
+            <div class="sede-panel">
+              <div class="sp-in">
+                <div class="sp-lbl">Sede GYE</div>
+                <h3 class="sp-titulo">Guayaquil</h3>
+              <div class="sp-dato"><div class="sp-k">Bloque</div><div class="sp-v">Costa<small>Inicio: octubre de 2026</small></div></div>
+              <div class="sp-dato"><div class="sp-k">Modalidad</div><div class="sp-v">100% virtual<small>Con encuentro presencial mensual</small></div></div>
+              <div class="sp-dato"><div class="sp-k">Sesiones semanales</div><div class="sp-v">Dos<small>Martes y jueves, ambas en vivo por Zoom</small></div></div>
+              <div class="sp-dato"><div class="sp-k">Presencialidad</div><div class="sp-v">Una vez al mes<small>Sábado, en Guayaquil</small></div></div>
+              <div class="sp-dato"><div class="sp-k">Certificación</div><div class="sp-v">Avalada por Unión Estudiantil y la UMET</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="met-panel" id="met-CUE">
+          <div class="met-grid">
+            <div>
+              <span class="mod-badge mod-vir">100% virtual + encuentro mensual</span>
+              <h3 class="met-h">Cuenca cursa el programa en línea, con un encuentro presencial cada mes.</h3>
+              <p class="met-p">Dos sesiones en vivo por semana en lugar de una, para sostener el mismo ritmo de trabajo que la sede presencial. Cuenca pertenece al bloque Sierra, que inicia en noviembre de 2026. Una vez al mes, la generación se reúne cara a cara en la ciudad.</p>
+              <div class="horario">
+              <div class="hr-row">
+                <div class="hr-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="13" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+                <div class="hr-tx">
+                  <div class="hr-d">Miércoles</div>
+                  <div class="hr-h">18:00 – 20:00</div>
+                  <div class="hr-s">Virtual por Zoom · compartida con Quito</div>
+                </div>
+              </div>
+              <div class="hr-row">
+                <div class="hr-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="13" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+                <div class="hr-tx">
+                  <div class="hr-d">Viernes</div>
+                  <div class="hr-h">18:00 – 20:00</div>
+                  <div class="hr-s">Virtual por Zoom · sesión de sede</div>
+                </div>
+              </div>
+              <div class="hr-row destaca">
+                <div class="hr-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9"/><path d="M16 3.1a4 4 0 0 1 0 7.8"/></svg></div>
+                <div class="hr-tx">
+                  <div class="hr-d">Un sábado al mes</div>
+                  <div class="hr-h">Encuentro presencial</div>
+                  <div class="hr-s">Lugar confirmado al inicio del ciclo</div>
+                </div>
+              </div>
+              </div>
+              <a class="met-link" href="/cuenca/">Ver la ficha completa de la sede Cuenca
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </a>
+            </div>
+            <div class="sede-panel">
+              <div class="sp-in">
+                <div class="sp-lbl">Sede CUE</div>
+                <h3 class="sp-titulo">Cuenca</h3>
+              <div class="sp-dato"><div class="sp-k">Bloque</div><div class="sp-v">Sierra<small>Inicio: noviembre de 2026</small></div></div>
+              <div class="sp-dato"><div class="sp-k">Modalidad</div><div class="sp-v">100% virtual<small>Con encuentro presencial mensual</small></div></div>
+              <div class="sp-dato"><div class="sp-k">Sesiones semanales</div><div class="sp-v">Dos<small>Miércoles y viernes, ambas en vivo por Zoom</small></div></div>
+              <div class="sp-dato"><div class="sp-k">Presencialidad</div><div class="sp-v">Una vez al mes<small>Sábado, en Cuenca</small></div></div>
+              <div class="sp-dato"><div class="sp-k">Certificación</div><div class="sp-v">Avalada por Unión Estudiantil y la UMET</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="met-panel" id="met-SDO">
+          <div class="met-grid">
+            <div>
+              <span class="mod-badge mod-vir">100% virtual + encuentro mensual</span>
+              <h3 class="met-h">Santo Domingo cursa el programa en línea, con un encuentro presencial cada mes.</h3>
+              <p class="met-p">Dos sesiones en vivo por semana en lugar de una, para sostener el mismo ritmo de trabajo que la sede presencial. Santo Domingo pertenece al bloque Costa, que inicia en octubre de 2026. Una vez al mes, la generación se reúne cara a cara en la ciudad.</p>
+              <div class="horario">
+              <div class="hr-row">
+                <div class="hr-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="13" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+                <div class="hr-tx">
+                  <div class="hr-d">Martes</div>
+                  <div class="hr-h">18:00 – 20:00</div>
+                  <div class="hr-s">Virtual por Zoom · compartida con la Costa</div>
+                </div>
+              </div>
+              <div class="hr-row">
+                <div class="hr-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="13" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+                <div class="hr-tx">
+                  <div class="hr-d">Jueves</div>
+                  <div class="hr-h">18:00 – 20:00</div>
+                  <div class="hr-s">Virtual por Zoom · sesión de sede</div>
+                </div>
+              </div>
+              <div class="hr-row destaca">
+                <div class="hr-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9"/><path d="M16 3.1a4 4 0 0 1 0 7.8"/></svg></div>
+                <div class="hr-tx">
+                  <div class="hr-d">Un sábado al mes</div>
+                  <div class="hr-h">Encuentro presencial</div>
+                  <div class="hr-s">Lugar confirmado al inicio del ciclo</div>
+                </div>
+              </div>
+              </div>
+              <a class="met-link" href="/santodomingo/">Ver la ficha completa de la sede Santo Domingo
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </a>
+            </div>
+            <div class="sede-panel">
+              <div class="sp-in">
+                <div class="sp-lbl">Sede SDO</div>
+                <h3 class="sp-titulo">Santo Domingo</h3>
+              <div class="sp-dato"><div class="sp-k">Bloque</div><div class="sp-v">Costa<small>Inicio: octubre de 2026</small></div></div>
+              <div class="sp-dato"><div class="sp-k">Modalidad</div><div class="sp-v">100% virtual<small>Con encuentro presencial mensual</small></div></div>
+              <div class="sp-dato"><div class="sp-k">Sesiones semanales</div><div class="sp-v">Dos<small>Martes y jueves, ambas en vivo por Zoom</small></div></div>
+              <div class="sp-dato"><div class="sp-k">Presencialidad</div><div class="sp-v">Una vez al mes<small>Sábado, en Santo Domingo</small></div></div>
+              <div class="sp-dato"><div class="sp-k">Certificación</div><div class="sp-v">Avalada por Unión Estudiantil y la UMET</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      <div class="aviso rv" style="max-width:840px;margin:clamp(38px,5vw,54px) auto 0">
+        <span class="aviso-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><line x1="3" y1="12" x2="21" y2="12"/><path d="M12 3a14.5 14.5 0 0 1 0 18 14.5 14.5 0 0 1 0-18z"/></svg></span>
+        <p>El programa se dicta en <b>dos bloques regionales</b>: la Costa arranca en <b>octubre de 2026</b> y la Sierra en <b>noviembre de 2026</b>. Cada bloque comparte una sesión semanal, así que estudias con jóvenes de otras ciudades desde el primer día.</p>
+      </div>
+
+      <div style="text-align:center;margin-top:34px" class="rv rv-d3">
+        <a class="btn btn-ghost-l" href="/sedes/">Comparar las cuatro sedes en detalle</a>
+      </div>
+    </div>
+  </section>
+
+<!-- ══ DESPUÉS DE ELECTI ══ -->
+  <section class="pad after" id="resultados">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow rv">Después del programa</p>
+        <h2 class="h-section rv rv-d1">ELECTI termina.<br>La ventaja, no.</h2>
+        <p class="lead rv rv-d2">Lo que construyes en seis meses te sigue abriendo puertas años después.</p>
+      </div>
+
+      <div class="af-grid">
+        <div class="af rv">
+          <div class="af-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 9 12 4 2 9l10 5 10-5z"/><path d="M6 11.4V16c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.6"/></svg></div>
+          <h3>Becas universitarias</h3>
+          <p>Las universidades premian a quien llega con experiencia real, no solo con notas. Un proyecto ejecutado y liderazgo comprobable pesan en cualquier proceso de admisión.</p>
+          <span class="af-proof"><svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg> Alumni con becas del 70% y 100%</span>
+        </div>
+        <div class="af rv rv-d1">
+          <div class="af-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg></div>
+          <h3>Destacas desde el primer semestre</h3>
+          <p>Mientras tus compañeros descubren cómo funciona un equipo, tú ya dirigiste uno. Esa ventaja se nota en trabajos grupales, en prácticas y en las primeras oportunidades.</p>
+          <span class="af-proof"><svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg> Prácticas en 2.º semestre</span>
+        </div>
+        <div class="af rv rv-d2">
+          <div class="af-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="6"/><path d="M8.4 14.4 7 22l5-2.4 5 2.4-1.4-7.6"/></svg></div>
+          <h3>Lideras tu consejo estudiantil</h3>
+          <p>Vuelves a tu colegio con herramientas que nadie más tiene: cómo planificar una campaña, gestionar un presupuesto y ejecutar propuestas que sí se cumplen.</p>
+          <span class="af-proof"><svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg> Formación de consejos desde 2017</span>
+        </div>
+      </div>
+
+      <div class="af-hero rv rv-d3">
+        <div class="af-hero-in">
+          <div>
+            <p class="eyebrow on-dark">La oportunidad real</p>
+            <h3>Los mejores de cada generación<br><span class="grad">se quedan a dirigir la red.</span></h3>
+            <p>Cada año, los alumni más destacados pasan a liderar la red de consejos estudiantiles de Unión Estudiantil: más de 150 colegios en todo el país.</p>
+            <p>No es un reconocimiento simbólico. Es <b style="color:#fff">responsabilidad real, experiencia verificable en tu hoja de vida y una posición de liderazgo</b> a una edad en la que casi nadie la tiene.</p>
+          </div>
+          <div class="af-steps">
+            <div class="af-step"><div class="af-step-n">1</div><div><strong>Te gradúas</strong><span>Con tu proyecto ejecutado</span></div></div>
+            <div class="af-step"><div class="af-step-n">2</div><div><strong>Destacas</strong><span>Desempeño, liderazgo y compromiso</span></div></div>
+            <div class="af-step"><div class="af-step-n">3</div><div><strong>Diriges</strong><span>Un frente de la red de consejos</span></div></div>
+            <div class="af-step"><div class="af-step-n">4</div><div><strong>Construyes carrera</strong><span>Experiencia real desde los 17</span></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ TESTIMONIOS ══ -->
+  <section class="pad testi">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow rv">Resultados</p>
+        <h2 class="h-section rv rv-d1">Lo que pasó después<br>de graduarse.</h2>
+      </div>
+      <div class="tt-grid">
+        <div class="tt rv">
+          <div class="tt-mark">"</div>
+          <span class="tt-win"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 9 12 4 2 9l10 5 10-5z"/><path d="M6 11.4V16c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.6"/></svg> Beca del 100% · USFQ</span>
+          <p class="tt-q">Entrar a ELECTI cambió mi trayectoria. Aprendí a estructurar ideas, liderar equipos y ejecutar con criterio. La red que construyes vale más que cualquier título.</p>
+          <div class="tt-who">
+            <div class="tt-ava">RA</div>
+            <div><strong>Ricardo A.</strong><span>Generación 2025 · USFQ</span></div>
+          </div>
+        </div>
+        <div class="tt rv rv-d1">
+          <div class="tt-mark">"</div>
+          <span class="tt-win"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 9 12 4 2 9l10 5 10-5z"/><path d="M6 11.4V16c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.6"/></svg> Beca del 70% · USFQ</span>
+          <p class="tt-q">Me dio las herramientas para ejecutar proyectos de verdad, con equipos reales y resultados concretos. Aprendí a liderarme a mí mismo bajo presión. Eso no te lo enseña ningún colegio.</p>
+          <div class="tt-who">
+            <div class="tt-ava">IS</div>
+            <div><strong>Ignacio S.</strong><span>Generación 2024 · USFQ</span></div>
+          </div>
+        </div>
+        <div class="tt rv rv-d2">
+          <div class="tt-mark">"</div>
+          <span class="tt-win"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="2" y1="12.5" x2="22" y2="12.5"/></svg> Prácticas en 2.º semestre</span>
+          <p class="tt-q">Estando en segundo semestre de Derecho, ELECTI me abrió las puertas a prácticas en un bufete. Las habilidades que desarrollé me pusieron años adelante de mis compañeros.</p>
+          <div class="tt-who">
+            <div class="tt-ava">EM</div>
+            <div><strong>Emilia M.</strong><span>Generación 2024 · UIDE</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ PORTAL ══ -->
+  <section class="pad portal-sec on-dark">
+    <div class="wrap">
+      <div class="pt-split">
+        <div>
+          <p class="eyebrow on-dark rv">Tu portal privado</p>
+          <h2 class="h-section rv rv-d1">Todo tu progreso,<br>en un solo lugar.</h2>
+          <p class="lead rv rv-d2">Cada alumno de ELECTI recibe acceso a un portal donde ve su avance en tiempo real.</p>
+          <div class="pt-feats">
+            <div class="pt-feat rv rv-d3"><div class="pt-fi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 5h2a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2"/><rect x="8" y="3" width="8" height="4" rx="1"/><polyline points="9.2 13.5 11 15.3 14.8 11.5"/></svg></div><div><strong>Asistencia y faltas</strong><span>Tu registro actualizado sesión por sesión</span></div></div>
+            <div class="pt-feat rv rv-d3"><div class="pt-fi"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div><div><strong>Estado de cuenta</strong><span>Cuotas, becas y pagos siempre claros</span></div></div>
+            <div class="pt-feat rv rv-d4"><div class="pt-fi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div><div><strong>Materiales por fase</strong><span>Todos los recursos del programa, organizados</span></div></div>
+            <div class="pt-feat rv rv-d4"><div class="pt-fi"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 9 12 4 2 9l10 5 10-5z"/><path d="M6 11.4V16c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.6"/></svg></div><div><strong>Elegibilidad del certificado</strong><span>Sabes exactamente qué te falta para graduarte</span></div></div>
+          </div>
+          <div class="rv rv-d5" style="margin-top:30px">
+            <a href="/portal" class="btn btn-ghost-d">
+              Ir al portal de alumnos
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </a>
+          </div>
+        </div>
+        <div class="pt-shot rv rv-d2">
+          <div class="mock-bar">
+            <span class="mock-dot" style="background:#FF5F57"></span>
+            <span class="mock-dot" style="background:#FEBC2E"></span>
+            <span class="mock-dot" style="background:#28C840"></span>
+            <div class="mock-url">Mi progreso · ELECTI</div>
+          </div>
+          <div class="mock-main" style="padding:20px">
+            <div class="mock-hero">
+              <div class="mock-h-l"><div class="mock-h-t"></div><div class="mock-h-s"></div></div>
+              <div class="mock-ring"></div>
+            </div>
+            <div class="mock-kpis">
+              <div class="mock-kpi"><div class="mock-kpi-l"></div><div class="mock-kpi-v g"></div></div>
+              <div class="mock-kpi"><div class="mock-kpi-l"></div><div class="mock-kpi-v a"></div></div>
+              <div class="mock-kpi"><div class="mock-kpi-l"></div><div class="mock-kpi-v"></div></div>
+              <div class="mock-kpi"><div class="mock-kpi-l"></div><div class="mock-kpi-v b"></div></div>
+            </div>
+            <div class="mock-cards">
+              <div class="mock-card">
+                <div class="mock-kpi-l" style="width:50%"></div>
+                <div class="mock-row"><span class="mock-row-d" style="background:#16A34A"></span><span class="mock-row-l"></span></div>
+                <div class="mock-row"><span class="mock-row-d" style="background:#16A34A"></span><span class="mock-row-l" style="width:70%"></span></div>
+                <div class="mock-row"><span class="mock-row-d" style="background:#D97706"></span><span class="mock-row-l" style="width:84%"></span></div>
+              </div>
+              <div class="mock-card">
+                <div class="mock-kpi-l" style="width:42%"></div>
+                <div class="mock-chart">
+                  <div class="mock-bar-i" style="height:52%"></div><div class="mock-bar-i" style="height:76%"></div>
+                  <div class="mock-bar-i" style="height:60%"></div><div class="mock-bar-i" style="height:94%"></div>
+                  <div class="mock-bar-i" style="height:70%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+    <!-- ══ BECAS ══ -->
+  <section class="pad-sm" style="background:#fff">
+    <div class="wrap">
+      <div class="pr-box rv" style="max-width:900px;margin:0 auto">
+        <div>
+          <p class="eyebrow" style="margin-bottom:10px">Becas disponibles</p>
+          <h2 style="font-size:clamp(24px,2.4vw,32px);font-weight:800;letter-spacing:-.035em;color:var(--ink);margin-bottom:16px">Cuánto cuesta</h2>
+          <div class="pr-money"><span class="pr-amt">$40</span><span class="pr-per">/mes · 6 meses</span>
+            <span class="pr-mas">+</span>
+            <span class="pr-mat"><b>$15</b> matrícula<small>pago único</small></span>
+          </div>
+          <p class="pr-sub">Cuatro tipos de beca, hasta del 100%. El dinero no debería ser la barrera.</p>
+        </div>
+        <a class="btn btn-dark btn-lg" href="/becas/">
+          Ver las becas
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ PARA REPRESENTANTES ══ -->
+  <section class="pad-sm rep" id="representantes">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow rv">Para padres y representantes</p>
+        <h2 class="h-section rv rv-d1">Quién responde<br>por su hijo.</h2>
+        <p class="lead rv rv-d2">Usted firma el acuerdo y paga el programa. Estas son las respuestas que le corresponden antes de decidir.</p>
+      </div>
+
+      <div class="rep-grid">
+        <div class="rep-card rv">
+          <div class="rep-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9"/><path d="M16 3.1a4 4 0 0 1 0 7.8"/></svg></div>
+          <h3>Quién dicta las clases</h3>
+          <p>Tres docentes con nombre, cargo y trayectoria pública: el fundador de Unión Estudiantil, un economista de Produbanco y el director ejecutivo del programa. No hay instructores anónimos.</p>
+        </div>
+        <div class="rep-card rv rv-d1">
+          <div class="rep-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19.5c2.5 0 3-3.5 4.5-8S11.5 4 13 5.5s-1 6-2.5 9-2 5 0 5c2.5 0 4-2 6.5-2s2.5 2 2.5 2"/></svg></div>
+          <h3>Qué se firma</h3>
+          <p>Un Acuerdo de Compromiso que usted suscribe junto al estudiante. Define asistencia, permanencia por el semestre y las causales de fuerza mayor que se evalúan caso por caso.</p>
+        </div>
+        <div class="rep-card rv rv-d2">
+          <div class="rep-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div>
+          <h3>Cómo funciona el dinero</h3>
+          <p>$40 mensuales más $15 de matrícula por única vez. La beca se renueva cada mes con asistencia y compromiso. Las multas por atraso no son ingreso del programa: van a un fondo que la generación gasta en sí misma.</p>
+        </div>
+        <div class="rep-card rv rv-d3">
+          <div class="rep-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4.5" width="18" height="17" rx="2"/><line x1="3" y1="9.5" x2="21" y2="9.5"/><line x1="8" y1="2.5" x2="8" y2="6.5"/><line x1="16" y1="2.5" x2="16" y2="6.5"/><polyline points="8.8 14.4 11 16.6 15.2 12.4"/></svg></div>
+          <h3>Cómo ve el avance</h3>
+          <p>El estudiante tiene un portal con su asistencia sesión por sesión, su estado de cuenta y qué le falta para certificarse. Nada de eso se decide a puerta cerrada.</p>
+        </div>
+      </div>
+
+      <div class="rep-foot rv rv-d4">
+        <p><b>¿Tiene una pregunta que no está aquí?</b> Escríbanos directamente. Respondemos a representantes por WhatsApp o correo antes de que su hijo postule, no después. Puede revisar cómo tratamos los datos personales en nuestra <a href="/privacidad.html" style="color:var(--blue);font-weight:600">política de privacidad</a>.</p>
+        <a class="btn btn-dark" href="https://wa.me/593962893857?text=Hola%2C%20soy%20representante%20y%20tengo%20preguntas%20sobre%20ELECTI%20antes%20de%20que%20mi%20hijo%20postule." target="_blank" rel="noopener" style="white-space:normal">
+          Hablar con el equipo
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+    <!-- ══ PUERTA DE ENTRADA INSTITUCIONAL ══ -->
+  <section class="pad-sm" id="inst-puente">
+    <div class="wrap">
+      <div class="inst-hero-card rv" style="display:grid;grid-template-columns:1.25fr .75fr;gap:clamp(28px,4vw,56px);align-items:center;max-width:1000px;margin:0 auto">
+        <div>
+          <span class="inst-kicker">ELECTI para instituciones educativas</span>
+          <h2 style="font-size:clamp(24px,2.6vw,34px);font-weight:800;letter-spacing:-.035em;line-height:1.14;color:var(--ink);margin:20px 0 14px">Fortalece a quienes lideran<br>tu comunidad estudiantil.</h2>
+          <p style="font-size:16.5px;line-height:1.65;color:var(--ink-2)">Los colegios pueden seleccionar y patrocinar a sus representantes y líderes estudiantiles para que se formen en ELECTI, con un 30% de beneficio sobre la mensualidad y sin costo de matrícula.</p>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <a class="btn btn-primary" href="/colegios/" style="justify-content:center">Conocer programa para colegios</a>
+          <a class="btn btn-ghost-l" href="/colegios/#inst-contacto" style="justify-content:center">Solicitar información</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+<!-- ══ CTA FINAL ══ -->
+  <section class="pad cta">
+    <div class="wrap cta-in">
+      <h2 class="rv">Dentro de seis meses<br><span class="grad">vas a haber ejecutado algo.</span></h2>
+      <p class="rv rv-d1">O vas a estar exactamente donde estás hoy. La diferencia empieza con un formulario de cinco minutos.</p>
+      <div class="rv rv-d2">
+        <a href="https://forms.gle/SdaHtjDcyFuYEa3T7" target="_blank" rel="noopener" class="btn btn-primary btn-lg">
+          Postular a ELECTI
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+      </div>
+      <p class="cta-mail rv rv-d3">¿Dudas antes de aplicar? Escríbenos por <a class="wa-inline" href="https://wa.me/593962893857?text=Hola%2C%20tengo%20una%20duda%20sobre%20ELECTI%20antes%20de%20postular." target="_blank" rel="noopener"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.25-.46-2.39-1.47-.88-.79-1.48-1.76-1.65-2.06-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.22 3.08c.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.69.62.71.23 1.36.19 1.87.12.57-.09 1.76-.72 2.01-1.41.25-.7.25-1.29.17-1.41-.07-.12-.27-.2-.57-.35z"/><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.86 9.86 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2zm0 18.15h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 0 1-1.26-4.38c0-4.54 3.7-8.23 8.25-8.23a8.23 8.23 0 0 1 8.23 8.24c0 4.54-3.7 8.23-8.23 8.23z"/></svg>WhatsApp</a>, a <a href="mailto:mreza@unionestudiantil.org">mreza@unionestudiantil.org</a> o por Instagram a <a href="https://instagram.com/electi.ec" target="_blank" rel="noopener">@electi.ec</a></p>
+    </div>
+  </section>
+</div>
+
+
+<!-- ══════════════ PÁGINA: PROGRAMA ══════════════ -->
+
+<footer>
+  <div class="wrap">
+    <div class="ft-top">
+      <div>
+        <div class="ft-brand">
+          <img src="/assets/logo-electi.jpg" alt="ELECTI" width="40" height="40" loading="lazy">
+          <span class="ft-brand-n">ELECTI</span>
+        </div>
+        <p class="ft-desc">La escuela de liderazgo y gestión de proyectos de Unión Estudiantil, en alianza con la UMET.</p>
+        <a class="ft-ig" href="https://instagram.com/electi.ec" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+          @electi.ec
+        </a>
+      </div>
+      <div class="ft-cols">
+        <div class="ft-col">
+          <h5>Programa</h5>
+          <a href="/#programa">Qué es ELECTI</a>
+          <a href="/#resultados">Resultados</a>
+          <a href="/programa/#proceso">Cómo funciona</a>
+          <a href="/docentes/">Docentes</a>
+          <a href="/becas/">Becas</a>
+          <a href="/preguntas/">Preguntas frecuentes</a>
+          <a href="/#representantes">Para representantes</a>
+        </div>
+        <div class="ft-col">
+          <h5>Sedes</h5>
+          <a href="/quito/">Quito · UIO</a>
+          <a href="/guayaquil/">Guayaquil · GYE</a>
+          <a href="/cuenca/">Cuenca · CUE</a>
+          <a href="/santodomingo/">Santo Domingo · SDO</a>
+          <a href="/sedes/">Comparar sedes</a>
+        </div>
+        <div class="ft-col">
+          <h5>Colegios</h5>
+          <a href="/colegios/">ELECTI Instituciones</a>
+          <a href="/colegios/#inst-modalidades">Modalidades de vinculación</a>
+          <a href="/colegios/#inst-bi">Colegios BI</a>
+          <a href="/colegios/#inst-contacto">Solicitar propuesta</a>
+        </div>
+        <div class="ft-col">
+          <h5>Acceso</h5>
+          <a href="/portal">Portal de alumnos</a>
+          <a href="https://forms.gle/SdaHtjDcyFuYEa3T7" target="_blank" rel="noopener">Postular</a>
+          <a href="/institucional/">Unión Estudiantil</a>
+          <a href="/privacidad.html">Política de privacidad</a>
+        </div>
+        <div class="ft-col">
+          <h5>Contacto</h5>
+          <a href="https://instagram.com/electi.ec" target="_blank" rel="noopener">@electi.ec</a>
+          <a href="mailto:mreza@unionestudiantil.org">mreza@unionestudiantil.org</a>
+          <a href="https://wa.me/593962893857" target="_blank" rel="noopener">WhatsApp · 096 289 3857</a>
+          <a href="https://instagram.com/estudiantil_union" target="_blank" rel="noopener">@estudiantil_union</a>
+          <a href="https://instagram.com/grupo_fullef" target="_blank" rel="noopener">@grupo_fullef</a>
+        </div>
+      </div>
+    </div>
+    <p class="ft-legal">ELECTI es un programa de formación de Fundación Unión Estudiantil, desarrollado en alianza académica con la Universidad Metropolitana del Ecuador (UMET). Sedes activas en Quito, Guayaquil, Cuenca y Santo Domingo de los Tsáchilas.</p>
+    <div class="ft-bot">
+      <p class="ft-copy">© 2026 ELECTI — Fundación Unión Estudiantil. Quito, Ecuador.</p>
+      <div class="ft-social">
+        <a class="ft-so" href="https://instagram.com/electi.ec" target="_blank" rel="noopener" aria-label="Instagram ELECTI">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        </a>
+        <a class="ft-so" href="https://instagram.com/estudiantil_union" target="_blank" rel="noopener" aria-label="Instagram Unión Estudiantil">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        </a>
+        <a class="ft-so" href="mailto:mreza@unionestudiantil.org" aria-label="Correo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ══ WHATSAPP ══ Para revertir: eliminar este bloque, el CSS .wa-fab y la función waMensaje() -->
+<a class="wa-fab" id="wa-fab" data-tip="Escríbenos por WhatsApp" target="_blank" rel="noopener"
+   href="https://wa.me/593962893857?text=Hola%2C%20quiero%20informacion%20sobre%20ELECTI." aria-label="Escribir a ELECTI por WhatsApp"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.25-.46-2.39-1.47-.88-.79-1.48-1.76-1.65-2.06-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.62-.92-2.22-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.88 1.22 3.08c.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.69.62.71.23 1.36.19 1.87.12.57-.09 1.76-.72 2.01-1.41.25-.7.25-1.29.17-1.41-.07-.12-.27-.2-.57-.35z"/><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.86 9.86 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2zm0 18.15h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 0 1-1.26-4.38c0-4.54 3.7-8.23 8.25-8.23a8.23 8.23 0 0 1 8.23 8.24c0 4.54-3.7 8.23-8.23 8.23z"/></svg></a>
+
+<script src="/assets/electi.js"></script>
+</body>
+</html>

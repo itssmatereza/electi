@@ -43,3 +43,11 @@
 
 /robots.txt
   Cache-Control: public, max-age=3600
+
+# ══════════════════════════════════════════════════════════
+# CSS, JS e imágenes · nombres estables, caché de un año.
+# Si cambias el CSS o el JS y no ves el cambio, haz Ctrl+Shift+R
+# o renombra el archivo (electi-2.css) y actualiza la plantilla.
+# ══════════════════════════════════════════════════════════
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable

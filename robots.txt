@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /uide/
 
-Sitemap: https://electi.pages.dev/sitemap.xml
+Sitemap: https://electi.unionestudiantil.org/sitemap.xml
