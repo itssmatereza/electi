@@ -1,0 +1,53 @@
+# ══════════════════════════════════════════════════════════
+# Aplica a todo el sitio
+# COOP: lo necesita el popup de login de Google en el portal.
+# No lo cambies a "same-origin" a secas o se rompe la sesión.
+# ══════════════════════════════════════════════════════════
+/*
+  Cross-Origin-Opener-Policy: same-origin-allow-popups
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), interest-cohort=()
+
+# ══════════════════════════════════════════════════════════
+# HTML · siempre revalidar para que un deploy se vea al instante
+# ══════════════════════════════════════════════════════════
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+/
+  Cache-Control: public, max-age=0, must-revalidate
+
+# ══════════════════════════════════════════════════════════
+# Imágenes e íconos · no cambian, caché de un año
+# Si reemplazas og.jpg, renómbralo (og-2.jpg) y actualiza el meta,
+# o el caché seguirá sirviendo el anterior.
+# ══════════════════════════════════════════════════════════
+/og.jpg
+  Cache-Control: public, max-age=31536000, immutable
+
+/apple-touch-icon.png
+  Cache-Control: public, max-age=31536000, immutable
+
+/icon-192.png
+  Cache-Control: public, max-age=31536000, immutable
+
+/icon-512.png
+  Cache-Control: public, max-age=31536000, immutable
+
+# ══════════════════════════════════════════════════════════
+# Rastreo
+# ══════════════════════════════════════════════════════════
+/sitemap.xml
+  Cache-Control: public, max-age=3600
+
+/robots.txt
+  Cache-Control: public, max-age=3600
+
+# ══════════════════════════════════════════════════════════
+# CSS, JS e imágenes · nombres estables, caché de un año.
+# Si cambias el CSS o el JS y no ves el cambio, haz Ctrl+Shift+R
+# o renombra el archivo (electi-2.css) y actualiza la plantilla.
+# ══════════════════════════════════════════════════════════
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
