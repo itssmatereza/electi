@@ -1,5 +1,0 @@
-User-agent: *
-Allow: /
-Disallow: /uide/
-
-Sitemap: https://electi.pages.dev/sitemap.xml
