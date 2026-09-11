@@ -7,7 +7,10 @@
 <meta name="description" content="Portal institucional de ELECTI — asistencia, pagos, materiales y seguimiento del programa.">
 <meta name="robots" content="noindex,nofollow">
 <meta name="theme-color" content="#081a4a">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="icon" href="/assets/portal-favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="192x192" href="/assets/portal-icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="/assets/portal-icon-512.png">
+<link rel="apple-touch-icon" href="/assets/portal-apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -3893,24 +3896,28 @@ function renderPagos() {
   const tbody = document.getElementById('pagos-table');
   pintarSelectorPagos();
 
-  // Con calendarios distintos por bloque, las columnas de meses solo tienen
-  // sentido dentro de un bloque: "todas las sedes" deja de ser una vista valida.
-  let sedeF = document.getElementById('pagos-sede') ? document.getElementById('pagos-sede').value : 'ALL';
-  if (sedeF === 'ALL' && bloquesDifieren()) { sedeF = 'costa'; document.getElementById('pagos-sede').value = 'costa'; }
+  const sedeF = document.getElementById('pagos-sede') ? document.getElementById('pagos-sede').value : 'ALL';
 
+  // Con calendarios distintos por bloque, las columnas de meses solo tienen
+  // sentido dentro de un bloque. En la vista de todos se cambia la rejilla
+  // por un resumen, en vez de esconder la vista.
+  const resumen = (sedeF === 'ALL' && bloquesDifieren());
   const esBloque = !!BLOQUES[sedeF];
   const sedeRef = esBloque ? BLOQUES[sedeF].sedes[0] : (sedeF === 'ALL' ? null : sedeF);
   const M = getMeses(sedeRef);
-  document.getElementById('pagos-thead').innerHTML =
-    '<th>Alumno</th><th>Beca</th><th>Cuota</th><th>Mat.</th>' +
-    M.map(m => '<th>' + m.label + '</th>').join('') +
-    '<th>Pagado</th><th>Estado</th>';
+  document.getElementById('pagos-thead').innerHTML = resumen
+    ? '<th>Alumno</th><th>Beca</th><th>Cuota</th><th>Mat.</th><th>Cuotas pagadas</th><th>Pagado</th><th>Estado</th>'
+    : '<th>Alumno</th><th>Beca</th><th>Cuota</th><th>Mat.</th>' +
+      M.map(m => '<th>' + m.label + '</th>').join('') +
+      '<th>Pagado</th><th>Estado</th>';
   const cfg = getConfig(sedeRef);
   const ps = document.getElementById('pagos-sub');
   const arrancado = sedeRef ? cicloArrancado(sedeRef) : true;
-  if (ps) ps.textContent = cfg.cicloNombre + ' · Matrícula $' + dinero(cfg.matricula) + ' + ' + cfg.numCuotas + ' cuotas de $' + dinero(cfg.cuotaBase) +
-    (arrancado ? '. Mora: cuota impaga después del día 5 del mes.'
-               : '. El ciclo inicia el ' + fechaLarga(inicioClases(sedeRef)) + ': hasta entonces nada figura en mora.');
+  if (ps) ps.textContent = resumen
+    ? 'Todos los alumnos del programa. Costa y Sierra siguen calendarios distintos, así que aquí ves el resumen de cobranza; para marcar cuota por cuota elige un bloque en el selector.'
+    : cfg.cicloNombre + ' · Matrícula $' + dinero(cfg.matricula) + ' + ' + cfg.numCuotas + ' cuotas de $' + dinero(cfg.cuotaBase) +
+      (arrancado ? '. Mora: cuota impaga después del día 5 del mes.'
+                 : '. El ciclo inicia el ' + fechaLarga(inicioClases(sedeRef)) + ': hasta entonces nada figura en mora.');
 
   const lista = sedeF === 'ALL' ? state.alumnos
     : esBloque ? state.alumnos.filter(a => BLOQUES[sedeF].sedes.indexOf(a.sede || 'UIO') !== -1)
@@ -3929,11 +3936,25 @@ function renderPagos() {
   let matEsp = 0, matCob = 0;
   mensuales.forEach(a => { const m = matriculaDe(a); matEsp += m; if (getPagos(a).mat) matCob += m; });
   filas += filaMes('Matrícula', matEsp, matCob);
-  M.forEach(mo => {
-    let esp = 0, cob = 0;
-    mensuales.forEach(a => { const c = cuotaDe(a); esp += c; if (getPagos(a).m[mo.k]) cob += c; });
-    filas += filaMes('Cuota ' + mo.label, esp, cob);
-  });
+  if (resumen) {
+    // Los meses no coinciden entre bloques: se listan por separado para que
+    // cada cifra siga correspondiendo a un mes real de ese calendario.
+    Object.keys(BLOQUES).forEach(function(b){
+      const delBloque = mensuales.filter(a => BLOQUES[b].sedes.indexOf(a.sede || 'UIO') !== -1);
+      if (delBloque.length === 0) return;
+      getMeses(BLOQUES[b].sedes[0]).forEach(mo => {
+        let esp = 0, cob = 0;
+        delBloque.forEach(a => { const c = cuotaDe(a); esp += c; if (getPagos(a).m[mo.k]) cob += c; });
+        filas += filaMes(nombreBloque(b) + ' · cuota ' + mo.label, esp, cob);
+      });
+    });
+  } else {
+    M.forEach(mo => {
+      let esp = 0, cob = 0;
+      mensuales.forEach(a => { const c = cuotaDe(a); esp += c; if (getPagos(a).m[mo.k]) cob += c; });
+      filas += filaMes('Cuota ' + mo.label, esp, cob);
+    });
+  }
   if (unicos.length > 0) {
     let uEsp = 0, uCob = 0;
     unicos.forEach(a => { const r2 = resumenPago(a); uEsp += r2.total; if (r2.unicoPagado) uCob += r2.total; });
@@ -3941,25 +3962,39 @@ function renderPagos() {
   }
   document.getElementById('pagos-mes').innerHTML = filas;
 
-  if (lista.length === 0) { tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;color:var(--gray);padding:32px;">No hay alumnos en esta vista.</td></tr>'; return; }
+  if (lista.length === 0) { tbody.innerHTML = '<tr><td colspan="' + (resumen ? 7 : M.length + 6) + '" style="text-align:center;color:var(--gray);padding:32px;">No hay alumnos en esta vista.</td></tr>'; return; }
   tbody.innerHTML = lista.map(a => {
     const r = resumenPago(a);
     const p = getPagos(a);
     let matChip, mesChips;
     if (a.plan === 'unico' && r.total > 0) {
       matChip = `<span class="pay-chip ${r.unicoPagado ? 'paid' : (r.mora ? 'overdue' : '')}" style="width:auto;padding:0 10px;white-space:nowrap;" onclick="togglePagoUnico('${a.username}')">${r.unicoPagado ? '✓ $' + dinero(r.total) : 'Marcar $' + dinero(r.total)}</span>`;
-      mesChips = M.map(() => '<td class="pay-cell"><span class="pay-chip zero">—</span></td>').join('');
+      mesChips = resumen
+        ? '<td style="font-family:\'DM Mono\',monospace;color:var(--gray);">Pago único</td>'
+        : M.map(() => '<td class="pay-cell"><span class="pay-chip zero">—</span></td>').join('');
     } else {
       matChip = r.mat === 0
         ? '<span class="pay-chip zero">—</span>'
         : `<span class="pay-chip ${p.mat ? 'paid' : (r.mora && !p.mat ? 'overdue' : '')}" onclick="togglePago('${a.username}','mat')">${p.mat ? '✓' : '$'+dinero(r.mat)}</span>`;
-      mesChips = M.map(m => {
-        const st = estadoMes(a, m);
-        if (st === 'exento') return '<td class="pay-cell"><span class="pay-chip zero">—</span></td>';
-        const cls = st === 'paid' ? 'paid' : st === 'overdue' ? 'overdue' : '';
-        const txt = st === 'paid' ? '✓' : '·';
-        return `<td class="pay-cell"><span class="pay-chip ${cls}" onclick="togglePago('${a.username}','${m.k}')">${txt}</span></td>`;
-      }).join('');
+      if (resumen) {
+        // Cada alumno se cuenta contra el calendario de SU bloque.
+        const suyos = getMeses(a.sede);
+        const total = suyos.filter(m => estadoMes(a, m) !== 'exento').length;
+        const pagas = suyos.filter(m => estadoMes(a, m) === 'paid').length;
+        const enMora = suyos.some(m => estadoMes(a, m) === 'overdue');
+        mesChips = total === 0
+          ? '<td style="font-family:\'DM Mono\',monospace;color:var(--gray);">—</td>'
+          : '<td style="font-family:\'DM Mono\',monospace;' + (enMora ? 'color:var(--red);font-weight:700;' : '') + '">' +
+            pagas + '/' + total + '</td>';
+      } else {
+        mesChips = M.map(m => {
+          const st = estadoMes(a, m);
+          if (st === 'exento') return '<td class="pay-cell"><span class="pay-chip zero">—</span></td>';
+          const cls = st === 'paid' ? 'paid' : st === 'overdue' ? 'overdue' : '';
+          const txt = st === 'paid' ? '✓' : '·';
+          return `<td class="pay-cell"><span class="pay-chip ${cls}" onclick="togglePago('${a.username}','${m.k}')">${txt}</span></td>`;
+        }).join('');
+      }
     }
     const estado = a.suspendido
       ? '<span class="badge badge-red">⛔ Suspendido</span>'
@@ -3988,7 +4023,9 @@ function pintarSelectorPagos() {
   const firma = dif ? 'bloques' : 'sedes';
   if (sel.dataset.firma === firma) return;
   const previo = sel.value;
-  let h = dif ? '' : '<option value="ALL">Todas las sedes</option>';
+  // Con calendarios distintos la opcion sigue existiendo, pero se llama
+  // distinto porque lo que muestra es un resumen, no la rejilla de meses.
+  let h = '<option value="ALL">' + (dif ? 'Todos los alumnos (resumen)' : 'Todas las sedes') + '</option>';
   Object.keys(BLOQUES).forEach(function(b){
     h += '<option value="' + b + '">' + nombreBloque(b) + '</option>';
     BLOQUES[b].sedes.forEach(function(sd){
@@ -3997,7 +4034,7 @@ function pintarSelectorPagos() {
   });
   sel.innerHTML = h;
   sel.dataset.firma = firma;
-  sel.value = previo && sel.querySelector('option[value="' + previo + '"]') ? previo : (dif ? 'costa' : 'ALL');
+  sel.value = previo && sel.querySelector('option[value="' + previo + '"]') ? previo : 'ALL';
 }
 
 function togglePagoUnico(u) {
