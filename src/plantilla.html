@@ -25,7 +25,7 @@
 <meta name="theme-color" content="#0D2A6E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/assets/electi.css">
 <noscript><style>.rv{opacity:1!important;transform:none!important}</style></noscript>
 <script>
@@ -34,17 +34,17 @@
    Cuando esos enlaces dejen de circular, este bloque se puede borrar. */
 (function(){
   if (location.pathname !== '/' || !location.hash) return;
-  var M = {'home':'/','programa':'/programa/','docentes':'/docentes/','becas':'/becas/',
-           'preguntas':'/preguntas/','sedes':'/sedes/','sede-quito':'/quito/',
-           'sede-guayaquil':'/guayaquil/','sede-cuenca':'/cuenca/',
-           'sede-santo-domingo':'/santodomingo/','instituciones':'/colegios/',
+  var M = {'home':'/','programa':'/programa/','malla':'/malla/','docentes':'/docentes/',
+           'becas':'/becas/','preguntas':'/preguntas/','sedes':'/quito/','sede-quito':'/quito/',
+           'sede-guayaquil':'/quito/','sede-cuenca':'/quito/',
+           'sede-santo-domingo':'/quito/','instituciones':'/colegios/',
            'ue':'/institucional/','uide':'/uide/'};
   var p = location.hash.replace('#','').split('/');
   var destino = M[p[0]];
   if (destino && destino !== '/') location.replace(destino + (p[1] ? '#' + p[1] : ''));
 })();
 </script>
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "EducationalOrganization", "name": "ELECTI", "alternateName": "ELECTI — Escuela de liderazgo y gestión de proyectos", "url": "{{DOMINIO}}/", "logo": "{{DOMINIO}}/icon-512.png", "image": "{{DOMINIO}}/og.jpg", "description": "Escuela de liderazgo y gestión de proyectos para jóvenes, programa de Fundación Unión Estudiantil en alianza académica con la Universidad Metropolitana del Ecuador (UMET).", "email": "mreza@unionestudiantil.org", "telephone": "+593962893857", "sameAs": ["https://instagram.com/electi.ec", "https://instagram.com/estudiantil_union"], "parentOrganization": {"@type": "Organization", "name": "Fundación Unión Estudiantil"}, "areaServed": [{"@type": "City", "name": "Quito"}, {"@type": "City", "name": "Guayaquil"}, {"@type": "City", "name": "Cuenca"}, {"@type": "City", "name": "Santo Domingo de los Tsáchilas"}], "address": {"@type": "PostalAddress", "addressCountry": "EC", "addressLocality": "Quito", "addressRegion": "Pichincha"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "EducationalOrganization", "name": "ELECTI", "alternateName": "ELECTI — Escuela de liderazgo y gestión de proyectos", "url": "{{DOMINIO}}/", "logo": "{{DOMINIO}}/icon-512.png", "image": "{{DOMINIO}}/og.jpg", "description": "Escuela de liderazgo y gestión de proyectos para jóvenes en Quito: 24 semanas, seis fases y un proyecto real ejecutado. Programa de Fundación Unión Estudiantil en alianza académica con la Universidad Metropolitana del Ecuador (UMET).", "email": "mreza@unionestudiantil.org", "telephone": "+593962893857", "sameAs": ["https://instagram.com/electi.ec", "https://instagram.com/estudiantil_union"], "parentOrganization": {"@type": "Organization", "name": "Fundación Unión Estudiantil"}, "areaServed": [{"@type": "City", "name": "Quito"}], "address": {"@type": "PostalAddress", "addressCountry": "EC", "addressLocality": "Quito", "addressRegion": "Pichincha"}}</script>
 </head>
 <body>
 

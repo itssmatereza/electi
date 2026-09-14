@@ -17,7 +17,21 @@
 /faq                      /preguntas/        301
 /equipo                   /docentes/         301
 /metodologia              /programa/         301
-/santo-domingo            /santodomingo/     301
-/sto-domingo              /santodomingo/     301
+
+# ── Sedes en pausa: mientras solo opera Quito, todo lo que
+#    apuntaba a otra ciudad cae en la modalidad en linea,
+#    que cubre todo el pais.
+/santo-domingo            /online/           302
+/sto-domingo              /online/           302
+/santodomingo/*           /online/           302
+/guayaquil/*              /online/           302
+/cuenca/*                 /online/           302
+/sedes/*                  /online/           302
+/virtual                  /online/           301
+/en-linea                 /online/           301
+
+# ── Malla académica
+/malla-academica          /malla/            301
+/pensum                   /malla/            301
 /union-estudiantil        /institucional/    301
 /ue                       /institucional/    301

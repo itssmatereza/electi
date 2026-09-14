@@ -118,7 +118,7 @@ def main():
              + '\n'.join(sorted(filas)) + '\n</urlset>\n')
 
     escribir('robots.txt',
-             'User-agent: *\nAllow: /\nDisallow: /uide/\n\nSitemap: %s/sitemap.xml\n' % DOMINIO)
+             'User-agent: *\nAllow: /\n\nSitemap: %s/sitemap.xml\n' % DOMINIO)
 
     print('Sitio construido con dominio: %s\n' % DOMINIO)
     for archivo, peso in sorted(generadas):

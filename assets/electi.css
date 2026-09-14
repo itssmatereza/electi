@@ -1035,9 +1035,9 @@ footer{background:#040d24;padding:60px 0 34px}
    Para revertir: eliminar este bloque, la página #pg-instituciones,
    el bloque #inst-puente del inicio y las entradas de navegación.
    ══════════════════════════════════════════════════════════ */
+/* El punto de novedad ahora vive en el desplegable "Alianzas"
+   (ver el bloque de navegación al final de este archivo). */
 .nav-colegios{position:relative}
-.nav-colegios::after{content:'';position:absolute;right:2px;top:9px;width:6px;height:6px;
-  border-radius:50%;background:var(--sky)}
 
 .inst-hero{background:var(--paper);border-bottom:1px solid var(--line);
   padding:clamp(64px,7vw,104px) 0 clamp(56px,6vw,86px)}
@@ -1403,3 +1403,488 @@ footer{background:#040d24;padding:60px 0 34px}
    scroll-margin-top evita que el nav fijo tape el título al saltar a un ancla. */
 .pg{display:block}
 [id]{scroll-margin-top:88px}
+
+/* ════════════════════════════════════════════════════════════════
+   PÁGINA: MALLA ACADÉMICA  (/malla/)
+   Todo lo de esta página lleva el prefijo .ml- para no chocar
+   con nada del resto del sitio.
+   ════════════════════════════════════════════════════════════════ */
+.ml-vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ── Cabecera con el mapa de 24 semanas ── */
+.ml-ph{padding-bottom:clamp(40px,5vw,58px)}
+.ml-ph h1{margin-bottom:20px}
+.ml-mapa-wrap{margin-top:clamp(38px,5vw,54px);position:relative;z-index:1}
+.ml-mapa-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px}
+.ml-mapa{display:grid;grid-template-columns:repeat(24,1fr);gap:4px;min-width:620px}
+.ml-c{
+  position:relative;display:block;height:66px;border-radius:7px;text-decoration:none;
+  background:rgba(66,165,245,.3);transition:transform .2s cubic-bezier(.34,1.4,.64,1),background .2s;
+}
+.ml-c:hover,.ml-c:focus-visible{transform:translateY(-4px);background:var(--sky-l)}
+.ml-c-n{
+  position:absolute;top:7px;left:0;right:0;text-align:center;
+  font-size:11px;font-weight:800;color:#fff;opacity:.72;letter-spacing:-.02em;
+}
+.ml-c.f1{background:rgba(66,165,245,.26)} .ml-c.f2{background:rgba(66,165,245,.4)}
+.ml-c.f3{background:rgba(66,165,245,.54)} .ml-c.f4{background:rgba(66,165,245,.68)}
+.ml-c.f5{background:rgba(66,165,245,.84)} .ml-c.f6{background:var(--sky)}
+.ml-c.f5 .ml-c-n,.ml-c.f6 .ml-c-n{color:var(--navy-deep);opacity:.8}
+.ml-bandas{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;min-width:620px;margin-top:7px}
+.ml-banda{
+  display:flex;align-items:baseline;gap:6px;padding:9px 2px 0;
+  border-top:2px solid rgba(255,255,255,.22);
+  font-size:12.5px;color:rgba(255,255,255,.62);line-height:1.25;
+}
+.ml-banda b{font-size:13px;font-weight:800;color:var(--sky-l)}
+.ml-banda.f6{border-top-color:var(--sky)}
+.ml-leyenda{
+  display:flex;flex-wrap:wrap;gap:10px 26px;margin-top:20px;
+  font-size:12.5px;color:rgba(255,255,255,.46);
+}
+.ml-leyenda span{display:inline-flex;align-items:center;gap:8px}
+
+/* ── Cifras ── */
+.ml-cifras{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:14px;
+  margin-top:clamp(34px,4.5vw,46px);position:relative;z-index:1;
+}
+.ml-cifras>div{
+  background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.12);
+  border-radius:var(--r);padding:20px 18px;backdrop-filter:blur(10px);
+}
+.ml-cifras b{
+  display:block;font-size:clamp(28px,3.6vw,40px);font-weight:900;color:#fff;
+  letter-spacing:-.045em;line-height:1;margin-bottom:8px;
+}
+.ml-cifras span{font-size:12.5px;color:rgba(255,255,255,.52);line-height:1.45;display:block}
+
+/* ── Qué te llevas ── */
+.ml-llevas{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.ml-ll{
+  background:#fff;border:1px solid var(--line);border-radius:var(--r);
+  padding:30px 28px;box-shadow:var(--shadow-s);
+}
+.ml-ll h4{font-size:19px;font-weight:800;margin-bottom:9px}
+.ml-ll p{font-size:14.5px;color:var(--muted);line-height:1.66}
+.ml-tira{margin-top:20px;border-radius:var(--r-lg);overflow:hidden}
+.ml-tira img{width:100%;height:clamp(200px,30vw,380px);object-fit:cover;object-position:center 42%}
+
+/* ── Los dos ejes ── */
+.ml-ejes-sec{background:var(--paper)}
+.ml-ejes{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.ml-eje{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:30px 28px}
+.ml-eje-k{
+  display:inline-block;font-size:11px;font-weight:800;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--blue);background:#EEF3FC;
+  padding:6px 12px;border-radius:100px;margin-bottom:16px;
+}
+.ml-eje h4{font-size:18px;font-weight:800;line-height:1.3;margin-bottom:10px}
+.ml-eje p{font-size:14.5px;color:var(--muted);line-height:1.66}
+.ml-nota{
+  margin-top:20px;font-size:13.5px;color:var(--muted);line-height:1.7;
+  max-width:820px;border-left:2px solid var(--line-2);padding-left:18px;
+}
+.ml-nota a{color:var(--blue);font-weight:600;text-decoration:none}
+.ml-nota a:hover{text-decoration:underline}
+
+/* ── Navegación de fases ── */
+.ml-chips{
+  position:sticky;top:70px;z-index:30;display:flex;gap:7px;overflow-x:auto;
+  padding:12px 0;margin-bottom:12px;background:rgba(255,255,255,.9);
+  backdrop-filter:blur(14px);scrollbar-width:none;
+}
+.ml-chips::-webkit-scrollbar{display:none}
+.ml-chip{
+  flex:none;display:inline-flex;align-items:center;gap:7px;text-decoration:none;
+  font-size:13.5px;font-weight:600;color:var(--ink-2);background:var(--paper);
+  border:1px solid var(--line);border-radius:100px;padding:9px 16px;transition:.18s;
+}
+.ml-chip b{color:var(--blue);font-weight:800}
+.ml-chip:hover{border-color:var(--navy);color:var(--navy);transform:translateY(-1px)}
+
+/* ── Cada fase ── */
+.ml-fase{padding:clamp(42px,5.5vw,64px) 0;border-top:1px solid var(--line)}
+.ml-fase:first-of-type{border-top:none;padding-top:24px}
+.ml-fase-h{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-bottom:28px}
+.ml-fase-n{
+  flex:none;width:58px;height:58px;border-radius:16px;display:grid;place-items:center;
+  background:var(--navy);color:#fff;font-size:24px;font-weight:900;letter-spacing:-.04em;
+}
+.ml-fase-h h3{font-size:clamp(24px,3.2vw,34px);font-weight:800;line-height:1.1}
+.ml-fase-q{font-size:14.5px;color:var(--muted);margin-top:4px}
+.ml-fase-s{
+  margin-left:auto;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--blue);background:#EEF3FC;border-radius:100px;padding:8px 16px;white-space:nowrap;
+}
+.ml-fase-b{display:grid;grid-template-columns:1.15fr .85fr;gap:28px;align-items:start;margin-bottom:26px}
+.ml-res{font-size:16.5px;color:var(--ink-2);line-height:1.7;margin-bottom:22px}
+.ml-comp{display:grid;gap:12px}
+.ml-comp>div{background:var(--paper);border:1px solid var(--line);border-radius:var(--r-sm);padding:16px 18px}
+.ml-comp span{
+  display:block;font-size:11px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:5px;
+}
+.ml-comp p{font-size:14.5px;font-weight:600;color:var(--ink)}
+.ml-comp>div:first-child{background:#EEF3FC;border-color:#D8E5FA}
+.ml-comp>div:first-child p{color:var(--navy)}
+.ml-foto{border-radius:var(--r);overflow:hidden;background:var(--paper)}
+.ml-foto img{width:100%;height:auto;display:block}
+.ml-foto figcaption{font-size:13px;color:var(--muted);line-height:1.6;padding:14px 16px 16px}
+
+/* ── Tabla de semanas ── */
+.ml-tabla-wrap{
+  border:1px solid var(--line);border-radius:var(--r);background:#fff;
+  box-shadow:var(--shadow-s);overflow:hidden;
+}
+.ml-semanas{width:100%;border-collapse:collapse;font-size:14px}
+.ml-semanas thead th{
+  background:var(--navy);color:#fff;font-size:11px;font-weight:800;letter-spacing:.1em;
+  text-transform:uppercase;text-align:left;padding:13px 18px;
+}
+.ml-semanas tbody th,.ml-semanas tbody td{
+  padding:18px;vertical-align:top;border-bottom:1px solid var(--line);
+  text-align:left;line-height:1.6;color:var(--ink-2);font-weight:400;
+}
+.ml-semanas tbody tr:last-child th,.ml-semanas tbody tr:last-child td{border-bottom:none}
+.ml-semanas tbody th{width:78px;background:var(--paper)}
+.ml-semanas tbody th b{display:block;font-size:22px;font-weight:900;color:var(--navy);letter-spacing:-.04em;line-height:1}
+.ml-semanas tbody th i{display:block;font-style:normal;font-size:11px;color:var(--muted);margin-top:3px}
+.ml-semanas td.ml-ent{width:22%;color:var(--ink);font-weight:600;background:#FCFDFF}
+.ml-st{
+  display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--navy);background:#EEF3FC;border-radius:5px;padding:2px 7px;margin-right:5px;
+}
+.ml-eval tbody td b{color:var(--navy);font-size:17px;font-weight:900}
+.ml-total th,.ml-total td{background:var(--paper);font-weight:800;color:var(--ink)}
+
+/* ── Calendario ── */
+.ml-cal{
+  display:grid;grid-template-columns:1fr 1fr;gap:36px;align-items:center;
+  background:var(--paper);border:1px solid var(--line);border-radius:var(--r-lg);
+  padding:clamp(28px,4vw,48px);
+}
+.ml-cal-txt h3{font-size:clamp(22px,2.8vw,30px);font-weight:800;line-height:1.18;margin-bottom:14px}
+.ml-cal-txt p{font-size:15px;color:var(--muted);line-height:1.7}
+.ml-cal-txt b{color:var(--ink);font-weight:700}
+.ml-link{
+  display:inline-flex;align-items:center;gap:8px;margin-top:20px;
+  font-size:14.5px;font-weight:700;color:var(--blue);text-decoration:none;
+}
+.ml-link svg{width:15px;height:15px;transition:transform .2s}
+.ml-link:hover svg{transform:translateX(3px)}
+.ml-cal-fotos{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0}
+.ml-cal-fotos img{width:100%;height:170px;object-fit:cover;border-radius:var(--r-sm)}
+.ml-cierre-alt{font-size:13.5px;color:rgba(255,255,255,.5);margin:24px auto 0}
+.ml-cierre-alt a{color:var(--sky-l);text-decoration:none;font-weight:600}
+.ml-cierre-alt a:hover{text-decoration:underline}
+
+/* ── Adaptación a pantallas chicas ── */
+@media (max-width:1024px){
+  .ml-ejes{grid-template-columns:1fr;gap:12px}
+  .ml-fase-b{grid-template-columns:1fr;gap:22px}
+  .ml-cal{grid-template-columns:1fr;gap:26px}
+}
+@media (max-width:768px){
+  .ml-cifras{grid-template-columns:1fr 1fr;gap:10px}
+  .ml-cifras>div{padding:16px 15px}
+  .ml-llevas{grid-template-columns:1fr;gap:12px}
+  .ml-ll{padding:24px 22px}
+  .ml-fase-n{width:48px;height:48px;font-size:20px;border-radius:13px}
+  .ml-fase-h{gap:14px}
+  .ml-fase-s{margin-left:0;order:3;width:100%;text-align:center}
+  .ml-chips{top:64px}
+  .ml-cal-fotos img{height:130px}
+
+  /* La tabla de semanas se convierte en tarjetas apiladas */
+  .ml-tabla-wrap{border:none;background:none;box-shadow:none;overflow:visible}
+  .ml-semanas thead{display:none}
+  .ml-semanas tbody tr{
+    display:block;background:#fff;border:1px solid var(--line);border-radius:var(--r);
+    padding:20px;margin-bottom:12px;box-shadow:var(--shadow-s);
+  }
+  .ml-semanas tbody th,.ml-semanas tbody td{
+    display:block;width:auto;padding:0;border:none;background:none;
+  }
+  .ml-semanas tbody th{display:flex;align-items:baseline;gap:8px;margin-bottom:14px}
+  .ml-semanas tbody th b{display:inline;font-size:19px}
+  .ml-semanas tbody th i{display:inline;margin:0}
+  .ml-semanas tbody td{margin-bottom:14px}
+  .ml-semanas tbody td:last-child{margin-bottom:0}
+  .ml-semanas tbody td::before{
+    content:attr(data-l);display:block;font-size:10.5px;font-weight:800;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--muted);margin-bottom:5px;
+  }
+  .ml-semanas td.ml-ent{
+    background:var(--paper);border-radius:var(--r-sm);padding:14px 16px;
+  }
+}
+
+/* ── Bloque de la malla dentro de /programa/ ── */
+.pm-malla{background:var(--paper)}
+.pm-fases{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+.pm-f{
+  display:block;text-decoration:none;background:#fff;border:1px solid var(--line);
+  border-radius:var(--r);padding:22px 18px;transition:.2s;box-shadow:var(--shadow-s);
+}
+.pm-f:hover{transform:translateY(-3px);border-color:var(--sky);box-shadow:var(--shadow-m)}
+.pm-f b{
+  display:grid;place-items:center;width:34px;height:34px;border-radius:10px;
+  background:var(--navy);color:#fff;font-size:15px;font-weight:900;margin-bottom:14px;
+}
+.pm-f strong{display:block;font-size:16px;font-weight:800;color:var(--ink);letter-spacing:-.02em}
+.pm-f span{display:block;font-size:12.5px;color:var(--muted);margin-top:3px}
+.pm-cta{display:flex;flex-direction:column;align-items:center;gap:14px;margin-top:34px;text-align:center}
+.pm-cta p{font-size:13.5px;color:var(--muted);max-width:440px}
+@media (max-width:1024px){.pm-fases{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:600px){.pm-fases{grid-template-columns:repeat(2,1fr);gap:10px}.pm-f{padding:18px 15px}}
+
+/* ── Saltos de ancla en la malla: que el nav y los chips no tapen el destino ── */
+.ml-fase{scroll-margin-top:150px}
+.ml-semanas tbody tr{scroll-margin-top:150px}
+.ml-semanas tbody tr:target th,
+.ml-semanas tbody tr:target td{background:#EEF3FC;transition:background .5s}
+@media (max-width:768px){
+  .ml-semanas tbody tr:target{border-color:var(--sky);box-shadow:0 0 0 3px rgba(66,165,245,.18)}
+  .ml-fase,.ml-semanas tbody tr{scroll-margin-top:130px}
+}
+
+/* ════════════════════════════════════════════════════════════════
+   PORTADA REMODELADA · fotos reales, malla en primer plano y
+   la sede Quito como única sede activa.
+   ════════════════════════════════════════════════════════════════ */
+
+/* ── Franja de foto debajo del hero ── */
+.gen-franja{position:relative;margin:0;background:var(--navy-deep)}
+.gen-franja img{
+  width:100%;height:clamp(230px,38vw,520px);object-fit:cover;object-position:center 38%;
+  display:block;
+}
+.gen-franja figcaption{
+  position:absolute;left:0;right:0;bottom:0;padding:44px clamp(20px,5vw,48px) 16px;
+  font-size:12.5px;font-weight:600;letter-spacing:.02em;color:rgba(255,255,255,.82);
+  background:linear-gradient(transparent,rgba(6,21,57,.82));
+}
+
+/* ── Foto dentro de la sección oscura "no es un curso" ── */
+.sol-foto{position:relative;margin:0;border-radius:var(--r-lg);overflow:hidden;
+  border:1px solid rgba(255,255,255,.12)}
+.sol-foto img{width:100%;height:auto;display:block}
+.sol-foto figcaption{
+  font-size:13.5px;line-height:1.6;color:rgba(255,255,255,.62);
+  padding:18px 22px 20px;background:rgba(255,255,255,.05);
+}
+
+/* ── La malla en portada ── */
+.malla-home{
+  background:linear-gradient(176deg,var(--navy-deep),#0b2565 62%,#123a8e);
+  overflow:hidden;
+}
+.malla-home::before{
+  content:'';position:absolute;inset:0;pointer-events:none;opacity:.3;
+  background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);
+  background-size:62px 62px;
+  mask-image:radial-gradient(ellipse 80% 60% at 50% 30%,#000 26%,transparent 76%);
+  -webkit-mask-image:radial-gradient(ellipse 80% 60% at 50% 30%,#000 26%,transparent 76%);
+}
+.malla-home .wrap{position:relative;z-index:1}
+.mh-ejes{
+  display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:clamp(34px,4.5vw,48px);
+}
+.mh-ejes>div{
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.13);
+  border-radius:var(--r);padding:24px 26px;
+}
+.mh-ejes span{
+  display:block;font-size:12px;font-weight:800;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--sky-l);margin-bottom:10px;
+}
+.mh-ejes p{font-size:14.5px;line-height:1.68;color:rgba(255,255,255,.66)}
+.mh-cta{
+  display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center;
+  margin-top:clamp(30px,4vw,42px);
+}
+.mh-cta p{font-size:13px;color:rgba(255,255,255,.5)}
+
+/* ── Las seis fases con foto ── */
+.fases-sec{background:var(--paper)}
+.fs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.fs-card{
+  display:flex;flex-direction:column;text-decoration:none;background:#fff;
+  border:1px solid var(--line);border-radius:var(--r);overflow:hidden;
+  box-shadow:var(--shadow-s);transition:transform .24s cubic-bezier(.34,1.3,.64,1),box-shadow .24s,border-color .24s;
+}
+.fs-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-m);border-color:var(--sky-l)}
+.fs-img{position:relative;overflow:hidden;background:var(--paper)}
+.fs-img img{width:100%;height:200px;object-fit:cover;display:block;transition:transform .5s ease}
+.fs-card:hover .fs-img img{transform:scale(1.04)}
+.fs-sem{
+  position:absolute;left:14px;bottom:14px;font-size:11.5px;font-weight:800;letter-spacing:.06em;
+  color:#fff;background:rgba(6,21,57,.78);backdrop-filter:blur(6px);
+  border-radius:100px;padding:6px 13px;
+}
+.fs-txt{padding:24px 24px 26px;display:flex;flex-direction:column;flex:1}
+.fs-n{
+  font-size:11.5px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--blue);margin-bottom:8px;
+}
+.fs-txt h3{font-size:21px;font-weight:800;letter-spacing:-.03em;margin-bottom:10px}
+.fs-txt p{font-size:14.5px;color:var(--muted);line-height:1.66;flex:1}
+.fs-comp{
+  display:block;margin-top:18px;padding-top:15px;border-top:1px solid var(--line);
+  font-size:12.5px;font-weight:600;color:var(--ink-2);
+}
+
+/* ── Cómo se cursa en Quito ── */
+.quito-sec{background:#fff}
+.qt-split{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(32px,4.5vw,60px);align-items:start}
+.qt-lista{border-top:1px solid var(--line)}
+.qt-row{display:grid;grid-template-columns:170px 1fr;gap:20px;padding:20px 0;border-bottom:1px solid var(--line)}
+.qt-k{font-size:12.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding-top:3px}
+.qt-v b{display:block;font-size:17px;font-weight:800;color:var(--ink);letter-spacing:-.025em;margin-bottom:5px}
+.qt-v span{display:block;font-size:14.5px;color:var(--muted);line-height:1.65}
+.qt-fotos{display:flex;flex-direction:column;gap:16px}
+.qt-fotos figure{margin:0;border-radius:var(--r);overflow:hidden;border:1px solid var(--line);background:var(--paper)}
+.qt-fotos img{width:100%;height:auto;display:block}
+.qt-fotos figcaption{font-size:13px;color:var(--muted);line-height:1.6;padding:14px 16px 16px}
+
+@media (max-width:1024px){
+  .mh-ejes{grid-template-columns:1fr;gap:12px}
+  .fs-grid{grid-template-columns:repeat(2,1fr)}
+  .qt-split{grid-template-columns:1fr;gap:32px}
+}
+@media (max-width:700px){
+  .fs-grid{grid-template-columns:1fr}
+  .fs-img img{height:190px}
+  .qt-row{grid-template-columns:1fr;gap:6px;padding:18px 0}
+  .qt-k{padding-top:0}
+  .gen-franja figcaption{font-size:11.5px;padding-top:36px}
+}
+
+/* ════════════════════════════════════════════════════════════════
+   BARRA DE NAVEGACIÓN · versión reorganizada
+   Cuatro entradas de texto en lugar de ocho: dos desplegables
+   ("El programa" y "Alianzas") y dos enlaces sueltos.
+   ════════════════════════════════════════════════════════════════ */
+.dd-ancho{min-width:310px}
+
+/* Entrada destacada del desplegable: la malla */
+.dd-destacado{background:linear-gradient(100deg,#F2F7FF,#EAF1FD);border:1px solid #DCE8FA}
+.dd-destacado:hover{background:linear-gradient(100deg,#EAF1FD,#DFEAFB)}
+.dd-destacado .dd-tx strong{color:var(--navy)}
+
+/* Miniatura del mapa de semanas dentro del desplegable */
+.dd-ic-malla{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;padding:8px;background:var(--navy)}
+.dd-ic-malla b{display:block;height:100%;border-radius:2px;background:rgba(66,165,245,.45)}
+.dd-ic-malla b:nth-child(4){background:rgba(66,165,245,.7)}
+.dd-ic-malla b:nth-child(5){background:rgba(66,165,245,.85)}
+.dd-ic-malla b:nth-child(6){background:var(--sky)}
+
+/* Íconos de los desplegables: dibujos, no números ni iniciales */
+.dd-ic svg{width:20px;height:20px;fill:none;stroke:var(--blue);
+  stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.dd-link:hover .dd-ic{background:#E3ECFA}
+
+/* La marca de la UIDE: su escudo, sobre fondo claro propio */
+.dd-ic-marca{background:#FDF6E6;border:1px solid #F2E3BC}
+.dd-ic-marca img{width:15px;height:15px;object-fit:contain}
+.dd-link:hover .dd-ic-marca{background:#FAEDD2}
+
+/* El punto azul de novedad pasa del enlace de colegios al desplegable */
+.nav-trigger.nav-colegios{position:relative}
+.nav-trigger.nav-colegios::after{
+  content:'';position:absolute;right:8px;top:7px;width:6px;height:6px;
+  border-radius:50%;background:var(--sky);
+}
+
+/* Móvil: la malla, arriba y destacada */
+.mob-destacado{
+  display:block;background:linear-gradient(100deg,#F2F7FF,#EAF1FD);
+  border:1px solid #DCE8FA!important;border-radius:14px;
+  padding:15px 16px!important;margin-bottom:6px;text-decoration:none;
+}
+.mob-destacado strong{display:block;font-size:16px;font-weight:800;color:var(--navy);letter-spacing:-.02em}
+.mob-destacado span{display:block;font-size:13px;color:var(--muted);margin-top:3px;font-weight:400}
+
+/* ════════════════════════════════════════════════════════════════
+   CAPA DE TONO INSTITUCIONAL
+   ────────────────────────────────────────────────────────────────
+   Esta capa va al final a propósito: cambia el CARÁCTER del sitio
+   sin tocar la estructura. Baja el redondeo, apaga los brillos de
+   color, afina los pesos tipográficos y pone una serif editorial
+   en los titulares. Si en algún momento se quiere volver al tono
+   anterior, se borra este bloque completo y nada más se rompe.
+   ════════════════════════════════════════════════════════════════ */
+:root{
+  /* Esquinas: de "aplicación" a "documento" */
+  --r-sm:5px; --r:8px; --r-lg:12px; --r-xl:16px;
+  /* Sombras neutras, sin halo de color */
+  --shadow-s:0 1px 2px rgba(8,21,58,.05);
+  --shadow-m:0 6px 18px rgba(8,21,58,.07);
+  --shadow-l:0 18px 44px rgba(8,21,58,.11);
+  --serif:'Source Serif 4',Georgia,'Times New Roman',serif;
+}
+
+/* ── Titulares en serif, con pesos más bajos ── */
+h1,h2,h3,.h-display,.h-section,.ph h1,.cierre h3,.cta-in h2{
+  font-family:var(--serif);letter-spacing:-.012em;
+}
+h1,h2,h3{font-weight:600}
+.h-display{font-weight:700;letter-spacing:-.018em;line-height:1.06}
+.h-section{font-weight:600;letter-spacing:-.012em;line-height:1.12}
+.h-card,h4,h5{font-family:'Inter',system-ui,sans-serif;font-weight:700;letter-spacing:-.015em}
+.hero-sub,.lead{font-weight:400}
+
+/* El degradado de texto se reemplaza por color plano */
+.grad{
+  background:none!important;-webkit-background-clip:border-box!important;
+  background-clip:border-box!important;-webkit-text-fill-color:var(--sky-l)!important;
+  color:var(--sky-l);
+}
+
+/* ── Botones y controles: rectangulares, sin brillo ── */
+.btn{border-radius:5px;font-weight:600;letter-spacing:0}
+.btn-primary{box-shadow:none}
+.btn-primary:hover{transform:none;box-shadow:none;background:var(--sky-l)}
+.btn-dark{box-shadow:none}
+.btn-dark:hover{transform:none}
+.btn-ghost-d:hover,.btn-ghost-l:hover{transform:none}
+.btn:hover svg{transform:none}
+.nav-links a,.nav-trigger,.nav-portal,.nav-cta{border-radius:5px}
+.pill,.fs-sem,.ml-chip,.ml-eje-k,.ml-fase-s,.sede-chip,.af-proof,.tt-win,
+.mob-cta,.mob-portal,.step-tag,.mod-badge{border-radius:5px}
+.dd{border-radius:10px}
+.dd-link,.dd-ic{border-radius:6px}
+.cierre{border-radius:var(--r-lg)}
+
+/* ── Menos efecto, más papel ── */
+.orb{opacity:.42}
+nav{background:rgba(255,255,255,.94)}
+.ml-c{border-radius:2px}
+.ml-fase-n{border-radius:6px}
+.fs-card:hover{transform:none}
+.fs-card:hover .fs-img img{transform:none}
+.pm-f:hover,.ml-chip:hover,.ft-so:hover{transform:none}
+
+/* ── El antetítulo, más contenido ── */
+.eyebrow{letter-spacing:.14em;font-size:11.5px}
+
+/* ── Las dos modalidades, en la portada ── */
+.mod2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:clamp(34px,4.5vw,52px)}
+.mod2-c{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:30px 30px 28px}
+.mod2-c.mod2-uio{background:var(--paper);border-color:var(--line-2)}
+.mod2-k{
+  display:inline-block;font-size:11.5px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--blue);margin-bottom:14px;
+}
+.mod2-c.mod2-uio .mod2-k{color:var(--navy)}
+.mod2-c h3{font-size:clamp(20px,2.2vw,25px);line-height:1.18;margin-bottom:12px}
+.mod2-c>p{font-size:15px;color:var(--muted);line-height:1.68;margin-bottom:20px}
+.mod2-c ul{list-style:none;margin:0 0 20px;border-top:1px solid var(--line)}
+.mod2-c li{
+  font-size:14px;color:var(--ink-2);padding:11px 0;border-bottom:1px solid var(--line);
+}
+.mod2-c li b{color:var(--ink);font-weight:700}
+.qt-split-2{padding-top:clamp(26px,3vw,38px);border-top:1px solid var(--line)}
+@media (max-width:860px){.mod2{grid-template-columns:1fr;gap:12px}.mod2-c{padding:24px 22px}}
