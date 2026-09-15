@@ -63,8 +63,28 @@ def url_whatsapp(mensaje):
     return 'https://wa.me/593962893857?text=' + quote(mensaje)
 
 
+def sello(*ruta):
+    """Huella corta del contenido de un archivo, para romper la caché.
+
+    El CSS y el JS se sirven con caché de un año (ver _headers). Si se
+    publica un cambio sin cambiar la URL, los navegadores que ya tienen
+    el archivo guardado siguen usando el viejo durante meses: la página
+    nueva se ve sin estilos. Colgando esta huella al final de la URL,
+    cada cambio de contenido genera una URL distinta y el navegador
+    vuelve a descargar. No hay que renombrar archivos a mano.
+    """
+    import hashlib
+    with open(os.path.join(RAIZ, *ruta), 'rb') as f:
+        return hashlib.md5(f.read()).hexdigest()[:8]
+
+
 def main():
     plantilla = leer('src', 'plantilla.html')
+
+    v_css = sello('assets', 'electi.css')
+    v_js = sello('assets', 'electi.js')
+    plantilla = plantilla.replace('/assets/electi.css', '/assets/electi.css?v=' + v_css)
+    plantilla = plantilla.replace('/assets/electi.js', '/assets/electi.js?v=' + v_js)
     nav = leer('src', 'parciales', 'nav.html')
     menu = leer('src', 'parciales', 'menu-movil.html')
     pie = leer('src', 'parciales', 'pie.html')

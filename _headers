@@ -45,9 +45,12 @@
   Cache-Control: public, max-age=3600
 
 # ══════════════════════════════════════════════════════════
-# CSS, JS e imágenes · nombres estables, caché de un año.
-# Si cambias el CSS o el JS y no ves el cambio, haz Ctrl+Shift+R
-# o renombra el archivo (electi-2.css) y actualiza la plantilla.
+# CSS, JS e imágenes · caché de un año.
+# El CSS y el JS se enlazan con una huella de contenido al final
+# (electi.css?v=abc12345) que build.py calcula en cada compilación.
+# Cada vez que cambia el archivo cambia la URL, así que el navegador
+# lo vuelve a descargar solo. Ya no hay que renombrar nada a mano ni
+# pedirle a nadie que limpie la caché.
 # ══════════════════════════════════════════════════════════
 /assets/*
   Cache-Control: public, max-age=31536000, immutable
