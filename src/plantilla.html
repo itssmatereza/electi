@@ -26,6 +26,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<!-- Marca que el JavaScript corre. Si por lo que sea no corre (error,
+     bloqueador, red caída), la clase nunca se pone y todo el contenido
+     que se revela con animación se muestra visible por defecto. Sin esto,
+     un solo error de JS deja la página en blanco. -->
+<script>document.documentElement.className += ' js';</script>
 <link rel="stylesheet" href="/assets/electi.css">
 <noscript><style>.rv{opacity:1!important;transform:none!important}</style></noscript>
 <script>
