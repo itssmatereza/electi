@@ -21,23 +21,54 @@
 
   if (puede) raiz.className += ' anim';
 
-  // Si algo revienta después, se apaga todo y el contenido queda visible.
-  function rendirse(){
-    raiz.className = raiz.className.replace(/\banim\b/g, '');
-  }
-  window.addEventListener('error', rendirse);
+  var vigilar;   // se define unas líneas más abajo
 
-  // Último seguro: a los 4 segundos, todo lo que siga escondido se muestra.
-  setTimeout(function(){
-    var faltan = document.querySelectorAll(
-      '.rv:not(.in), .foto-rv:not(.in), [data-escalon]:not(.in), .pal:not(.in), .ml-mapa:not(.llena)'
-    );
+  /* Ante un error de JavaScript no se apagan las animaciones de golpe: eso
+     hacía que cualquier fallo ajeno (una extensión, un recurso externo)
+     dejara la página entera revelada y sin animar. Basta con pedirle al
+     vigilante que muestre lo que esté en pantalla; si el error impidió que
+     los observadores se instalaran, el vigilante los sustituye y las
+     animaciones siguen ocurriendo al bajar. */
+  window.addEventListener('error', function(){ vigilar(); });
+
+  /* ── Vigilante de respaldo ──
+     Antes había un temporizador que a los pocos segundos mostraba TODO lo
+     que siguiera escondido. Eso arruinaba las animaciones: si tardabas más
+     de tres segundos en bajar, el resto de la página ya estaba revelada y
+     no se animaba nada.
+
+     El respaldo correcto no es un reloj, es la misma regla que usa el
+     observador: mostrar lo que está en pantalla. Este vigilante hace a mano
+     lo que debería hacer IntersectionObserver, así que si el observador
+     falla (o el navegador lo implementa raro) las animaciones siguen
+     ocurriendo en su momento, no todas de golpe. */
+  var SELECTOR = '.rv:not(.in), .foto-rv:not(.in), [data-escalon]:not(.in), .pal:not(.in), .ml-mapa:not(.llena)';
+  var revisando = false;
+
+  function mostrarLoVisible(){
+    revisando = false;
+    var faltan = document.querySelectorAll(SELECTOR);
     if (!faltan.length) return;
+    var alto = window.innerHeight || document.documentElement.clientHeight;
     Array.prototype.forEach.call(faltan, function(el){
-      el.classList.add('in');
-      if (el.classList.contains('ml-mapa')) el.classList.add('llena');
+      var caja = el.getBoundingClientRect();
+      if (caja.top < alto * 0.92 && caja.bottom > 0) {
+        el.classList.add('in');
+        if (el.classList.contains('ml-mapa')) el.classList.add('llena');
+      }
     });
-  }, 4000);
+  }
+
+  vigilar = function(){
+    if (revisando) return;
+    revisando = true;
+    requestAnimationFrame(mostrarLoVisible);
+  };
+
+  window.addEventListener('scroll', vigilar, {passive:true});
+  window.addEventListener('resize', vigilar, {passive:true});
+  window.addEventListener('load', vigilar);
+  setTimeout(vigilar, 1200);   // por si la primera pantalla no se animó sola
 })();
 
 (function(){
@@ -281,7 +312,6 @@ function toggleFaq(btn){
       });
     }, {threshold:0.25});
     ioMapa.observe(mapa);
-    setTimeout(function(){ mapa.classList.add('llena'); }, 4000);
   });
 
   /* ── Fotos con revelado de cortina ── */
@@ -300,18 +330,9 @@ function toggleFaq(btn){
           ioFoto.unobserve(e.target);
         });
       }, {threshold:0.12, rootMargin:'0px 0px -8% 0px'});
-      Array.prototype.forEach.call(fotos, function(f){
-        // Lo que ya está en pantalla al cargar se muestra de una: en
-        // monitores grandes media página entra antes del primer scroll.
-        var caja = f.getBoundingClientRect();
-        if (caja.top < window.innerHeight && caja.bottom > 0) { f.classList.add('in'); return; }
-        ioFoto.observe(f);
-      });
-      // Red de seguridad: si algo impide que el observador dispare, a los
-      // tres segundos se muestran todas. Una foto nunca se queda invisible.
-      setTimeout(function(){
-        Array.prototype.forEach.call(fotos, function(f){ f.classList.add('in'); });
-      }, 3000);
+      // Todas pasan por el observador. Lo que ya esté en pantalla lo revela
+      // él mismo al instalarse, y el vigilante de respaldo lo cubre si no.
+      Array.prototype.forEach.call(fotos, function(f){ ioFoto.observe(f); });
     }
   }
 
@@ -505,9 +526,6 @@ function toggleFaq(btn){
     } else {
       Array.prototype.forEach.call(rejillas, function(r){ r.classList.add('in'); });
     }
-    setTimeout(function(){
-      Array.prototype.forEach.call(rejillas, function(r){ r.classList.add('in'); });
-    }, 3000);
   }
   } catch (e) {
     /* Si esta capa falla, se pierde su animación y nada más:
