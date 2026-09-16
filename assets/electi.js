@@ -1,3 +1,45 @@
+/* ══════════════════════════════════════════════════════════════
+   INTERRUPTOR DE ANIMACIONES
+   ──────────────────────────────────────────────────────────────
+   Las reglas del CSS que esconden contenido para animarlo después
+   dependen de la clase .anim, y esa clase la enciende este bloque
+   SOLO si el navegador tiene lo necesario. Si algo falla —un error
+   de JavaScript, un navegador que no conoce IntersectionObserver,
+   una extensión que bloquea scripts— la clase no se enciende o se
+   apaga, y la página se ve completa y quieta.
+
+   Esto nació de un caso real: las fotos se veían en Safari pero no
+   en Chrome. Con este interruptor, cualquiera que sea la causa,
+   lo peor que puede pasar es perder una animación.
+   ══════════════════════════════════════════════════════════════ */
+(function(){
+  var raiz = document.documentElement;
+  var puede = ('IntersectionObserver' in window)
+           && ('classList' in raiz)
+           && (typeof requestAnimationFrame === 'function')
+           && (typeof CSS === 'undefined' || !CSS.supports || CSS.supports('clip-path','inset(0 0 0 0)'));
+
+  if (puede) raiz.className += ' anim';
+
+  // Si algo revienta después, se apaga todo y el contenido queda visible.
+  function rendirse(){
+    raiz.className = raiz.className.replace(/\banim\b/g, '');
+  }
+  window.addEventListener('error', rendirse);
+
+  // Último seguro: a los 4 segundos, todo lo que siga escondido se muestra.
+  setTimeout(function(){
+    var faltan = document.querySelectorAll(
+      '.rv:not(.in), .foto-rv:not(.in), [data-escalon]:not(.in), .pal:not(.in), .ml-mapa:not(.llena)'
+    );
+    if (!faltan.length) return;
+    Array.prototype.forEach.call(faltan, function(el){
+      el.classList.add('in');
+      if (el.classList.contains('ml-mapa')) el.classList.add('llena');
+    });
+  }, 4000);
+})();
+
 (function(){
   'use strict';
 
@@ -193,6 +235,7 @@ function toggleFaq(btn){
    Todo se apaga solo si el sistema pide menos animación.
    ══════════════════════════════════════════════════════════════ */
 (function(){
+  try {
   var quieto = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
   var movil  = window.matchMedia('(max-width:768px)').matches;
   var hayIO  = 'IntersectionObserver' in window;
@@ -238,6 +281,7 @@ function toggleFaq(btn){
       });
     }, {threshold:0.25});
     ioMapa.observe(mapa);
+    setTimeout(function(){ mapa.classList.add('llena'); }, 4000);
   });
 
   /* ── Fotos con revelado de cortina ── */
@@ -256,7 +300,18 @@ function toggleFaq(btn){
           ioFoto.unobserve(e.target);
         });
       }, {threshold:0.12, rootMargin:'0px 0px -8% 0px'});
-      Array.prototype.forEach.call(fotos, function(f){ ioFoto.observe(f); });
+      Array.prototype.forEach.call(fotos, function(f){
+        // Lo que ya está en pantalla al cargar se muestra de una: en
+        // monitores grandes media página entra antes del primer scroll.
+        var caja = f.getBoundingClientRect();
+        if (caja.top < window.innerHeight && caja.bottom > 0) { f.classList.add('in'); return; }
+        ioFoto.observe(f);
+      });
+      // Red de seguridad: si algo impide que el observador dispare, a los
+      // tres segundos se muestran todas. Una foto nunca se queda invisible.
+      setTimeout(function(){
+        Array.prototype.forEach.call(fotos, function(f){ f.classList.add('in'); });
+      }, 3000);
     }
   }
 
@@ -292,6 +347,10 @@ function toggleFaq(btn){
       });
     }, {passive:true});
   }
+  } catch (e) {
+    /* Si esta capa falla, se pierde su animación y nada más:
+       el resto del archivo sigue corriendo y el contenido queda visible. */
+  }
 })();
 
 /* ══════════════════════════════════════════════════════════════
@@ -300,6 +359,7 @@ function toggleFaq(btn){
    mueve la luz con el puntero y escalona las rejillas.
    ══════════════════════════════════════════════════════════════ */
 (function(){
+  try {
   var quieto = window.matchMedia('(prefers-reduced-motion:reduce)').matches;
   var movil  = window.matchMedia('(max-width:768px)').matches;
   var fino   = window.matchMedia('(hover:hover) and (pointer:fine)').matches;
@@ -445,5 +505,12 @@ function toggleFaq(btn){
     } else {
       Array.prototype.forEach.call(rejillas, function(r){ r.classList.add('in'); });
     }
+    setTimeout(function(){
+      Array.prototype.forEach.call(rejillas, function(r){ r.classList.add('in'); });
+    }, 3000);
+  }
+  } catch (e) {
+    /* Si esta capa falla, se pierde su animación y nada más:
+       el resto del archivo sigue corriendo y el contenido queda visible. */
   }
 })();

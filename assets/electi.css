@@ -114,8 +114,8 @@ nav.scrolled{border-bottom-color:var(--line);box-shadow:0 1px 20px rgba(8,21,58,
 .mob-portal{border:1.5px solid var(--line-2);border-radius:100px;text-align:center;margin-top:10px;padding:15px!important;border-bottom:1.5px solid var(--line-2)!important}
 
 /* ══ SCROLL REVEAL ══ */
-.js .rv{opacity:0;transform:translateY(26px);transition:opacity .75s cubic-bezier(.22,.9,.3,1),transform .75s cubic-bezier(.22,.9,.3,1)}
-.js .rv.in{opacity:1;transform:none}
+.anim .rv{opacity:0;transform:translateY(26px);transition:opacity .75s cubic-bezier(.22,.9,.3,1),transform .75s cubic-bezier(.22,.9,.3,1)}
+.anim .rv.in{opacity:1;transform:none}
 .rv-d1{transition-delay:.09s}.rv-d2{transition-delay:.18s}.rv-d3{transition-delay:.27s}
 .rv-d4{transition-delay:.36s}.rv-d5{transition-delay:.45s}
 @media (prefers-reduced-motion:reduce){
@@ -1906,12 +1906,12 @@ img,svg,video{max-width:100%}
 }
 
 /* ── 2. El mapa de 24 semanas se llena semana por semana ── */
-.js .ml-mapa .ml-c{
+.anim .ml-mapa .ml-c{
   opacity:0;transform:translateY(10px) scaleY(.55);transform-origin:50% 100%;
   transition:opacity .5s ease, transform .55s cubic-bezier(.2,.9,.3,1.1), background .2s;
 }
 .ml-mapa.llena .ml-c{opacity:1;transform:none;transition-delay:calc(var(--i) * 38ms)}
-.js .ml-bandas .ml-banda{opacity:0;transform:translateY(8px);
+.anim .ml-bandas .ml-banda{opacity:0;transform:translateY(8px);
   transition:opacity .5s ease,transform .5s ease}
 .ml-mapa.llena + .ml-bandas .ml-banda{opacity:1;transform:none;
   transition-delay:calc(920ms + var(--i) * 70ms)}
@@ -1923,9 +1923,9 @@ img,svg,video{max-width:100%}
 .ml-c:hover::before,.ml-c:focus-visible::before{opacity:.22}
 
 /* ── 3. Las fotos se revelan con una cortina, no con un parpadeo ── */
-.js .foto-rv{clip-path:inset(0 0 100% 0);transition:clip-path 1.05s cubic-bezier(.22,.9,.3,1)}
+.anim .foto-rv{clip-path:inset(0 0 100% 0);transition:clip-path 1.05s cubic-bezier(.22,.9,.3,1)}
 .foto-rv.in{clip-path:inset(0 0 0 0)}
-.js .foto-rv img{transform:scale(1.07);transition:transform 1.4s cubic-bezier(.22,.9,.3,1)}
+.anim .foto-rv img{transform:scale(1.07);transition:transform 1.4s cubic-bezier(.22,.9,.3,1)}
 .foto-rv.in img{transform:scale(1)}
 
 /* ── 4. Tarjetas de fase: la foto respira al pasar por encima ── */
@@ -1947,7 +1947,7 @@ img,svg,video{max-width:100%}
   content:'';position:absolute;left:0;bottom:0;height:2px;width:100%;
   background:currentColor;opacity:.32;
 }
-.js .eyebrow::after{
+.anim .eyebrow::after{
   content:'';position:absolute;left:0;bottom:0;height:2px;width:100%;
   background:currentColor;opacity:.32;transform:scaleX(0);transform-origin:0 50%;
   transition:transform .8s cubic-bezier(.22,.9,.3,1) .2s;
@@ -2012,20 +2012,20 @@ nav.scrolled .nav-brand img{transform:scale(.92);transition:transform .3s ease}
    ════════════════════════════════════════════════════════════════ */
 
 /* ── Titular que sube palabra por palabra ── */
-.js .pal{display:inline-block;overflow:hidden;vertical-align:top;
+.anim .pal{display:inline-block;overflow:hidden;vertical-align:top;
   padding:.16em 0 .12em;margin:-.16em 0 -.12em}
-.js .pal>span{display:inline-block;transform:translateY(128%);
+.anim .pal>span{display:inline-block;transform:translateY(128%);
   transition:transform 1s cubic-bezier(.16,.84,.26,1);
   transition-delay:calc(var(--w) * 62ms)}
-.js .rv.in .pal>span,.js .pal.in>span{transform:none}
+.anim .rv.in .pal>span,.anim .pal.in>span{transform:none}
 
 /* ── Fondo vivo del hero ── */
 .aurora{position:absolute;inset:-18%;pointer-events:none;z-index:0;overflow:hidden}
-.aurora i{position:absolute;display:block;border-radius:50%;filter:blur(90px);opacity:.5}
-.aurora i:nth-child(1){width:58vw;height:58vw;max-width:760px;max-height:760px;
+.aurora i{position:absolute;display:block;border-radius:50%;filter:blur(64px);opacity:.5}
+.aurora i:nth-child(1){width:58vw;height:58vw;max-width:620px;max-height:620px;
   background:radial-gradient(circle,rgba(66,165,245,.5),transparent 68%);
   top:-14%;left:-8%;animation:deriva1 26s ease-in-out infinite}
-.aurora i:nth-child(2){width:46vw;height:46vw;max-width:620px;max-height:620px;
+.aurora i:nth-child(2){width:46vw;height:46vw;max-width:540px;max-height:540px;
   background:radial-gradient(circle,rgba(21,101,192,.55),transparent 68%);
   bottom:-18%;right:-6%;animation:deriva2 32s ease-in-out infinite}
 .aurora i:nth-child(3){width:38vw;height:38vw;max-width:520px;max-height:520px;
@@ -2065,7 +2065,7 @@ nav.scrolled .nav-brand img{transform:scale(.92);transition:transform .3s ease}
 
 /* ── Grano finísimo: le quita el plástico al degradado ── */
 .grano{
-  position:absolute;inset:0;pointer-events:none;z-index:1;opacity:.35;mix-blend-mode:overlay;
+  position:absolute;inset:0;pointer-events:none;z-index:1;opacity:.35;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
 }
 
@@ -2097,10 +2097,10 @@ nav.scrolled .nav-brand img{transform:scale(.92);transition:transform .3s ease}
 @keyframes aparecer{from{opacity:0;transform:translate(-50%,10px)}to{opacity:1;transform:translate(-50%,0)}}
 
 /* ── Escalonado automático dentro de rejillas ── */
-.js [data-escalon]>*{opacity:0;transform:translateY(24px);
+.anim [data-escalon]>*{opacity:0;transform:translateY(24px);
   transition:opacity .7s cubic-bezier(.22,.9,.3,1),transform .7s cubic-bezier(.22,.9,.3,1);
   transition-delay:calc(var(--e) * 85ms)}
-.js [data-escalon].in>*{opacity:1;transform:none}
+.anim [data-escalon].in>*{opacity:1;transform:none}
 
 /* ── Teléfonos: el fondo vivo pesa, se simplifica ── */
 @media (max-width:768px){
@@ -2112,18 +2112,18 @@ nav.scrolled .nav-brand img{transform:scale(.92);transition:transform .3s ease}
   .hero .btn-primary::before{animation-duration:6s}
   .grano{opacity:.22}
   .hero-luz{display:none}
-  .js .pal>span{transition-delay:calc(var(--w) * 38ms);transition-duration:.8s}
+  .anim .pal>span{transition-delay:calc(var(--w) * 38ms);transition-duration:.8s}
   .baja{display:none}
 }
 
 /* ── Si se pide menos animación, se apaga todo esto ── */
 @media (prefers-reduced-motion:reduce){
-  .js .pal{overflow:visible}
-  .js .pal>span{transform:none!important;transition:none!important}
+  .anim .pal{overflow:visible}
+  .anim .pal>span{transform:none!important;transition:none!important}
   .aurora i,.hero-grid-bg::after,.hero .btn-primary::before,.baja,.baja span::after{
     animation:none!important}
   .hero-luz,.grano,.baja{display:none}
-  .js [data-escalon]>*{opacity:1!important;transform:none!important;transition:none!important}
+  .anim [data-escalon]>*{opacity:1!important;transform:none!important;transition:none!important}
 }
 
 /* ── Equilibrio del fondo: la aurora sustituye a los orbes viejos ── */

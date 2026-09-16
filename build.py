@@ -63,6 +63,46 @@ def url_whatsapp(mensaje):
     return 'https://wa.me/593962893857?text=' + quote(mensaje)
 
 
+def envolver_en_webp(pagina):
+    """Ofrece WebP antes que JPEG en cada <img> de fotos.
+
+    Las fotos pesan 58% menos en WebP. En vez de cambiar el marcado de
+    cada página a mano, aquí cada <img src="/assets/fotos/…jpg"> se envuelve
+    en un <picture> con un <source type="image/webp"> delante. El navegador
+    que entiende WebP se lleva el archivo liviano; el que no, sigue bajando
+    el JPEG de siempre. Si el .webp no existe en disco, la imagen se deja
+    intacta.
+    """
+    import re
+
+    def existe(url):
+        return os.path.exists(os.path.join(RAIZ, url.split('?')[0].lstrip('/')))
+
+    def a_webp(texto):
+        # cambia cada ruta .jpg de /assets/fotos/ por su gemela .webp
+        return re.sub(r'(/assets/fotos/[^\s",]+)\.jpg', r'\1.webp', texto)
+
+    def reemplazo(m):
+        etiqueta = m.group(0)
+        src = re.search(r'src="(/assets/fotos/[^"]+\.jpg)"', etiqueta)
+        if not src or not existe(a_webp(src.group(1))):
+            return etiqueta
+        srcset = re.search(r'srcset="([^"]+)"', etiqueta)
+        sizes = re.search(r'sizes="([^"]+)"', etiqueta)
+        conjunto = srcset.group(1) if srcset else src.group(1)
+        # si alguna candidata no tiene gemela WebP, mejor no tocar nada
+        for ruta in re.findall(r'/assets/fotos/[^\s",]+\.jpg', conjunto):
+            if not existe(a_webp(ruta)):
+                return etiqueta
+        fuente = '<source type="image/webp" srcset="' + a_webp(conjunto) + '"'
+        if sizes:
+            fuente += ' sizes="' + sizes.group(1) + '"'
+        fuente += '>'
+        return '<picture>' + fuente + etiqueta + '</picture>'
+
+    return re.sub(r'<img\b[^>]*?/assets/fotos/[^>]*?>', reemplazo, pagina)
+
+
 def sello(*ruta):
     """Huella corta del contenido de un archivo, para romper la caché.
 
@@ -114,6 +154,7 @@ def main():
                                 fab.replace('{{WHATSAPP}}', url_whatsapp(datos['whatsapp'])))
         pagina = pagina.replace('{{CONTENIDO}}', cuerpo.strip())
         pagina = pagina.replace('{{DOMINIO}}', DOMINIO)
+        pagina = envolver_en_webp(pagina)
 
         if '{{' in pagina:
             sobra = re.findall(r'\{\{[A-Z_]+\}\}', pagina)
