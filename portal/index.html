@@ -1577,11 +1577,9 @@ tbody tr:hover td { background: var(--off); }
           <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
             <select id="att-sede" onchange="loadAttendance()"
               style="padding:9px 14px;border:1px solid var(--border);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--text);background:var(--white);outline:none;">
-              <option value="ALL">Todas las sedes</option>
-              <option value="UIO">Solo Quito</option>
-              <option value="GYE">Solo Guayaquil</option>
-              <option value="CUE">Solo Cuenca</option>
-              <option value="SDO">Solo Santo Domingo</option>
+              <option value="ALL">Todas las modalidades</option>
+              <option value="UIO">Solo Quito (presencial)</option>
+              <option value="NAC">Solo Nacional (en línea)</option>
             </select>
             <button class="btn btn-ghost" onclick="marcarTodosPresentes()">Marcar todos presentes</button>
             <button class="btn btn-sky" id="att-guardar" onclick="saveAttendance()">Guardar asistencia</button>
@@ -1628,11 +1626,9 @@ tbody tr:hover td { background: var(--off); }
         <div class="card-head">
           <div class="card-title">Control de cobros</div>
           <select id="pagos-sede" onchange="renderPagos()" style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;font-family:'DM Sans',sans-serif;">
-            <option value="ALL">Todas las sedes</option>
-            <option value="UIO">Solo Quito</option>
-            <option value="GYE">Solo Guayaquil</option>
-            <option value="CUE">Solo Cuenca</option>
-            <option value="SDO">Solo Santo Domingo</option>
+            <option value="ALL">Todas las modalidades</option>
+            <option value="UIO">Solo Quito (presencial)</option>
+            <option value="NAC">Solo Nacional (en línea)</option>
           </select>
           <button class="btn btn-ghost" onclick="exportFinancieroExcel()">⬇ Excel financiero</button>
           <div class="pay-legend">
@@ -1795,8 +1791,8 @@ tbody tr:hover td { background: var(--off); }
         <div><label style="font-size:12px;font-weight:600;color:var(--gray);display:block;margin-bottom:8px;">Nombre del ciclo</label>
           <input type="text" id="cfg-nombre" placeholder="Ej: Generación 2026-A" style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--text);background:var(--white);"></div>
         <p style="font-size:12.5px;color:var(--gray);margin-top:12px;line-height:1.55;">
-          Las fechas de arranque se definen abajo, en <b>Calendario por región</b>. Aquí van los valores
-          que comparten las cuatro sedes.</p>
+          Las fechas de arranque se definen abajo, en <b>Calendario del ciclo</b>. Aquí van los valores
+          que comparten las dos modalidades, Quito y Nacional.</p>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-top:14px;">
           <div><label style="font-size:12px;font-weight:600;color:var(--gray);display:block;margin-bottom:8px;">N.º de cuotas</label>
             <input type="number" id="cfg-cuotas" min="1" max="12" style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--text);background:var(--white);"></div>
@@ -1810,11 +1806,11 @@ tbody tr:hover td { background: var(--off); }
       </div>
 
       <div class="card" style="max-width:620px;">
-        <div class="card-head"><div class="card-title">Calendario por región</div></div>
+        <div class="card-head"><div class="card-title">Calendario del ciclo</div></div>
         <p style="font-size:13px;color:var(--gray);margin-bottom:16px;line-height:1.6;">
-          Costa y Sierra siguen calendarios escolares distintos. Aquí defines cuándo arranca cada bloque
-          y cuántas cuotas tiene. Los precios son los mismos para los dos: se toman del ciclo activo.
-          Si dejas un campo vacío, ese bloque hereda lo del ciclo activo.
+          Quito (presencial) y Nacional (en línea) siguen el mismo calendario y los mismos precios.
+          Aquí defines cuándo arranca el ciclo y cuántas cuotas tiene.
+          Si dejas un campo vacío, se hereda lo del ciclo activo.
         </p>
         <div id="cfg-bloques"></div>
         <div style="margin-top:18px;padding:14px;background:var(--off);border-radius:10px;font-size:13px;color:var(--gray);" id="cfg-bloques-preview"></div>
@@ -2032,12 +2028,10 @@ tbody tr:hover td { background: var(--off); }
     <div class="field"><label>Nombre completo</label><input type="text" id="m-nombre" placeholder="Ej: Ana García"></div>
     <div class="field"><label>Correo (con este inicia sesión)</label><input type="email" id="m-user" placeholder="alumno@correo.com"></div>
     <div class="field"><label>Contraseña inicial (mínimo 6 caracteres)</label><input type="text" id="m-pass" placeholder="Ej: electi2026"></div>
-    <div class="field"><label>Sede</label>
+    <div class="field"><label>Modalidad</label>
       <select id="m-sede">
-        <option value="UIO">Quito (UIO)</option>
-        <option value="GYE">Guayaquil (GYE)</option>
-        <option value="CUE">Cuenca (CUE)</option>
-        <option value="SDO">Santo Domingo (SDO)</option>
+        <option value="UIO">Quito · presencial</option>
+        <option value="NAC">Nacional · en línea</option>
       </select>
     </div>
 
@@ -2203,8 +2197,8 @@ tbody tr:hover td { background: var(--off); }
       </select>
     </div>
     <div id="rp-alumno-extra" style="display:none;">
-      <div class="field"><label>Sede</label>
-        <select id="rp-sede"><option value="UIO">Quito (UIO)</option><option value="GYE">Guayaquil (GYE)</option><option value="CUE">Cuenca (CUE)</option><option value="SDO">Santo Domingo (SDO)</option></select>
+      <div class="field"><label>Modalidad</label>
+        <select id="rp-sede"><option value="UIO">Quito · presencial</option><option value="NAC">Nacional · en línea</option></select>
       </div>
       <div class="field"><label>Beca — porcentaje de descuento</label>
         <div class="beca-input-row">
@@ -2280,7 +2274,7 @@ import { getAuth, signInWithEmailAndPassword, signOut, createUserWithEmailAndPas
          EmailAuthProvider, reauthenticateWithCredential,
          GoogleAuthProvider, signInWithPopup, linkWithPopup, deleteUser, getAdditionalUserInfo,
          signInWithRedirect, getRedirectResult, sendEmailVerification, fetchSignInMethodsForEmail,
-         initializeAuth, inMemoryPersistence, browserPopupRedirectResolver, browserLocalPersistence }
+         initializeAuth, inMemoryPersistence, browserPopupRedirectResolver, browserSessionPersistence }
   from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
 import { getFirestore, collection, doc, getDoc, getDocs, setDoc, updateDoc, deleteDoc, writeBatch,
          query, where, documentId }
@@ -2296,13 +2290,23 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-// getAuth() guarda la sesión en IndexedDB. Al abrir el popup de Google el
-// navegador considera esta pestaña "oculta" y Firebase cierra esa base de datos;
-// cuando el popup devuelve el resultado ya no puede escribirlo y aparece
-// "Database is closing/hidden". localStorage no se cierra al ocultarse la pestaña,
-// conserva la sesión entre recargas igual que IndexedDB, y elimina el problema.
+// Dónde vive la sesión:
+// - IndexedDB (lo que usa getAuth()) falla con el popup de Google: el navegador
+//   considera la pestaña "oculta", Firebase cierra la base y aparece
+//   "Database is closing/hidden".
+// - localStorage evitaba ese error, pero la sesión no caducaba nunca: sobrevivía
+//   a cerrar el navegador, algo riesgoso en computadoras compartidas.
+// - sessionStorage tampoco se cierra con el popup y sobrevive a las recargas,
+//   pero el navegador lo borra al cerrar la pestaña. Es el comportamiento buscado.
+// Limpieza de la sesión que quedó guardada en localStorage con el esquema
+// anterior: Firebase ya no la lee, pero el token seguiría en el disco.
+try {
+  Object.keys(localStorage).forEach(function(k){
+    if (k.indexOf('firebase:authUser:') === 0) localStorage.removeItem(k);
+  });
+} catch (e) {}
 const auth = initializeAuth(app, {
-  persistence: browserLocalPersistence,
+  persistence: browserSessionPersistence,
   popupRedirectResolver: browserPopupRedirectResolver
 });
 const db = getFirestore(app);
@@ -2422,25 +2426,60 @@ window.dispatchEvent(new Event('fb-ready'));
 const MES_NOMBRES = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
 const CUOTAS_KEYS = ['c1','c2','c3','c4','c5','c6'];
 
-// ─── BLOQUES REGIONALES ───
+// ─── MODALIDADES ───
 //
-// Costa y Sierra siguen calendarios escolares distintos, asi que arrancan en
-// meses distintos. Los precios son los mismos; lo que cambia es cuando empieza
-// el ciclo, cuantas cuotas tiene y como se llama. Cada bloque guarda solo esas
-// diferencias y hereda el resto de la configuracion general.
+// El programa tiene dos modalidades:
+//   UIO · Quito, presencial: martes virtual + sabado presencial en la UMET.
+//   NAC · Nacional, en linea: martes + jueves, ambos por Zoom.
+// El campo en Firestore se sigue llamando 'sede' y Quito conserva el codigo
+// 'UIO', asi los perfiles, pagos, asistencias y acuerdos ya firmados no se
+// tocan. GYE, CUE y SDO son sedes cerradas: se siguen leyendo y mostrando si
+// algun registro viejo las tiene, pero ya no se pueden elegir.
+const MODALIDADES = {
+  UIO: { nombre: 'Quito',    largo: 'Quito · presencial',  sesiones: ['martes', 'sabado'] },
+  NAC: { nombre: 'Nacional', largo: 'Nacional · en línea', sesiones: ['martes', 'jueves'] },
+};
+const SEDES_HISTORICAS = { GYE: 'Guayaquil', CUE: 'Cuenca', SDO: 'Santo Domingo' };
 
+function codSede(s) { return s || 'UIO'; }
+function esNacional(s) { return s === 'NAC'; }
+// Las sedes historicas tenian el formato de Quito (martes + sabado).
+function sesionesDe(s) { return esNacional(s) ? MODALIDADES.NAC.sesiones : MODALIDADES.UIO.sesiones; }
+function alumnoEnSesion(al, tipo) { return sesionesDe(al.sede).indexOf(tipo) !== -1; }
+function nombreModalidad(s) {
+  const c = codSede(s);
+  return MODALIDADES[c] ? MODALIDADES[c].largo : (SEDES_HISTORICAS[c] || c) + ' (sede anterior)';
+}
+// Codigos presentes en la lista de alumnos: las dos modalidades siempre, y
+// una sede historica solo si algun alumno todavia la tiene.
+function codigosEnUso() {
+  const out = Object.keys(MODALIDADES);
+  (state.alumnos || []).forEach(function(a){
+    const c = codSede(a.sede);
+    if (out.indexOf(c) === -1) out.push(c);
+  });
+  return out;
+}
+
+// ─── CALENDARIO DEL CICLO ───
+//
+// Antes habia dos bloques regionales (Costa y Sierra) con calendarios propios.
+// Ahora las dos modalidades comparten calendario, asi que queda un solo bloque.
+// Conserva la clave 'sierra' a proposito: es donde Firestore ya guarda la
+// fecha de inicio y las cuotas del ciclo de Quito (config.bloques.sierra), y
+// cambiarla moveria las cuotas de los alumnos inscritos. La clave 'costa' que
+// pueda quedar guardada se ignora y no se borra.
 const BLOQUES = {
-  costa:  { nombre: 'Costa',  sedes: ['GYE', 'SDO'] },
-  sierra: { nombre: 'Sierra', sedes: ['UIO', 'CUE'] },
+  sierra: { nombre: 'Calendario del ciclo', sedes: ['UIO', 'NAC'] },
 };
 
 function bloqueDe(sede) {
-  return (sede === 'GYE' || sede === 'SDO') ? 'costa' : 'sierra';
+  return 'sierra';
 }
 
 function nombreBloque(b) {
   const x = BLOQUES[b];
-  return x ? x.nombre + ' (' + x.sedes.join(' · ') + ')' : b;
+  return x ? x.nombre : b;
 }
 
 // Sin argumento devuelve la configuracion general (precios, firma, contacto).
@@ -2509,11 +2548,10 @@ function getConfigBloque(b) {
   return getConfig((BLOQUES[b] || BLOQUES.sierra).sedes[0]);
 }
 
-// Si los dos bloques comparten calendario, las vistas globales siguen
-// funcionando como antes. Si difieren, hay que mirarlas por separado.
+// Con un solo calendario para las dos modalidades nunca difieren. Se deja la
+// funcion para que las vistas que la consultan sigan en su rama de siempre.
 function bloquesDifieren() {
-  const c = getConfigBloque('costa'), s = getConfigBloque('sierra');
-  return c.inicioAnio !== s.inicioAnio || c.inicioMes !== s.inicioMes || c.numCuotas !== s.numCuotas;
+  return false;
 }
 
 function saveConfig(cfg) {
@@ -2708,15 +2746,15 @@ function rangoCiclo(cfg) {
   return { desde: fechaISO(ini), hasta: fechaISO(fin) };
 }
 
-// Las sesiones tienen dos prefijos, y un rango por ID no puede abarcar ambos
-// de una vez: 'martes_...' y 'sabado_...' no son contiguos alfabeticamente.
-// Por eso son dos consultas, que igual viajan en paralelo.
+// Las sesiones tienen un prefijo por dia ('martes_', 'sabado_' y, desde la
+// modalidad Nacional, 'jueves_'). Un rango por ID no puede abarcar varios
+// prefijos a la vez, asi que es una consulta por tipo, en paralelo.
 async function asistenciaDelCiclo(cfg) {
   const r = rangoCiclo(cfg);
-  const partes = await Promise.all(['martes', 'sabado'].map(function(t){
+  const partes = await Promise.all(TIPOS_SESION.map(function(t){
     return window.fb.getDocsRango('asistencia', t + '_' + r.desde, t + '_' + r.hasta);
   }));
-  return partes[0].concat(partes[1]);
+  return [].concat.apply([], partes);
 }
 
 async function cargarDatosAlumno(uid, previa) {
@@ -2801,12 +2839,13 @@ async function cargarDatos(rol, previa) {
 }
 
 function badgeSede(s) {
-  const sd = s || 'UIO';
-  return sd === 'GYE' ? 'badge-yellow' : sd === 'CUE' ? 'badge-navy' : sd === 'SDO' ? 'badge-green' : 'badge-navy';
+  const sd = codSede(s);
+  return sd === 'NAC' ? 'badge-green' : sd === 'UIO' ? 'badge-navy' : 'badge-yellow';
 }
 
 function nombreSede(s) {
-  return { UIO: 'Quito', GYE: 'Guayaquil', CUE: 'Cuenca', SDO: 'Santo Domingo' }[s || 'UIO'] || 'Quito';
+  const c = codSede(s);
+  return MODALIDADES[c] ? MODALIDADES[c].nombre : (SEDES_HISTORICAS[c] || 'Quito');
 }
 
 // ─── JERARQUÍA DE ROLES ───
@@ -3296,11 +3335,59 @@ function navigate(page) {
 
 // ─── ASISTENCIA ───
 // ─── CALENDARIO DE SESIONES ───
-// El programa tiene dos sesiones fijas por semana: martes virtual y sabado
-// presencial. El calendario las deriva del dia de la semana, y ademas muestra
-// cualquier fecha que ya tenga registros aunque caiga fuera de ese patron.
-const DOW_SESION = { 2: 'martes', 6: 'sabado' };
-const TIPO_NOMBRE = { martes: 'Sesión virtual', sabado: 'Sesión presencial' };
+// Sesiones fijas por semana: martes virtual (las dos modalidades), sabado
+// presencial (Quito) y jueves virtual (Nacional). El calendario las deriva del
+// dia de la semana, y ademas muestra cualquier fecha que ya tenga registros
+// aunque caiga fuera de ese patron.
+const TIPOS_SESION = ['martes', 'sabado', 'jueves'];
+const DOW_SESION = { 2: 'martes', 4: 'jueves', 6: 'sabado' };
+const TIPO_NOMBRE = { martes: 'Sesión virtual', sabado: 'Sesión presencial', jueves: 'Sesión virtual del jueves' };
+const TIPO_CORTO  = { martes: 'Virtual', sabado: 'Presencial', jueves: 'Virtual (jueves)' };
+const TIPO_DIA    = { martes: 'Martes · Quito y Nacional', sabado: 'Sábado · Quito', jueves: 'Jueves · Nacional' };
+const HORARIO_SESION = {
+  martes: '18:00 – 20:00 · Virtual (Zoom)',
+  sabado: '10:00 – 13:30 · Presencial',
+  jueves: '18:00 – 21:30 · Virtual (Zoom)',
+};
+function nombreTipo(t) { return TIPO_NOMBRE[t] || 'Sesión'; }
+
+// Tipos de sesion que tienen alumnos. El martes siempre existe; el sabado y
+// el jueves solo si hay alumnos de Quito o de Nacional. Sin alumnos cargados
+// se mantiene el patron de siempre (martes y sabado).
+function tiposActivos() {
+  const t = { martes: true };
+  const lista = state.alumnos || [];
+  if (lista.length === 0) t.sabado = true;
+  lista.forEach(function(a){ sesionesDe(a.sede).forEach(function(x){ t[x] = true; }); });
+  return t;
+}
+function tipoDelDia(dow) {
+  const t = DOW_SESION[dow];
+  return (t && tiposActivos()[t]) ? t : '';
+}
+
+// Proxima sesion para un conjunto de tipos, contando hoy.
+function proximaSesion(tipos, hoy) {
+  const dowDe = { martes: 2, jueves: 4, sabado: 6 };
+  let mejor = null;
+  tipos.forEach(function(t){
+    const d = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
+    d.setDate(d.getDate() + ((dowDe[t] - d.getDay() + 7) % 7));
+    if (!mejor || d < mejor.fecha) mejor = { fecha: d, tipo: t };
+  });
+  return mejor;
+}
+
+// Alumnos que se pasan lista en una sesion: los de la modalidad que tiene
+// clase ese dia, mas cualquiera que ya tenga una marca guardada en ella
+// (por ejemplo, alguien que cambio de modalidad a mitad de ciclo).
+function alumnosDeSesion(tipo, sedeF, data) {
+  data = data || {};
+  return state.alumnos.filter(function(a){
+    if (sedeF !== 'ALL' && codSede(a.sede) !== sedeF) return false;
+    return alumnoEnSesion(a, tipo) || !!data[a.username];
+  });
+}
 const MES_LARGO = ['enero','febrero','marzo','abril','mayo','junio','julio',
                    'agosto','septiembre','octubre','noviembre','diciembre'];
 
@@ -3360,11 +3447,10 @@ function renderCalendario() {
     const d = new Date(inicio.getFullYear(), inicio.getMonth(), inicio.getDate() + i);
     const iso = fechaISO(d);
     const delMes = d.getMonth() === calMes;
-    let tipo = DOW_SESION[d.getDay()] || '';
+    let tipo = tipoDelDia(d.getDay());
     // Registro fuera del patron habitual: igual debe poder abrirse.
     if (!tipo) {
-      if (state.asistencia['martes_' + iso]) tipo = 'martes';
-      else if (state.asistencia['sabado_' + iso]) tipo = 'sabado';
+      TIPOS_SESION.forEach(function(t){ if (!tipo && state.asistencia[t + '_' + iso]) tipo = t; });
     }
 
     const clases = ['cal-dia'];
@@ -3381,7 +3467,7 @@ function renderCalendario() {
 
     clases.push('sesion');
     const res = resumenSesion(tipo, iso);
-    const etiquetaTipo = tipo === 'martes' ? 'Virtual' : 'Presencial';
+    const etiquetaTipo = TIPO_CORTO[tipo] || '';
 
     if (res) {
       clases.push(res.pct >= 85 ? 'alta' : res.pct >= 70 ? 'media' : 'baja');
@@ -3440,19 +3526,19 @@ function loadAttendance() {
   document.getElementById('att-card').style.display = 'block';
   document.getElementById('att-session-label').textContent = TIPO_NOMBRE[tipo] + ' · ' + formatDate(fecha);
   document.getElementById('att-session-sub').textContent =
-    (tipo === 'martes' ? 'Martes' : 'Sábado') +
+    (TIPO_DIA[tipo] || '') +
     ' · presente y tardanza cuentan como asistencia · la tardanza genera $2 por cada 10 minutos';
   const grid = document.getElementById('attendance-grid');
   if (state.alumnos.length === 0) { grid.innerHTML = '<div class="empty"><p>No hay alumnos registrados aún.</p></div>'; return; }
   const sedeF = document.getElementById('att-sede').value;
-  const lista = sedeF === 'ALL' ? state.alumnos : state.alumnos.filter(a => (a.sede||'UIO') === sedeF);
-  if (lista.length === 0) { grid.innerHTML = '<div class="empty"><p>No hay alumnos en esta sede. Cambia el filtro o agrégalos en Alumnos.</p></div>'; pintarMarcador(); return; }
+  const lista = alumnosDeSesion(tipo, sedeF, saved);
+  if (lista.length === 0) { grid.innerHTML = '<div class="empty"><p>No hay alumnos de esta modalidad con clase este día. Cambia el filtro o revisa la modalidad de cada alumno en Alumnos.</p></div>'; pintarMarcador(); return; }
   grid.innerHTML = lista.map(al => {
     const cur = saved[al.username] || '';
     const esT = typeof cur === 'string' && cur.startsWith('T');
     const minutos = esT && cur.includes(':') ? cur.split(':')[1] : '10';
     return `<div class="att-row">
-      <div class="tbl-nombre">${avatarHTML(al)}<div><div class="att-name">${al.name}</div><div class="att-info">${al.sede || 'UIO'} · ${al.colegio || ''}</div></div></div>
+      <div class="tbl-nombre">${avatarHTML(al)}<div><div class="att-name">${al.name}</div><div class="att-info">${nombreSede(al.sede)} · ${al.colegio || ''}</div></div></div>
       <div class="att-toggle">
         <button class="att-btn presente ${cur==='P'?'selected-p':''}" onclick="setAtt('${al.username}','P',this)">✓ Presente</button>
         <button class="att-btn tardanza ${esT?'selected-t':''}" onclick="setAtt('${al.username}','T',this)">⏱ Tardanza</button>
@@ -3471,8 +3557,8 @@ function pintarMarcador() {
   const cont = document.getElementById('att-marcador');
   if (!cont || !state.attSession.key) return;
   const sedeF = document.getElementById('att-sede').value;
-  const lista = sedeF === 'ALL' ? state.alumnos : state.alumnos.filter(function(a){ return (a.sede||'UIO') === sedeF; });
   const d = state.attSession.data;
+  const lista = alumnosDeSesion(state.attSession.tipo, sedeF, d);
   let P = 0, T = 0, FJ = 0, FI = 0, sin = 0;
   lista.forEach(function(al){
     const v = d[al.username];
@@ -3497,7 +3583,8 @@ function pintarMarcador() {
 function marcarTodosPresentes() {
   if (!state.attSession.key) { toast('Abre una sesión del calendario primero'); return; }
   const sedeF = document.getElementById('att-sede').value;
-  const lista = sedeF === 'ALL' ? state.alumnos : state.alumnos.filter(function(a){ return (a.sede||'UIO') === sedeF; });
+  // Solo alumnos con clase ese dia: un jueves nunca marca presentes a los de Quito.
+  const lista = alumnosDeSesion(state.attSession.tipo, sedeF, state.attSession.data);
   // Solo rellena los vacíos: nunca sobrescribe una falta ya marcada.
   let n = 0;
   lista.forEach(function(al){ if (!state.attSession.data[al.username]) { state.attSession.data[al.username] = 'P'; n++; } });
@@ -3551,7 +3638,7 @@ function sincronizarMultas(sessKey) {
     if (typeof v === 'string' && v.startsWith('T')) {
       const min = parseInt((v.split(':')[1] || '10')) || 10;
       const monto = Math.ceil(min / 10) * 2;
-      const rec = { id, username: u, fecha, motivo: 'Atraso ' + min + ' min — ' + (tipo === 'martes' ? 'sesión virtual' : 'sesión presencial'), monto, pagada: idx >= 0 ? state.multas[idx].pagada : false, auto: true };
+      const rec = { id, username: u, fecha, motivo: 'Atraso ' + min + ' min — ' + nombreTipo(tipo).toLowerCase(), monto, pagada: idx >= 0 ? state.multas[idx].pagada : false, auto: true };
       if (idx >= 0) state.multas[idx] = rec; else state.multas.push(rec);
     } else if (idx >= 0) {
       state.multas.splice(idx, 1);
@@ -3612,16 +3699,12 @@ function renderDashboard() {
     (hoy.getHours() < 12 ? 'Buenos días' : hoy.getHours() < 19 ? 'Buenas tardes' : 'Buenas noches') +
     ', ' + state.user.name.split(' ')[0];
 
-  const uio = state.alumnos.filter(function(a){ return (a.sede || 'UIO') === 'UIO'; }).length;
-  const gye = state.alumnos.filter(function(a){ return a.sede === 'GYE'; }).length;
-  const cue = state.alumnos.filter(function(a){ return a.sede === 'CUE'; }).length;
-  const sdo = state.alumnos.filter(function(a){ return a.sede === 'SDO'; }).length;
   const chips = ['<span class="al-chip">' + cfg.cicloNombre + '</span>',
                  '<span class="al-chip">👥 ' + state.alumnos.length + ' alumnos</span>'];
-  if (uio) chips.push('<span class="al-chip">UIO ' + uio + '</span>');
-  if (gye) chips.push('<span class="al-chip">GYE ' + gye + '</span>');
-  if (cue) chips.push('<span class="al-chip">CUE ' + cue + '</span>');
-  if (sdo) chips.push('<span class="al-chip">SDO ' + sdo + '</span>');
+  codigosEnUso().forEach(function(c){
+    const n = state.alumnos.filter(function(a){ return codSede(a.sede) === c; }).length;
+    if (n) chips.push('<span class="al-chip">' + nombreSede(c) + ' ' + n + '</span>');
+  });
   chips.push('<span class="al-chip accent">' + (soyAdmin ? 'Administrador' : 'Profesor') + '</span>');
   document.getElementById('dash-chips').innerHTML = chips.join('');
 
@@ -3653,19 +3736,15 @@ function renderDashboard() {
   }
 
   // Próxima clase
-  function proxima(d) {
-    const x = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
-    x.setDate(x.getDate() + ((d - x.getDay() + 7) % 7));
-    return x;
-  }
-  const mar = proxima(2), sab = proxima(6);
-  const esMartes = mar <= sab;
-  const prox = esMartes ? mar : sab;
+  // Solo cuentan los dias con alumnos: sin alumnos de Nacional no hay jueves.
+  const tiposHoy = tiposActivos();
+  const sig = proximaSesion(TIPOS_SESION.filter(function(t){ return tiposHoy[t]; }), hoy);
+  const prox = sig.fecha;
   document.getElementById('dash-next-day').textContent =
     (prox.toDateString() === hoy.toDateString() ? 'Hoy · ' : '') +
     dias[prox.getDay()].charAt(0).toUpperCase() + dias[prox.getDay()].slice(1) + ' ' + prox.getDate() + ' ' + meses[prox.getMonth()].slice(0,3);
   document.getElementById('dash-next-time').textContent =
-    esMartes ? '18:00 – 20:00 · Virtual (Zoom)' : '11:00 – 13:30 · Presencial';
+    HORARIO_SESION[sig.tipo] + (sig.tipo === 'sabado' ? ' · Quito' : sig.tipo === 'jueves' ? ' · Nacional' : '');
 
   // ── Acciones rápidas ──
   const acciones = [];
@@ -3691,7 +3770,9 @@ function renderDashboard() {
   let metricas = [];
   metricas.push({ ico:'<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/>',
     cls:'ico-blue', lbl:'Alumnos', val:state.alumnos.length,
-    sub: [uio + ' UIO', gye + ' GYE'].concat(cue ? [cue + ' CUE'] : []).concat(sdo ? [sdo + ' SDO'] : []).join(' · ') });
+    sub: codigosEnUso().map(function(c){
+      return state.alumnos.filter(function(a){ return codSede(a.sede) === c; }).length + ' ' + nombreSede(c);
+    }).join(' · ') });
   metricas.push({ ico:'<path d="M20 6L9 17l-5-5"/>', cls:'ico-green', lbl:'Asistencia',
     val: asistProm !== null ? asistProm + '%' : '—', sub: sesiones + (sesiones === 1 ? ' sesión registrada' : ' sesiones registradas') });
 
@@ -3791,7 +3872,7 @@ function renderDashboard() {
   const alertas = [];
   state.alumnos.forEach(function(a){
     const st = getAlumnoStats(a.username);
-    const nom = a.name + ' · ' + (a.sede || 'UIO');
+    const nom = a.name + ' · ' + nombreSede(a.sede);
     if (st.total > 0 && st.faltas > 2) alertas.push({ n:nom, tag:'Faltas: ' + faltasTxt(st.faltas) + ' — revisión', cls:'badge-red' });
     else if (st.total > 0 && st.faltas === 2) alertas.push({ n:nom, tag:'En el límite de faltas', cls:'badge-yellow' });
     if (soyAdmin) {
@@ -3822,7 +3903,7 @@ function renderDashboard() {
     const ses = state.asistencia[k];
     const n = Object.keys(ses).length;
     act.push({ fecha:partes[1], ico:'✓', bg:'#F0FDF4',
-      titulo:'Asistencia registrada — ' + (partes[0] === 'martes' ? 'sesión virtual' : 'sesión presencial'),
+      titulo:'Asistencia registrada — ' + nombreTipo(partes[0]).toLowerCase(),
       desc:n + (n === 1 ? ' alumno' : ' alumnos') });
   });
   state.anuncios.forEach(function(a){
@@ -3858,7 +3939,7 @@ function renderHistorial() {
     const bcls = total === 0 ? 'badge-gray' : !dentro ? 'badge-red' : faltas === 2 ? 'badge-yellow' : 'badge-green';
     const barPct = Math.min(100, (faltas / 2) * 100);
     return `<tr>
-      <td><strong>${a.name}</strong><br><span style="font-size:11px;color:var(--gray);">${a.sede||'UIO'}</span></td>
+      <td><strong>${a.name}</strong><br><span style="font-size:11px;color:var(--gray);">${nombreSede(a.sede)}</span></td>
       <td style="color:var(--green);font-weight:700;">${P}</td>
       <td style="color:var(--yellow);font-weight:700;">${T}</td>
       <td style="color:var(--blue);font-weight:700;">${FJ}</td>
@@ -3919,7 +4000,7 @@ function renderPagos() {
 
   const lista = sedeF === 'ALL' ? state.alumnos
     : esBloque ? state.alumnos.filter(a => BLOQUES[sedeF].sedes.indexOf(a.sede || 'UIO') !== -1)
-    : state.alumnos.filter(a => (a.sede || 'UIO') === sedeF);
+    : state.alumnos.filter(a => codSede(a.sede) === sedeF);
 
   let tTotal = 0, tCobrado = 0, tPend = 0;
   lista.forEach(a => { const r = resumenPago(a); tTotal += r.total; tCobrado += r.pagado; tPend += r.pendiente; });
@@ -4000,7 +4081,7 @@ function renderPagos() {
       : (a.beca || 0) === 100 ? '<span class="badge badge-navy">Beca 100%</span>'
       : '<span class="badge badge-green">Al día</span>';
     return `<tr>
-      <td><strong>${a.name}</strong><br><span style="font-size:11px;color:var(--gray);">${a.sede||'UIO'} · ${a.plan === 'unico' ? 'Pago único' : 'Mensual'}</span></td>
+      <td><strong>${a.name}</strong><br><span style="font-size:11px;color:var(--gray);">${nombreSede(a.sede)} · ${a.plan === 'unico' ? 'Pago único' : 'Mensual'}</span></td>
       <td>${a.beca > 0 ? `<span class="badge badge-navy">${a.beca}%</span>` : '—'}</td>
       <td style="font-family:'DM Mono',monospace;">$${dinero(r.cuota)}</td>
       <td class="pay-cell">${matChip}</td>
@@ -4017,18 +4098,15 @@ function renderPagos() {
 function pintarSelectorPagos() {
   const sel = document.getElementById('pagos-sede');
   if (!sel) return;
-  const dif = bloquesDifieren();
-  const firma = dif ? 'bloques' : 'sedes';
+  // Las dos modalidades comparten calendario: una opcion por modalidad, y las
+  // sedes historicas solo si algun alumno todavia las tiene.
+  const cods = codigosEnUso();
+  const firma = cods.join(',');
   if (sel.dataset.firma === firma) return;
   const previo = sel.value;
-  // Con calendarios distintos la opcion sigue existiendo, pero se llama
-  // distinto porque lo que muestra es un resumen, no la rejilla de meses.
-  let h = '<option value="ALL">' + (dif ? 'Todos los alumnos (resumen)' : 'Todas las sedes') + '</option>';
-  Object.keys(BLOQUES).forEach(function(b){
-    h += '<option value="' + b + '">' + nombreBloque(b) + '</option>';
-    BLOQUES[b].sedes.forEach(function(sd){
-      h += '<option value="' + sd + '">&nbsp;&nbsp;' + nombreSede(sd) + '</option>';
-    });
+  let h = '<option value="ALL">Todas las modalidades</option>';
+  cods.forEach(function(sd){
+    h += '<option value="' + sd + '">Solo ' + nombreModalidad(sd) + '</option>';
   });
   sel.innerHTML = h;
   sel.dataset.firma = firma;
@@ -4074,18 +4152,18 @@ function renderAlumnos() {
     : 'Consulta de alumnos · solo lectura';
   const thead = document.getElementById('alumnos-thead');
   if (thead) thead.innerHTML = soyAdmin
-    ? '<tr><th>Nombre</th><th>Correo</th><th>Colegio / Universidad</th><th>Sede</th><th>Beca</th><th>Plan</th><th></th></tr>'
-    : '<tr><th>Nombre</th><th>Correo</th><th>Colegio / Universidad</th><th>Sede</th><th>Asistencia</th><th>Faltas</th></tr>';
+    ? '<tr><th>Nombre</th><th>Correo</th><th>Colegio / Universidad</th><th>Modalidad</th><th>Beca</th><th>Plan</th><th></th></tr>'
+    : '<tr><th>Nombre</th><th>Correo</th><th>Colegio / Universidad</th><th>Modalidad</th><th>Asistencia</th><th>Faltas</th></tr>';
   const cols = soyAdmin ? 7 : 6;
 
   // Si el filtro activo es financiero y el usuario dejó de ser admin, volver a "todos"
   if (!soyAdmin && (filtroAlumnos === 'beca' || filtroAlumnos === 'mora' || filtroAlumnos === 'sinactivar' || filtroAlumnos === 'sinacuerdo')) filtroAlumnos = 'todos';
 
   // Conteos para los filtros
-  const cuenta = { todos: state.alumnos.length, UIO: 0, GYE: 0, CUE: 0, SDO: 0, mora: 0, riesgo: 0, beca: 0, sinactivar: 0, sinacuerdo: 0 };
+  const cuenta = { todos: state.alumnos.length, mora: 0, riesgo: 0, beca: 0, sinactivar: 0, sinacuerdo: 0 };
+  codigosEnUso().forEach(function(c){ cuenta[c] = 0; });
   state.alumnos.forEach(function(a){
-    var sd = a.sede || 'UIO';
-    if (sd === 'GYE') cuenta.GYE++; else if (sd === 'CUE') cuenta.CUE++; else if (sd === 'SDO') cuenta.SDO++; else cuenta.UIO++;
+    cuenta[codSede(a.sede)]++;
     if (soyAdmin && resumenPago(a).mora) cuenta.mora++;
     const s = getAlumnoStats(a.username);
     if (s.total > 0 && s.faltas >= 2) cuenta.riesgo++;
@@ -4095,26 +4173,22 @@ function renderAlumnos() {
   });
   const defs = [
     { k:'todos', lbl:'Todos', n:cuenta.todos },
-    { k:'UIO', lbl:'Quito', n:cuenta.UIO },
-    { k:'GYE', lbl:'Guayaquil', n:cuenta.GYE },
-    { k:'CUE', lbl:'Cuenca', n:cuenta.CUE },
-    { k:'SDO', lbl:'Santo Domingo', n:cuenta.SDO },
+  ].concat(codigosEnUso().map(function(c){
+    return { k:c, lbl:nombreSede(c), n:cuenta[c] };
+  })).concat([
     { k:'beca', lbl:'Con beca', n:cuenta.beca, soloAdmin:true },
     { k:'mora', lbl:'En mora', n:cuenta.mora, soloAdmin:true },
     { k:'riesgo', lbl:'En riesgo', n:cuenta.riesgo },
     { k:'sinactivar', lbl:'Sin activar', n:cuenta.sinactivar, soloAdmin:true },
     { k:'sinacuerdo', lbl:'Acuerdo pendiente', n:cuenta.sinacuerdo, soloAdmin:true },
-  ].filter(function(d){ return soyAdmin || !d.soloAdmin; });
+  ]).filter(function(d){ return soyAdmin || !d.soloAdmin; });
   const cf = document.getElementById('filtros-alumnos');
   if (cf) cf.innerHTML = defs.map(function(d){
     return '<button class="chip-filtro' + (filtroAlumnos === d.k ? ' on' : '') + '" onclick="setFiltroAlumnos(\'' + d.k + '\')">' + d.lbl + ' · ' + d.n + '</button>';
   }).join('');
 
   let lista = state.alumnos.filter(a => !q || (a.name + ' ' + (a.email||'') + ' ' + (a.colegio||'')).toLowerCase().includes(q));
-  if (filtroAlumnos === 'UIO') lista = lista.filter(function(a){ return (a.sede || 'UIO') === 'UIO'; });
-  else if (filtroAlumnos === 'GYE') lista = lista.filter(function(a){ return a.sede === 'GYE'; });
-  else if (filtroAlumnos === 'CUE') lista = lista.filter(function(a){ return a.sede === 'CUE'; });
-  else if (filtroAlumnos === 'SDO') lista = lista.filter(function(a){ return a.sede === 'SDO'; });
+  if (MODALIDADES[filtroAlumnos] || SEDES_HISTORICAS[filtroAlumnos]) lista = lista.filter(function(a){ return codSede(a.sede) === filtroAlumnos; });
   else if (filtroAlumnos === 'beca') lista = lista.filter(function(a){ return a.beca > 0; });
   else if (filtroAlumnos === 'mora') lista = lista.filter(function(a){ return resumenPago(a).mora; });
   else if (filtroAlumnos === 'riesgo') lista = lista.filter(function(a){ const s = getAlumnoStats(a.username); return s.total > 0 && s.faltas >= 2; });
@@ -4136,7 +4210,7 @@ function renderAlumnos() {
           '<br><span class="link-more" onclick="abrirFicha(\'' + a.username + '\')">Ver ficha completa →</span></div></div></td>' +
         '<td style="font-family:\'DM Mono\',monospace;font-size:12px;">' + (a.email || '—') + '</td>' +
         '<td>' + (a.colegio || '—') + '</td>' +
-        '<td><span class="badge ' + badgeSede(a.sede) + '">' + (a.sede || 'UIO') + '</span></td>' +
+        '<td><span class="badge ' + badgeSede(a.sede) + '">' + nombreSede(a.sede) + '</span></td>' +
         '<td style="font-size:13px;">' + (st.pct !== null ? st.pct + '%' : '—') + '</td>' +
         '<td style="font-weight:700;color:' + color + ';">' + faltasTxt(st.faltas) + ' / 2</td>' +
       '</tr>';
@@ -4148,7 +4222,7 @@ function renderAlumnos() {
     <td><div class="tbl-nombre">${avatarHTML(a)}<div><strong>${a.name}</strong>${a.suspendido ? ' <span class="badge badge-red" style="font-size:10px;">Suspendido</span>' : ''}${onboardingPendiente(Object.assign({ rol: 'alumno' }, a)) ? ' <span class="badge badge-yellow" style="font-size:10px;">Sin activar</span>' : ''}<br><span class="link-more" onclick="abrirFicha('${a.username}')">Ver ficha completa →</span></div></div></td>
     <td style="font-family:'DM Mono',monospace;font-size:12px;">${a.email || '—'}</td>
     <td>${a.colegio || '—'}</td>
-    <td><span class="badge ${badgeSede(a.sede)}">${a.sede||'UIO'}</span></td>
+    <td><span class="badge ${badgeSede(a.sede)}">${nombreSede(a.sede)}</span></td>
     <td>${a.beca > 0 ? `<span class="badge badge-navy">${a.beca}%</span>` : '<span style="color:var(--gray);">—</span>'}</td>
     <td style="font-size:13px;">${a.plan === 'unico' ? 'Pago único' : 'Mensual'}</td>
     <td style="white-space:nowrap;"><button class="btn btn-sky" style="margin-right:6px;font-size:12px;" onclick="generarAcuerdo('${a.username}')">📄 Acuerdo</button><button class="btn btn-ghost" style="margin-right:6px;" onclick="editAlumno('${a.username}')">Editar</button><button class="btn btn-ghost" style="margin-right:6px;" title="${a.suspendido ? 'Reactivar acceso' : 'Suspender acceso'}" onclick="toggleSuspension('${a.username}')">${a.suspendido ? '▶' : '⛔'}</button><button class="btn btn-red" onclick="deleteAlumno('${a.username}')">${delPend === a.username ? '¿Confirmar?' : 'Eliminar'}</button></td>
@@ -4336,7 +4410,7 @@ function renderAlumnoHome() {
   }
 
   const chips = [];
-  chips.push('<span class="al-chip">📍 Sede ' + (me.sede || 'UIO') + '</span>');
+  chips.push('<span class="al-chip">📍 ' + nombreModalidad(me.sede) + '</span>');
   chips.push('<span class="al-chip">' + cfg.cicloNombre + '</span>');
   if (me.beca > 0) chips.push('<span class="al-chip accent">🎖 Beca ' + me.beca + '%</span>');
   if (me.colegio) chips.push('<span class="al-chip">' + me.colegio + '</span>');
@@ -4353,22 +4427,13 @@ function renderAlumnoHome() {
   ring.setAttribute('stroke-dasharray', circ.toFixed(1));
   setTimeout(function() { ring.setAttribute('stroke-dashoffset', (circ * (1 - progPct / 100)).toFixed(1)); }, 120);
 
-  // Próxima clase: martes virtual 18:00, sábado presencial 11:00
-  function proxima(diaSemana) {
-    const d = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
-    let delta = (diaSemana - d.getDay() + 7) % 7;
-    if (delta === 0) delta = 0;
-    d.setDate(d.getDate() + delta);
-    return d;
-  }
-  const martes = proxima(2), sabado = proxima(6);
-  const esMartes = martes <= sabado;
-  const prox = esMartes ? martes : sabado;
+  // Próxima clase según la modalidad: Quito martes + sábado, Nacional martes + jueves.
+  const sig = proximaSesion(sesionesDe(me.sede), hoy);
+  const prox = sig.fecha;
   const mismoDia = prox.toDateString() === hoy.toDateString();
   document.getElementById('al-next-day').textContent =
     (mismoDia ? 'Hoy · ' : '') + dias[prox.getDay()].charAt(0).toUpperCase() + dias[prox.getDay()].slice(1) + ' ' + prox.getDate() + ' ' + meses[prox.getMonth()].slice(0,3);
-  document.getElementById('al-next-time').textContent =
-    esMartes ? '18:00 – 20:00 · Virtual (Zoom)' : '11:00 – 13:30 · Presencial';
+  document.getElementById('al-next-time').textContent = HORARIO_SESION[sig.tipo];
 
   // ── Alertas ──
   const alertas = [];
@@ -4561,7 +4626,7 @@ function renderAlumnoHome() {
           const dot = e.badge === 'badge-green' ? 'dot-green' : e.badge === 'badge-yellow' ? 'dot-yellow'
                     : e.badge === 'badge-navy' ? 'dot-blue' : 'dot-red';
           return '<div class="al-tl-item"><div class="al-tl-dot ' + dot + '"></div>' +
-            '<div class="al-tl-top"><span class="al-tl-title">' + (x.tipo === 'martes' ? 'Sesión virtual' : 'Sesión presencial') + '</span>' +
+            '<div class="al-tl-top"><span class="al-tl-title">' + nombreTipo(x.tipo) + '</span>' +
             '<span class="badge ' + e.badge + '">' + e.label + '</span></div>' +
             '<div class="al-tl-date">' + formatDate(x.fecha) + '</div></div>';
         }).join('') + '</div>';
@@ -4652,6 +4717,7 @@ function abrirNuevoAlumno() {
   document.getElementById('m-beca').value = '25';
   document.getElementById('m-plan').value = 'mensual';
   document.getElementById('m-matricula').value = 'normal';
+  document.getElementById('m-sede').querySelectorAll('option[data-historica]').forEach(function(o){ o.remove(); });
   document.getElementById('m-sede').value = 'UIO';
   previewBeca();
   document.getElementById('m-user').disabled = false;
@@ -4672,7 +4738,16 @@ function editAlumno(u) {
   document.getElementById('m-pass').value = '••••••';
   document.getElementById('m-pass').disabled = true;
   document.getElementById('m-colegio').value = a.colegio || '';
-  document.getElementById('m-sede').value = a.sede || 'UIO';
+  // Un alumno con una sede cerrada (GYE, CUE, SDO) conserva su valor: sin esta
+  // opcion temporal el selector caeria en Quito y guardar lo cambiaria sin avisar.
+  const selSede = document.getElementById('m-sede');
+  selSede.querySelectorAll('option[data-historica]').forEach(function(o){ o.remove(); });
+  if (!MODALIDADES[codSede(a.sede)]) {
+    const o = document.createElement('option');
+    o.value = a.sede; o.textContent = nombreModalidad(a.sede); o.dataset.historica = '1';
+    selSede.appendChild(o);
+  }
+  selSede.value = codSede(a.sede);
   document.getElementById('m-beca').value = String(a.beca || 0);
   document.getElementById('m-plan').value = a.plan || 'mensual';
   document.getElementById('m-matricula').value = a.matricula || 'normal';
@@ -5158,7 +5233,9 @@ function renderBloques() {
 }
 
 function leerBloquesUI() {
-  const out = {};
+  // Parte de lo guardado para no borrar claves que ya no se muestran
+  // (por ejemplo 'costa', del esquema anterior de bloques regionales).
+  const out = Object.assign({}, (state.config && state.config.bloques) || {});
   Object.keys(BLOQUES).forEach(function(b){
     const nom = (document.getElementById('cfgb-' + b + '-nombre').value || '').trim();
     const cuo = parseInt(document.getElementById('cfgb-' + b + '-cuotas').value);
@@ -5176,7 +5253,7 @@ function previewBloques() {
   const bl = leerBloquesUI();
   const base = getConfig();
   const txt = Object.keys(BLOQUES).map(function(b){
-    const o = bl[b];
+    const o = bl[b] || {};
     const n = o.numCuotas || base.numCuotas;
     const arranque = o.fechaInicio ? new Date(o.fechaInicio + 'T00:00:00')
                                    : new Date(base.inicioAnio, base.inicioMes - 1, 1);
@@ -5425,10 +5502,10 @@ function sesionesProximas(semanas) {
   const desde = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate());
   for (let i = 0; i <= semanas * 7; i++) {
     const d = new Date(desde.getFullYear(), desde.getMonth(), desde.getDate() + i);
-    const tipo = DOW_SESION[d.getDay()];
+    const tipo = tipoDelDia(d.getDay());
     if (!tipo) continue;
     const iso = fechaISO(d);
-    out.push({ fecha: iso, txt: (tipo === 'martes' ? 'Sesión virtual' : 'Sesión presencial') +
+    out.push({ fecha: iso, txt: nombreTipo(tipo) +
       ' · ' + formatDate(iso) + (i === 0 ? ' · hoy' : '') });
   }
   return out;
@@ -5449,7 +5526,7 @@ function pintarExtra(t) {
       const v = state.asistencia[k][uid];
       if (!v || v === 'P') return;
       const pt = k.split('_');
-      marcadas.push({ fecha: pt[1], txt: (pt[0] === 'martes' ? 'Sesión virtual' : 'Sesión presencial') +
+      marcadas.push({ fecha: pt[1], txt: nombreTipo(pt[0]) +
         ' · ' + formatDate(pt[1]) + ' · ' + estadoAtt(v).label });
     });
     marcadas.sort(function(a, b){ return b.fecha.localeCompare(a.fecha); });
@@ -5520,7 +5597,7 @@ function textoMensaje() {
     '───────────────────────\n' +
     'DATOS DEL ALUMNO\n' +
     'Nombre: ' + me.name + '\n' +
-    'Sede: ' + nombreSede(me.sede) + '\n' +
+    'Modalidad: ' + nombreModalidad(me.sede) + '\n' +
     'Colegio/Universidad: ' + (me.colegio || '—') + '\n' +
     'Teléfono: ' + (me.telefono || '—') + '\n' +
     'Correo: ' + (me.correo || me.email || '—') + '\n' +
@@ -5660,6 +5737,15 @@ function importarAlumnos(input) {
   reader.readAsArrayBuffer(file);
 }
 
+// Modalidad desde el Excel. Quito solo si lo dice o si la celda esta vacia;
+// "NAC", "nacional", "en linea", "online", "virtual" o una ciudad de las sedes
+// cerradas llevan a Nacional, que es la modalidad para fuera de Quito.
+function sedeDeImport(raw) {
+  if (!raw) return 'UIO';
+  if (/nac|online|enlinea|virtual|zoom|gye|guayaquil|cue|cuenca|sdo|santo/.test(raw)) return 'NAC';
+  return 'UIO';
+}
+
 async function procesarImport(rows) {
   let ok = 0, dup = 0, sin = 0, err = 0;
   toast('Importando... no cierres la ventana');
@@ -5684,9 +5770,7 @@ async function procesarImport(rows) {
       rol: 'alumno',
       cedula: getCol(row, ['cedula'], ['repres']) || getCol(row, ['documento'], ['repres']),
       colegio: getCol(row, ['colegio']) || getCol(row, ['universidad']) || getCol(row, ['institucion']),
-      sede: (sedeRaw.includes('gye') || sedeRaw.includes('guayaquil')) ? 'GYE'
-          : (sedeRaw.includes('cue') || sedeRaw.includes('cuenca')) ? 'CUE'
-          : (sedeRaw.includes('sdo') || sedeRaw.includes('santodomingo') || sedeRaw.includes('santo')) ? 'SDO' : 'UIO',
+      sede: sedeDeImport(sedeRaw),
       beca: becaValida(getCol(row, ['beca'])),
       plan: planRaw.includes('unic') ? 'unico' : 'mensual',
       matricula: matRaw.includes('exent') ? 'exenta' : 'normal',
@@ -5717,7 +5801,7 @@ async function procesarImport(rows) {
 function plantillaImport() {
   if (!soloAdmin()) return;
   const data = [
-    ['Nombre', 'Correo (obligatorio)', 'Contraseña', 'Cédula', 'Colegio', 'Sede (UIO/GYE/CUE/SDO)', 'Beca %', 'Plan (mensual/unico)', 'Matrícula (normal/exenta)', 'Teléfono', 'Nombre representante', 'Cédula representante', 'Teléfono representante', 'Correo representante', 'URL acuerdo firmado'],
+    ['Nombre', 'Correo (obligatorio)', 'Contraseña', 'Cédula', 'Colegio', 'Sede / modalidad (UIO = Quito, NAC = Nacional)', 'Beca %', 'Plan (mensual/unico)', 'Matrícula (normal/exenta)', 'Teléfono', 'Nombre representante', 'Cédula representante', 'Teléfono representante', 'Correo representante', 'URL acuerdo firmado'],
     ['Ana García', 'ana@mail.com', 'electi2026', '1712345678', 'Colegio San Gabriel', 'UIO', '25', 'mensual', 'normal', '0991234567', 'María Pérez', '1798765432', '0998765432', 'maria@mail.com', ''],
   ];
   descargarLibro([{ name: 'Plantilla', data }], 'plantilla-alumnos-electi.xlsx');
@@ -5753,6 +5837,9 @@ function generarAcuerdo(u) {
   const hoy = new Date();
   const fecha  = hoy.getDate() + ' de ' + mesesL[hoy.getMonth()] + ' de ' + hoy.getFullYear();
   const ciudad = nombreSede(a.sede);
+  // Lugar de emision del acuerdo: Quito, salvo en registros de una sede cerrada.
+  const lugar = SEDES_HISTORICAS[codSede(a.sede)] || 'Quito';
+  const nacional = esNacional(a.sede);
 
   // Periodo del ciclo, derivado de la configuración
   const rango  = M.length ? (M[0].label + ' – ' + M[M.length - 1].label) : cfg.cicloNombre;
@@ -5790,7 +5877,7 @@ function generarAcuerdo(u) {
 
   const ficha = '<div class="ficha">' +
     filaFicha('Participante', nom, 'Documento de identidad', ced) +
-    filaFicha('Institución educativa', esc(a.colegio), 'Sede', ciudad) +
+    filaFicha('Institución educativa', esc(a.colegio), nacional ? 'Modalidad' : 'Sede', nacional ? 'Nacional · en línea' : ciudad) +
     (autonomo
       ? filaFicha('Responsable del compromiso', nom + ' (mayor de edad)', 'Documento del responsable', ced)
       : filaFicha('Representante legal', repNom, 'Documento del representante', repCed)) +
@@ -5957,7 +6044,7 @@ function generarAcuerdo(u) {
 
     // ── HOJA 1 ──
     '<div class="hoja"><div class="agua"><img src="' + ISO + '" alt=""></div><div class="contenido">' +
-    encabezado('<b>' + esc(cfg.cicloNombre) + '</b><br>' + rango + '<br>' + ciudad + ', ' + fecha) +
+    encabezado('<b>' + esc(cfg.cicloNombre) + '</b><br>' + rango + '<br>' + lugar + ', ' + fecha) +
     '<div class="doc-tit">Acuerdo de Compromiso y Participación</div>' +
     '<div class="doc-tit-sub">' + (becaTotal ? 'Beca completa'
         : esBecado ? 'Modalidad con beca ' + beca + '%' : 'Tarifa regular') + ' · ' +
@@ -5969,8 +6056,12 @@ function generarAcuerdo(u) {
     'de compromiso</b> con el programa y su comunidad.</p>' +
 
     '<h2><span class="n">01</span>Sobre el programa</h2>' +
-    '<p>Periodo ' + periodo + '. Modalidad híbrida: martes de 18:00 a 20:00 en sesión virtual, y sábados de 11:00 a 13:30 ' +
-    'en sesión presencial en la sede ' + ciudad + '. El programa culmina con la ejecución de un proyecto real y con ' +
+    '<p>Periodo ' + periodo + '. ' + (nacional
+      ? 'Modalidad en línea: martes de 18:00 a 20:00 y jueves de 18:00 a 21:30, en sesiones sincrónicas por Zoom; ' +
+        'la sesión del jueves incluye una hora y media de taller acompañado. '
+      : 'Modalidad híbrida: martes de 18:00 a 20:00 en sesión virtual, y sábados de 10:00 a 13:30 ' +
+        'en sesión presencial en la sede ' + ciudad + '. ') +
+    'El programa culmina con la ejecución de un proyecto real y con ' +
     'certificación oficial para quienes cumplan este acuerdo.</p>' +
 
     '<h2><span class="n">02</span>Condiciones económicas</h2>' +
@@ -6168,7 +6259,7 @@ function exportAlumnosExcel() {
 
 function exportAsistenciaExcel() {
   const sesiones = Object.keys(state.asistencia).sort((a, b) => a.split('_')[1].localeCompare(b.split('_')[1]));
-  const head = ['Alumno', 'Sede', ...sesiones.map(k => { const [t, f] = k.split('_'); return f + ' (' + (t === 'martes' ? 'Virtual' : 'Presencial') + ')'; }), 'Presentes', 'Tardanzas', 'F. Justificadas', 'F. Injustificadas', 'Faltas equiv.', '% Asistencia'];
+  const head = ['Alumno', 'Sede', ...sesiones.map(k => { const [t, f] = k.split('_'); return f + ' (' + (TIPO_CORTO[t] || t) + ')'; }), 'Presentes', 'Tardanzas', 'F. Justificadas', 'F. Injustificadas', 'Faltas equiv.', '% Asistencia'];
   const data = [head];
   state.alumnos.forEach(a => {
     const fila = [a.name, a.sede || 'UIO'];
@@ -6280,7 +6371,7 @@ function abrirFicha(uid) {
 
   // Encabezado
   const chips = [];
-  chips.push('<span class="al-chip">' + (a.sede || 'UIO') + '</span>');
+  chips.push('<span class="al-chip">' + nombreModalidad(a.sede) + '</span>');
   if (soyAdmin && a.beca > 0) chips.push('<span class="al-chip accent">Beca ' + a.beca + '%</span>');
   if (soyAdmin) chips.push('<span class="al-chip">' + (a.plan === 'unico' ? 'Pago único' : 'Mensual') + '</span>');
   if (a.suspendido) chips.push('<span class="al-chip" style="background:rgba(239,68,68,0.25);border-color:rgba(239,68,68,0.4);">⛔ Suspendido</span>');
@@ -6359,7 +6450,7 @@ function abrirFicha(uid) {
       const e = estadoAtt(x.status);
       const dot = e.badge === 'badge-green' ? 'dot-green' : e.badge === 'badge-yellow' ? 'dot-yellow' : e.badge === 'badge-navy' ? 'dot-blue' : 'dot-red';
       return '<div class="al-tl-item"><div class="al-tl-dot ' + dot + '"></div>' +
-        '<div class="al-tl-top"><span class="al-tl-title">' + (x.tipo === 'martes' ? 'Sesión virtual' : 'Sesión presencial') + '</span>' +
+        '<div class="al-tl-top"><span class="al-tl-title">' + nombreTipo(x.tipo) + '</span>' +
         '<span class="badge ' + e.badge + '">' + e.label + '</span></div>' +
         '<div class="al-tl-date">' + formatDate(x.fecha) + '</div></div>';
     }).join('') + '</div>';
@@ -6720,7 +6811,9 @@ function abrirBienvenida(sinPass) {
     (conBeca
       ? 'El comité revisó tu entrevista y decidió otorgarte una beca. '
       : 'El comité revisó tu entrevista y confirmó tu admisión. ') +
-    'Tu cupo en la sede de <b>' + nombreSede(a.sede) + '</b> queda reservado a tu nombre.';
+    (esNacional(a.sede)
+      ? 'Tu cupo en la modalidad <b>Nacional, en línea</b>, queda reservado a tu nombre.'
+      : 'Tu cupo en la sede de <b>' + nombreSede(a.sede) + '</b> queda reservado a tu nombre.');
 
   let cajaBeca = '';
   if (beca >= 100) {
@@ -7051,7 +7144,7 @@ function bvPintarConfirmacion() {
       ? '<div class="bv-fila"><span>Responsable</span><b>Tú mismo (mayor de edad)</b></div>'
       : '<div class="bv-fila"><span>Representante</span><b>' + bvEl('bv-rep-nombre').value.trim() + '</b></div>') +
     '<div class="bv-fila"><span>Factura a</span><b>' + bvNombreFacturacion() + '</b></div>' +
-    '<div class="bv-fila"><span>Sede</span><b>' + nombreSede(a.sede) + '</b></div>' +
+    '<div class="bv-fila"><span>Sede</span><b>' + nombreModalidad(a.sede) + '</b></div>' +
     '<div class="bv-fila"><span>Periodo</span><b>' + rango + '</b></div>' +
     '<div class="bv-fila"><span>Modalidad</span><b>' + (cuota === 0 ? 'Beca completa' : esUnico ? 'Pago por adelantado' : 'Pago mensual') + '</b></div>' +
     '<div class="bv-fila"><span>Total del ciclo</span><b>$' + dinero(total) + '</b></div>' +
