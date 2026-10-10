@@ -2144,19 +2144,31 @@ nav.scrolled .nav-brand img{transform:scale(.92);transition:transform .3s ease}
 /* En la portada el mapa va sobre azul; en /malla/ también. Si algún día
    se usa sobre fondo claro, cambiar el degradado de arriba. */
 
-/* ── Franja "Postulaciones abiertas" (portada, debajo de la foto de la generación) ── */
-.inicio-band{background:var(--paper);border-bottom:1px solid var(--line);padding:clamp(28px,4vw,40px) 0}
-.inicio-in{display:flex;align-items:center;gap:clamp(18px,3vw,36px);flex-wrap:wrap}
+/* ── Franja "Postulaciones abiertas" (portada, debajo de la foto de la generación) ──
+   Continúa el azul marino del hero y de la foto: mismo antetítulo en píldora,
+   mismo botón celeste y mismas cifras en blanco que el resto de la portada. */
+.inicio-band{
+  position:relative;overflow:hidden;background:var(--navy-deep);
+  padding:clamp(30px,4.4vw,46px) 0;border-top:1px solid rgba(144,202,249,.14);
+}
+.inicio-band::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(620px 240px at 8% 50%,rgba(66,165,245,.16),transparent 70%),
+             radial-gradient(520px 220px at 96% 50%,rgba(21,101,192,.2),transparent 70%);
+}
+.inicio-in{position:relative;z-index:1;display:flex;align-items:center;gap:clamp(20px,3.4vw,40px);flex-wrap:wrap}
 .inicio-fecha{
-  flex:none;width:76px;height:84px;border-radius:var(--r);background:var(--navy);color:#fff;
+  flex:none;width:82px;height:90px;border-radius:var(--r);
+  background:rgba(66,165,245,.12);border:1px solid rgba(144,202,249,.28);color:#fff;
   display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;
 }
-.inicio-fecha span{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--sky-l);margin-bottom:6px}
-.inicio-fecha b{font-size:36px;font-weight:900;letter-spacing:-.04em}
-.inicio-txt{flex:1 1 320px;min-width:0}
-.inicio-txt .eyebrow{display:inline-flex;align-items:center;gap:8px;margin-bottom:8px}
-.inicio-txt h2{font-size:clamp(22px,2.6vw,30px);margin-bottom:6px}
-.inicio-txt p:last-child{font-size:15.5px;color:var(--ink-2);line-height:1.6}
+.inicio-fecha span{font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--sky-l);margin-bottom:7px}
+.inicio-fecha b{font-size:38px;font-weight:900;letter-spacing:-.045em}
+.inicio-txt{flex:1 1 340px;min-width:0}
+.inicio-txt .pill{margin-bottom:14px;padding:6px 14px;font-size:12px}
+.inicio-txt h2{font-size:clamp(24px,3vw,34px);font-weight:900;letter-spacing:-.04em;margin-bottom:8px}
+.inicio-txt p:last-child{font-size:15.5px;color:rgba(255,255,255,.62);line-height:1.6}
 @media (max-width:560px){
-  .inicio-band .btn{width:100%;justify-content:center}
+  .inicio-band .btn{width:100%}
+  .inicio-fecha{width:72px;height:80px}
 }
