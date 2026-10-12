@@ -532,3 +532,96 @@ function toggleFaq(btn){
        el resto del archivo sigue corriendo y el contenido queda visible. */
   }
 })();
+
+/* ══ WHATSAPP: pedir el nombre antes de abrir el chat ══
+   Todo enlace a wa.me del sitio pasa por este paso: la persona escribe su
+   nombre y el mensaje sale como "Hola, soy <nombre>. …".
+   Si el JavaScript falla, el enlace funciona igual que antes, sin nombre.
+   Para revertir: borrar este bloque y el CSS .wa-nombre. */
+(function(){
+  try {
+  var NUMERO = '593962893857';
+  var guardado = '';
+  try { guardado = localStorage.getItem('electi-nombre') || ''; } catch (e) {}
+
+  function mensajeCon(nombre, href){
+    var texto = '';
+    var m = href.match(/[?&]text=([^&]*)/);
+    if (m) { try { texto = decodeURIComponent(m[1]); } catch (e) { texto = ''; } }
+    texto = texto.replace(/^\s*hola[,!.]?\s*/i, '');
+    if (!texto) texto = 'Quiero información sobre ELECTI.';
+    texto = texto.charAt(0).toUpperCase() + texto.slice(1);
+    return 'Hola, soy ' + nombre + '. ' + texto;
+  }
+
+  var caja = null, campo = null, aviso = null, destino = '';
+
+  function crear(){
+    caja = document.createElement('div');
+    caja.className = 'wa-nombre';
+    caja.setAttribute('role', 'dialog');
+    caja.setAttribute('aria-modal', 'true');
+    caja.setAttribute('aria-labelledby', 'wa-nombre-t');
+    caja.innerHTML =
+      '<div class="wa-nombre-fondo" data-cerrar></div>' +
+      '<form class="wa-nombre-caja" novalidate>' +
+        '<button type="button" class="wa-nombre-x" data-cerrar aria-label="Cerrar">×</button>' +
+        '<span class="wa-nombre-tag">WhatsApp · ELECTI</span>' +
+        '<h3 id="wa-nombre-t">Antes de escribirnos, ¿cómo te llamas?</h3>' +
+        '<p>Así sabemos con quién hablamos y te respondemos mejor.</p>' +
+        '<label class="wa-nombre-l" for="wa-nombre-i">Tu nombre y apellido</label>' +
+        '<input id="wa-nombre-i" name="nombre" type="text" autocomplete="name" maxlength="60" placeholder="Ej. María Pérez">' +
+        '<span class="wa-nombre-aviso" aria-live="polite"></span>' +
+        '<button type="submit" class="wa-nombre-ok">Continuar en WhatsApp</button>' +
+      '</form>';
+    document.body.appendChild(caja);
+    campo = caja.querySelector('input');
+    aviso = caja.querySelector('.wa-nombre-aviso');
+    caja.addEventListener('click', function(e){
+      if (e.target.hasAttribute('data-cerrar')) cerrar();
+    });
+    caja.querySelector('form').addEventListener('submit', function(e){
+      e.preventDefault();
+      var nombre = campo.value.replace(/\s+/g, ' ').trim();
+      if (nombre.length < 2) {
+        aviso.textContent = 'Escribe tu nombre para continuar.';
+        campo.focus();
+        return;
+      }
+      try { localStorage.setItem('electi-nombre', nombre); } catch (err) {}
+      guardado = nombre;
+      var url = 'https://wa.me/' + NUMERO + '?text=' + encodeURIComponent(mensajeCon(nombre, destino));
+      cerrar();
+      var w = window.open(url, '_blank');
+      if (w) { try { w.opener = null; } catch (err) {} } else { location.href = url; }
+    });
+    document.addEventListener('keydown', function(e){
+      if (e.key === 'Escape' && caja.classList.contains('abierto')) cerrar();
+    });
+  }
+
+  function abrir(href){
+    if (!caja) crear();
+    destino = href;
+    campo.value = guardado;
+    aviso.textContent = '';
+    caja.classList.add('abierto');
+    document.documentElement.classList.add('wa-nombre-on');
+    setTimeout(function(){ campo.focus(); campo.select(); }, 60);
+  }
+
+  function cerrar(){
+    caja.classList.remove('abierto');
+    document.documentElement.classList.remove('wa-nombre-on');
+  }
+
+  document.addEventListener('click', function(e){
+    var a = e.target.closest && e.target.closest('a[href*="wa.me/' + NUMERO + '"]');
+    if (!a || e.ctrlKey || e.metaKey || e.shiftKey) return;
+    e.preventDefault();
+    abrir(a.getAttribute('href'));
+  });
+  } catch (e) {
+    /* Si algo falla aquí, los enlaces de WhatsApp siguen funcionando sin el paso del nombre. */
+  }
+})();

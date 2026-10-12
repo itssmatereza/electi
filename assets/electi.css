@@ -2172,3 +2172,23 @@ nav.scrolled .nav-brand img{transform:scale(.92);transition:transform .3s ease}
   .inicio-band .btn{width:100%}
   .inicio-fecha{width:72px;height:80px}
 }
+
+/* ══ WHATSAPP: ventana que pide el nombre ══ */
+.wa-nombre{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px;visibility:hidden;opacity:0;transition:opacity .22s,visibility .22s}
+.wa-nombre.abierto{visibility:visible;opacity:1}
+.wa-nombre-fondo{position:absolute;inset:0;background:rgba(6,21,57,.62);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.wa-nombre-caja{position:relative;width:100%;max-width:420px;background:#fff;border-radius:24px;padding:32px 28px 28px;box-shadow:0 30px 80px rgba(6,21,57,.4);transform:translateY(14px) scale(.98);transition:transform .26s cubic-bezier(.34,1.4,.64,1)}
+.wa-nombre.abierto .wa-nombre-caja{transform:none}
+.wa-nombre-x{position:absolute;top:14px;right:14px;width:36px;height:36px;border-radius:50%;border:0;background:var(--paper);color:var(--ink-2);font-size:22px;line-height:1;cursor:pointer}
+.wa-nombre-x:hover{background:var(--line)}
+.wa-nombre-tag{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#128C7E}
+.wa-nombre-tag::before{content:'';width:8px;height:8px;border-radius:50%;background:#25D366}
+.wa-nombre-caja h3{font-size:24px;margin:10px 0 8px;padding-right:28px}
+.wa-nombre-caja p{font-size:15px;color:var(--muted);line-height:1.55;margin:0 0 18px}
+.wa-nombre-l{display:block;font-size:13px;font-weight:700;color:var(--ink);margin-bottom:6px}
+.wa-nombre-caja input{width:100%;font:inherit;font-size:16px;color:var(--ink);padding:14px 16px;border:1.5px solid var(--line-2);border-radius:14px;background:var(--paper);outline:none;transition:border-color .2s,box-shadow .2s}
+.wa-nombre-caja input:focus{border-color:var(--navy);box-shadow:0 0 0 4px rgba(13,42,110,.1);background:#fff}
+.wa-nombre-aviso{display:block;min-height:18px;font-size:13px;color:#C62828;margin:6px 0 10px}
+.wa-nombre-ok{width:100%;font:inherit;font-size:16px;font-weight:800;color:#fff;background:#25D366;border:0;border-radius:100px;padding:16px;cursor:pointer;box-shadow:0 10px 26px rgba(37,211,102,.32);transition:transform .2s,background .2s}
+.wa-nombre-ok:hover{background:#1EBE5A;transform:translateY(-2px)}
+html.wa-nombre-on{overflow:hidden}
