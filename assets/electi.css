@@ -2368,3 +2368,19 @@ body:has(.hf) nav{transition:background .3s,border-color .3s,box-shadow .3s}
   .hf-foto img{height:64%;object-position:50% 30%}
   .hf::before{background:linear-gradient(rgba(6,21,57,.55),transparent 14%,transparent 40%,rgba(6,21,57,.75) 58%,rgba(6,21,57,.97) 70%)}
 }
+
+/* Continuidad con el hero de foto: tras quitar la franja y la tarjeta repetida,
+   los aliados entran sobre la misma base marina y el resto mantiene azul + blanco */
+.hf + .allies,.hf ~ .allies{background:#061539;border-bottom:0;padding:34px 0 40px}
+.hf ~ .allies .allies-lbl{color:rgba(255,255,255,.45)}
+.hf ~ .allies .ally strong{color:#fff}
+.hf ~ .allies .ally span{color:rgba(255,255,255,.55)}
+.hf ~ .allies .ally{opacity:1}
+.hf ~ .allies .ally-mark{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.14)}
+.p-ico{background:#EEF4FF;color:var(--blue)!important}
+.p-card{border-radius:14px}
+.hf::before{background:linear-gradient(90deg,rgba(6,21,57,.92) 0%,rgba(6,21,57,.6) 45%,rgba(6,21,57,.05) 80%),
+  linear-gradient(rgba(6,21,57,.6),transparent 20%,transparent 66%,rgba(6,21,57,.75) 90%,#061539 100%)}
+@media (max-width:760px){
+  .hf::before{background:linear-gradient(rgba(6,21,57,.55),transparent 14%,transparent 40%,rgba(6,21,57,.75) 58%,rgba(6,21,57,.97) 70%,#061539)}
+}
