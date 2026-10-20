@@ -2384,3 +2384,25 @@ body:has(.hf) nav{transition:background .3s,border-color .3s,box-shadow .3s}
 @media (max-width:760px){
   .hf::before{background:linear-gradient(rgba(6,21,57,.55),transparent 14%,transparent 40%,rgba(6,21,57,.75) 58%,rgba(6,21,57,.97) 70%,#061539)}
 }
+
+/* Respaldo: logos para fondo oscuro, sin recuadro */
+.ally-logo{width:44px;height:44px;object-fit:contain;flex:none;display:block}
+.ally-ico{display:flex;align-items:center;justify-content:center;color:var(--sky-l)}
+.ally-ico svg{width:34px;height:34px}
+.hf ~ .allies .allies-row{gap:clamp(28px,6vw,80px)}
+/* Hero: texto y tarjeta alineados a la misma línea base */
+.hf-in{align-items:flex-end;padding-bottom:clamp(56px,10vh,104px)}
+.hf-txt{max-width:720px}
+.hf-sub{margin-bottom:32px}
+.hf-fecha{margin-bottom:2px;padding:20px 24px;border-radius:14px;gap:20px;box-shadow:0 24px 50px rgba(0,0,0,.3)}
+.hf-fecha-d{padding-right:20px}
+.hf-fecha strong{font-size:17px;margin-bottom:2px}
+@media (max-width:760px){.hf-in{padding-bottom:48px}.hf ~ .allies .allies-row{gap:22px 28px}}
+
+.nav-logo-claro{display:none}
+body:has(.hf) nav:not(.scrolled) .nav-brand img:first-child{display:none}
+body:has(.hf) nav:not(.scrolled) .nav-logo-claro{display:block;border-radius:0}
+@media (max-width:760px){
+  .hf ~ .allies .allies-row{display:grid;grid-template-columns:1fr;justify-content:start;max-width:300px;margin:0 auto;gap:18px}
+  .hf ~ .allies .ally{justify-content:flex-start}
+}
