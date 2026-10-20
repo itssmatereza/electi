@@ -2407,3 +2407,32 @@ body:has(.hf) nav:not(.scrolled) .nav-logo-claro{display:block;border-radius:0}
   .hf ~ .allies .ally{justify-content:flex-start}
 }
 .hf ~ .allies .allies-row{gap:clamp(24px,4.5vw,64px)}
+/* ══ Encuadres en celular: menú → hero → respaldo ══ */
+@media (max-width:760px){
+  nav{padding:0 20px}
+  .hf-in{padding:0 20px 36px}
+  .hf::before{background:linear-gradient(rgba(6,21,57,.7),rgba(6,21,57,.15) 12%,transparent 22%,transparent 40%,rgba(6,21,57,.75) 58%,rgba(6,21,57,.97) 70%,#061539)}
+  .hf-k{margin-bottom:0}
+  .hf h1{font-size:clamp(38px,11.4vw,48px);margin:14px 0 22px}
+  .hf-btns{gap:10px}.hf-btns .btn{flex:1;justify-content:center;padding:15px 12px}
+  .hf-movil{padding-right:64px;line-height:1.5}
+  .hf ~ .allies{padding:8px 0 40px}
+  .hf ~ .allies .wrap{padding:0 20px}
+  .hf ~ .allies .allies-lbl{margin-bottom:22px;padding-top:28px;border-top:1px solid rgba(255,255,255,.1)}
+  .hf ~ .allies .allies-row{display:grid;grid-template-columns:1fr 1fr;max-width:none;gap:24px 16px;margin:0}
+  .hf ~ .allies .ally{flex-direction:column;align-items:flex-start;gap:10px}
+  .hf ~ .allies .ally-logo{width:36px;height:36px}
+  .hf ~ .allies .ally-ico svg{width:30px;height:30px}
+  .hf ~ .allies .ally-txt strong{font-size:14px}
+  .hf ~ .allies .ally-txt span{font-size:12px;line-height:1.4;display:block;margin-top:2px}
+}
+@media (max-width:760px) and (max-height:700px){
+  .hf-foto img{height:56%}
+  .hf h1{font-size:38px}
+}
+@media (max-width:760px){
+  .hf ~ .allies .ally-logo{width:36px;height:36px;object-position:left center}
+  .hf ~ .allies .ally-ico{justify-content:flex-start}
+  .hf ~ .allies .ally-ico svg{width:32px;height:32px}
+  .hf ~ .allies .ally-txt span{min-height:2.8em}
+}
