@@ -131,7 +131,7 @@
 
   // ── Parallax sutil en los orbes del hero ──
   var orbes = document.querySelectorAll('.orb');
-  if (orbes.length && window.matchMedia('(min-width:769px)').matches
+  if (false && orbes.length && window.matchMedia('(min-width:769px)').matches
       && !window.matchMedia('(prefers-reduced-motion:reduce)').matches) {
     var ticking = false;
     window.addEventListener('scroll', function(){
@@ -353,7 +353,7 @@ function toggleFaq(btn){
 
   /* ── La franja del hero se acerca despacio mientras se baja ── */
   var franja = document.querySelector('.gen-franja img');
-  if (franja && !quieto && !movil) {
+  if (false && franja && !quieto && !movil) {
     var tickF = false;
     window.addEventListener('scroll', function(){
       if (tickF) return;
@@ -624,4 +624,13 @@ function toggleFaq(btn){
   } catch (e) {
     /* Si algo falla aquí, los enlaces de WhatsApp siguen funcionando sin el paso del nombre. */
   }
+})();
+
+/* ── Rendimiento: el fondo animado del hero se pausa cuando no se ve ── */
+(function(){
+  var hero = document.querySelector('.hero');
+  if (!hero || !('IntersectionObserver' in window)) return;
+  new IntersectionObserver(function(e){
+    hero.classList.toggle('hero-pausa', !e[0].isIntersecting);
+  }, {threshold:0}).observe(hero);
 })();
