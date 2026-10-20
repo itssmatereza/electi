@@ -2192,3 +2192,12 @@ nav.scrolled .nav-brand img{transform:scale(.92);transition:transform .3s ease}
 .wa-nombre-ok{width:100%;font:inherit;font-size:16px;font-weight:800;color:#fff;background:#25D366;border:0;border-radius:100px;padding:16px;cursor:pointer;box-shadow:0 10px 26px rgba(37,211,102,.32);transition:transform .2s,background .2s}
 .wa-nombre-ok:hover{background:#1EBE5A;transform:translateY(-2px)}
 html.wa-nombre-on{overflow:hidden}
+
+/* ══ Auditoría oct-2026 ══ */
+.hero:has(.hero-proof) .baja{display:none}
+.af-alum{display:flex;gap:18px;align-items:center;margin-top:26px;padding:16px 18px;border-radius:var(--r);background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14)}
+.af-alum img{width:78px!important;height:78px!important;max-width:none;aspect-ratio:1;border-radius:50%;object-fit:cover;object-position:50% 22%;flex:none;border:2px solid rgba(255,255,255,.5)}
+.af-alum-k{display:block;font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--sky-l)}
+.af-alum strong{display:block;color:#fff;font-size:17px;margin-top:3px}
+.af-alum p{margin:4px 0 0!important;font-size:13.5px;line-height:1.5;color:rgba(255,255,255,.72)}
+.tt-nota{text-align:center;font-size:13px;color:var(--muted,#8592AE);margin-top:22px}
