@@ -31,7 +31,7 @@
      que se revela con animación se muestra visible por defecto. Sin esto,
      un solo error de JS deja la página en blanco. -->
 <script>document.documentElement.className += ' js';</script>
-<link rel="stylesheet" href="/assets/electi.css?v=2abb0f79">
+<link rel="stylesheet" href="/assets/electi.css?v=16d8bb6a">
 <noscript><style>.rv{opacity:1!important;transform:none!important}</style></noscript>
 <script>
 /* Compatibilidad con los enlaces antiguos que llevaban # (QR, bios, mensajes ya enviados).
@@ -192,7 +192,10 @@
 <!-- ══ HERO ══ foto de la graduación a pantalla completa -->
   <section class="hf">
     <picture class="hf-foto">
-      <picture><source type="image/webp" srcset="/assets/fotos/hero-graduacion-sm.webp 800w, /assets/fotos/hero-graduacion.webp 1280w" sizes="100vw"><img src="/assets/fotos/hero-graduacion.jpg" srcset="/assets/fotos/hero-graduacion-sm.jpg 800w, /assets/fotos/hero-graduacion.jpg 1280w" sizes="100vw" width="1280" height="960" fetchpriority="high" decoding="async" alt="Graduación de una generación de ELECTI lanzando los birretes al aire"></picture>
+      <source media="(max-width:760px)" srcset="/assets/fotos/hero-graduacion-movil.webp" type="image/webp">
+      <source media="(max-width:760px)" srcset="/assets/fotos/hero-graduacion-movil.jpg">
+      <source srcset="/assets/fotos/hero-graduacion.webp" type="image/webp">
+      <picture><source type="image/webp" srcset="/assets/fotos/hero-graduacion.webp"><img src="/assets/fotos/hero-graduacion.jpg" width="2560" height="1920" fetchpriority="high" decoding="async" alt="Graduación de una generación de ELECTI lanzando los birretes al aire"></picture>
     </picture>
     <div class="hf-in">
       <div class="hf-txt">
