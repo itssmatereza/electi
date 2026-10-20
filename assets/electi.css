@@ -2406,3 +2406,4 @@ body:has(.hf) nav:not(.scrolled) .nav-logo-claro{display:block;border-radius:0}
   .hf ~ .allies .allies-row{display:grid;grid-template-columns:1fr;justify-content:start;max-width:300px;margin:0 auto;gap:18px}
   .hf ~ .allies .ally{justify-content:flex-start}
 }
+.hf ~ .allies .allies-row{gap:clamp(24px,4.5vw,64px)}
