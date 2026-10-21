@@ -2502,3 +2502,11 @@ body:has(.hero-foto) nav{transition:background .3s,border-color .3s,box-shadow .
   linear-gradient(90deg,rgba(6,21,57,.66) 0%,rgba(6,21,57,.36) 38%,rgba(6,21,57,.12) 52%,rgba(6,21,57,0) 60%),
   linear-gradient(rgba(6,21,57,.45),rgba(6,21,57,0) 14%,rgba(6,21,57,0) 80%,rgba(6,21,57,.6))}
 @media (max-width:760px){.hf::before{background:linear-gradient(rgba(6,21,57,.55),transparent 14%,transparent 40%,rgba(6,21,57,.75) 58%,rgba(6,21,57,.97) 70%,#061539)}}
+/* Botones del hero con más presencia */
+.hf-btns .btn{border-radius:12px;padding:18px 30px;font-weight:800;letter-spacing:-.01em;transition:transform .25s cubic-bezier(.34,1.4,.64,1),box-shadow .25s,background .25s,border-color .25s}
+.hf-btns .btn-primary{background:linear-gradient(180deg,#5DB4FA 0%,#2F8FE8 100%);color:#fff;
+  box-shadow:0 14px 34px rgba(47,143,232,.45),0 2px 0 rgba(255,255,255,.35) inset,0 -2px 0 rgba(6,21,57,.18) inset}
+.hf-btns .btn-primary:hover{transform:translateY(-2px);background:linear-gradient(180deg,#6FC0FF 0%,#3A9AF0 100%);box-shadow:0 20px 44px rgba(47,143,232,.55),0 2px 0 rgba(255,255,255,.35) inset}
+.hf-btns .btn-primary svg{transition:transform .25s}.hf-btns .btn-primary:hover svg{transform:translateX(4px)}
+.hf-btns .btn-ghost-d{background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.45);color:#fff;box-shadow:0 10px 26px rgba(6,21,57,.25)}
+.hf-btns .btn-ghost-d:hover{background:rgba(255,255,255,.18);border-color:#fff;transform:translateY(-2px)}
