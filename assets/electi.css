@@ -2484,3 +2484,5 @@ body:has(.hero-foto) nav{transition:background .3s,border-color .3s,box-shadow .
 .inst-hero.hero-foto .btn-ghost-l{color:#fff;border-color:rgba(255,255,255,.35);background:transparent}
 .inst-hero.hero-foto .inst-hero-card{box-shadow:0 30px 60px rgba(0,0,0,.35)}
 .sk-big .sk-ico,.sk-big .sk-ico svg{color:#fff!important}
+.hf-foto img{object-position:100% 50%}
+@media (max-width:760px){.hf-foto img{height:66%;object-position:50% 0}}

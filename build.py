@@ -84,6 +84,8 @@ def envolver_en_webp(pagina):
 
     def reemplazo(m):
         etiqueta = m.group(0)
+        if 'data-sin-webp' in etiqueta:
+            return etiqueta
         src = re.search(r'src="(/assets/fotos/[^"]+\.jpg)"', etiqueta)
         if not src or not existe(a_webp(src.group(1))):
             return etiqueta
