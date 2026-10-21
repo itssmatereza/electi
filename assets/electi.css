@@ -2493,3 +2493,8 @@ body:has(.hero-foto) nav{transition:background .3s,border-color .3s,box-shadow .
   linear-gradient(rgba(6,21,57,.55),rgba(6,21,57,0) 16%,rgba(6,21,57,0) 78%,rgba(6,21,57,.65))}
 .hf h1,.hf-sub,.hf-k{text-shadow:0 2px 24px rgba(6,21,57,.45)}
 @media (max-width:760px){.hf::before{background:linear-gradient(rgba(6,21,57,.55),transparent 14%,transparent 40%,rgba(6,21,57,.75) 58%,rgba(6,21,57,.97) 70%,#061539)}}
+.hf-foto img{object-position:100% 50%}
+.hf::before{background:
+  linear-gradient(90deg,rgba(6,21,57,.6) 0%,rgba(6,21,57,.3) 35%,rgba(6,21,57,0) 52%),
+  linear-gradient(rgba(6,21,57,.45),rgba(6,21,57,0) 14%,rgba(6,21,57,0) 80%,rgba(6,21,57,.6))}
+@media (max-width:760px){.hf-foto img{object-position:50% 0}.hf::before{background:linear-gradient(rgba(6,21,57,.55),transparent 14%,transparent 40%,rgba(6,21,57,.75) 58%,rgba(6,21,57,.97) 70%,#061539)}}
