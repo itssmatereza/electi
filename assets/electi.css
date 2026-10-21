@@ -2510,3 +2510,11 @@ body:has(.hero-foto) nav{transition:background .3s,border-color .3s,box-shadow .
 .hf-btns .btn-primary svg{transition:transform .25s}.hf-btns .btn-primary:hover svg{transform:translateX(4px)}
 .hf-btns .btn-ghost-d{background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.45);color:#fff;box-shadow:0 10px 26px rgba(6,21,57,.25)}
 .hf-btns .btn-ghost-d:hover{background:rgba(255,255,255,.18);border-color:#fff;transform:translateY(-2px)}
+/* Botones del hero · estilo D: bloque blanco + enlace subrayado */
+.hf-btns{align-items:center;gap:28px}
+.hf-btns .btn-primary{background:#fff!important;color:#061539!important;border-radius:6px;padding:18px 30px;box-shadow:0 12px 30px rgba(0,0,0,.22)!important;font-weight:800}
+.hf-btns .btn-primary:hover{background:#EEF4FF!important;transform:translateY(-2px)}
+.hf-btns .btn-primary::before{display:none}
+.hf-btns .btn-ghost-d{background:transparent!important;border:0!important;border-bottom:2px solid #90CAF9!important;border-radius:0;padding:14px 2px!important;box-shadow:none!important;color:#fff;font-weight:800}
+.hf-btns .btn-ghost-d:hover{border-bottom-color:#fff!important;transform:none}
+@media (max-width:760px){.hf-btns .btn-primary{flex:none}.hf-btns .btn-ghost-d{flex:none;padding:8px 2px!important}}
