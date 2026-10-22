@@ -1011,6 +1011,43 @@ tbody tr:hover td { background: var(--off); }
   .toast { bottom: calc(76px + env(safe-area-inset-bottom, 0px)); left: 14px; right: 14px; }
   .tabla-wrap { margin: 0 -14px; padding: 0 14px; }
 }
+
+/* ── Inicio del alumno (auditoría oct-2026) ── */
+.al-pend{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:6px 20px;margin-bottom:20px}
+.al-pend-h{display:flex;align-items:center;justify-content:space-between;padding:14px 0 6px;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gray)}
+.al-pend-n{font-size:11px;font-weight:800;background:var(--yellow-bg);color:#92400E;border-radius:20px;padding:3px 9px;letter-spacing:0}
+.al-pend-it{display:flex;align-items:center;gap:14px;padding:14px 0;border-top:1px solid var(--border)}
+.al-pend-it:first-of-type{border-top:0}
+.al-pend-ico{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;font-size:18px;flex-shrink:0;background:var(--off)}
+.al-pend-ico.am{background:var(--yellow-bg)}.al-pend-ico.az{background:#EEF4FF}
+.al-pend-tx{flex:1 1 220px;min-width:0}
+.al-pend-tit{font-size:14.5px;font-weight:700;color:var(--text)}
+.al-pend-des{font-size:13px;color:var(--gray);line-height:1.5;margin-top:2px}
+.al-pend-it .btn{flex-shrink:0;font-size:12.5px;padding:8px 14px;white-space:nowrap}
+.al-pend-ok{display:flex;align-items:center;gap:12px;padding:16px 0;font-size:14px;font-weight:600;color:#15803D}
+.al-pend-ok span{width:34px;height:34px;border-radius:50%;background:var(--green-bg);display:grid;place-items:center;font-size:16px}
+.al-stats-mini{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 14px}
+.al-stats-mini span{font-size:12px;font-weight:700;padding:5px 10px;border-radius:20px;background:var(--off);color:var(--gray)}
+.al-stats-mini b{color:var(--text)}
+.al-prox{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 14px;border-radius:12px;background:var(--off);margin-bottom:6px}
+.al-prox-k{font-size:11px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--gray)}
+.al-prox-v{font-size:16px;font-weight:800;color:var(--text);margin-top:2px}
+.al-det{margin-top:10px}
+.al-det summary{cursor:pointer;font-size:12.5px;font-weight:700;color:var(--blue);padding:8px 0;list-style:none}
+.al-det summary::-webkit-details-marker{display:none}
+.al-det summary::after{content:' ▾'}.al-det[open] summary::after{content:' ▴'}
+@media (max-width:640px){.al-pend{padding:4px 16px}.al-pend-it{flex-wrap:wrap;align-items:flex-start}.al-pend-it .btn{margin-left:52px}}
+/* Asistencia: barra fija para guardar en el teléfono */
+.att-barra{display:none}
+@media (max-width:900px){
+  .att-barra.on{display:flex;position:fixed;left:12px;right:12px;bottom:calc(74px + env(safe-area-inset-bottom,0px));z-index:60;align-items:center;justify-content:space-between;gap:12px;
+    background:var(--navy);color:#fff;border-radius:14px;padding:10px 10px 10px 16px;box-shadow:0 12px 30px rgba(13,42,110,.35)}
+  .att-barra b{font-size:14px}.att-barra small{display:block;font-size:11.5px;color:rgba(255,255,255,.7);margin-top:1px}
+  .att-barra .btn{flex-shrink:0}
+  #page-asistencia{padding-bottom:90px}
+}
+.nav-badge{display:inline-block;min-width:18px;padding:1px 6px;margin-left:6px;border-radius:10px;background:var(--sky);color:#fff;font-size:10.5px;font-weight:800;text-align:center;vertical-align:1px}
+.bn-item{position:relative}.bn-dot{position:absolute;top:6px;left:calc(50% + 6px);width:8px;height:8px;border-radius:50%;background:var(--sky);box-shadow:0 0 0 2px #fff}
 </style>
 </head>
 <body>
@@ -1588,6 +1625,8 @@ tbody tr:hover td { background: var(--off); }
         <div class="att-marcador" id="att-marcador" style="margin-bottom:18px;"></div>
         <div class="attendance-grid" id="attendance-grid"></div>
       </div>
+      <div class="att-barra" id="att-barra"><div><b id="att-barra-n">—</b><small id="att-barra-s"></small></div>
+        <button class="btn btn-sky" onclick="saveAttendance()">Guardar</button></div>
     </div>
 
     <!-- HISTORIAL -->
@@ -1869,7 +1908,8 @@ tbody tr:hover td { background: var(--off); }
           para que nadie tenga que pedirte que expliques tu situación desde cero.</div>
 
         <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;">
-          <button class="btn btn-navy" onclick="enviarMensaje()">Abrir mi correo y enviar</button>
+          <button class="btn btn-navy" onclick="enviarWhatsApp()">Enviar por WhatsApp a coordinación</button>
+          <button class="btn btn-ghost" onclick="enviarMensaje()">Enviar por correo</button>
           <button class="btn btn-ghost" onclick="copiarMensaje()">Copiar el mensaje</button>
         </div>
 
@@ -1884,30 +1924,6 @@ tbody tr:hover td { background: var(--off); }
 
     <!-- ALUMNO HOME -->
     <div class="page" id="page-alumno-home">
-
-      <!-- Acuerdo pendiente de entrega -->
-      <div id="al-acuerdo-alerta" style="display:none;background:var(--yellow-bg);border:1.5px solid #FCD34D;border-left:5px solid var(--yellow);border-radius:13px;padding:16px 18px;margin-bottom:18px;">
-        <div style="display:flex;gap:13px;align-items:flex-start;flex-wrap:wrap;">
-          <div style="font-size:22px;line-height:1;">📄</div>
-          <div style="flex:1;min-width:220px;">
-            <div style="font-size:15px;font-weight:800;margin-bottom:4px;">Falta tu acuerdo firmado</div>
-            <div style="font-size:13.5px;line-height:1.6;color:#78350F;">
-              Descarga el acuerdo de compromiso, fírmalo junto a tu representante y hazlo llegar a coordinación
-              por el mismo medio por el que te contactamos. Cuando lo recibamos y quede firmado por el programa,
-              este aviso desaparece.
-            </div>
-            <div style="margin-top:12px;display:flex;gap:9px;flex-wrap:wrap;">
-              <button class="btn btn-sky" style="font-size:13px;" onclick="generarAcuerdo(state.user.username)">Descargar acuerdo</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Acuerdo ya recibido -->
-      <div id="al-acuerdo-ok" style="display:none;background:var(--green-bg);border:1.5px solid #BBF7D0;border-left:5px solid var(--green);border-radius:13px;padding:13px 17px;margin-bottom:18px;font-size:13.5px;font-weight:600;color:#15803D;">
-        ✓ Tu acuerdo de compromiso está firmado y archivado.
-        <a id="al-acuerdo-link" href="#" target="_blank" rel="noopener" style="color:#15803D;font-weight:800;margin-left:6px;">Ver documento →</a>
-      </div>
 
       <!-- Hero -->
       <div class="al-hero">
@@ -1945,49 +1961,9 @@ tbody tr:hover td { background: var(--off); }
         </div>
       </div>
 
-      <!-- Alertas -->
-      <div id="al-alertas"></div>
+      <!-- Pendientes: lo que el alumno tiene que hacer, con su botón -->
+      <div id="al-pendientes"></div>
 
-      <!-- Métricas -->
-      <div class="al-metrics">
-        <div class="al-metric">
-          <div class="al-metric-top">
-            <div class="al-metric-ico ico-green"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></div>
-            <span class="al-metric-lbl">Asistencias</span>
-          </div>
-          <div class="al-metric-val" id="al-asistencias">0</div>
-          <div class="al-metric-sub" id="al-asistencias-sub">Sesiones presentes</div>
-        </div>
-        <div class="al-metric">
-          <div class="al-metric-top">
-            <div class="al-metric-ico ico-yellow"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
-            <span class="al-metric-lbl">Tardanzas</span>
-          </div>
-          <div class="al-metric-val" id="al-tardanzas">0</div>
-          <div class="al-metric-sub" id="al-tardanzas-sub">Llegadas tarde</div>
-        </div>
-        <div class="al-metric">
-          <div class="al-metric-top">
-            <div class="al-metric-ico ico-red"><svg viewBox="0 0 24 24"><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg></div>
-            <span class="al-metric-lbl">Faltas</span>
-          </div>
-          <div class="al-metric-val" id="al-ausencias">0</div>
-          <div class="al-metric-sub">Límite del programa: 2</div>
-        </div>
-        <div class="al-metric">
-          <div class="al-metric-top">
-            <div class="al-metric-ico ico-blue"><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M18 9l-5 5-3-3-4 4"/></svg></div>
-            <span class="al-metric-lbl">Asistencia</span>
-          </div>
-          <div class="al-metric-val" id="al-pct">—</div>
-          <div class="al-metric-sub" id="al-pct-sub">Del total de sesiones</div>
-        </div>
-      </div>
-
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:10px;flex-wrap:wrap;">
-        <div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--gray);">Tu seguimiento</div>
-        <button class="btn btn-ghost" style="font-size:11px;padding:5px 12px;" onclick="resetOrdenBloques()">↺ Restablecer orden</button>
-      </div>
       <div id="al-blocks" class="al-blocks-grid"></div>
     </div>
 
@@ -3329,8 +3305,12 @@ function navigate(page) {
   if (page === 'anuncios') renderAnuncios();
   if (page === 'alumno-home') renderAlumnoHome();
   if (page === 'alumno-materiales') renderMateriales('alumno');
-  if (page === 'alumno-anuncios') renderAnunciosAlumno();
-  if (page === 'asistencia') renderCalendario();
+  if (page === 'alumno-anuncios') { renderAnunciosAlumno(); anunciosVistos(); }
+  if (page === 'asistencia') {
+    const barra = document.getElementById('att-barra');
+    if (barra && !(state.attSession && state.attSession.key)) barra.classList.remove('on');
+    renderCalendario();
+  }
 }
 
 // ─── ASISTENCIA ───
@@ -3515,6 +3495,16 @@ function abrirSesion(tipo, fecha) {
   if (card) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
+// Abre directamente la sesión de hoy, sin pasar por el calendario.
+function pasarListaHoy() {
+  navigate('asistencia');
+  const hoy = new Date();
+  const tipo = tipoDelDia(hoy.getDay());
+  if (!tipo) { toast('Hoy no hay clase: elige la sesión en el calendario'); return; }
+  calAnio = hoy.getFullYear(); calMes = hoy.getMonth(); renderCalendario();
+  abrirSesion(tipo, fechaISO(hoy));
+}
+
 function loadAttendance() {
   if (!state.attSession.key) return;
   const tipo = state.attSession.tipo;
@@ -3574,6 +3564,13 @@ function pintarMarcador() {
           chip(FJ + ' justificadas', '#EEF2FF', 'var(--navy)') +
           chip(FI + ' injustificadas', 'var(--red-bg)', 'var(--red)');
   if (sin > 0) h += chip(sin + ' sin marcar', 'var(--off)', 'var(--gray)');
+  const barra = document.getElementById('att-barra');
+  if (barra) {
+    barra.classList.add('on');
+    document.getElementById('att-barra-n').textContent = (lista.length - sin) + ' de ' + lista.length + ' marcados';
+    const cambios = JSON.stringify(state.asistencia[state.attSession.key] || {}) !== JSON.stringify(state.attSession.data);
+    document.getElementById('att-barra-s').textContent = cambios ? 'Cambios sin guardar' : 'Todo guardado';
+  }
 
   const guardado = JSON.stringify(state.asistencia[state.attSession.key] || {});
   if (guardado !== JSON.stringify(state.attSession.data)) h += '<span class="att-sin-guardar">Cambios sin guardar</span>';
@@ -3748,7 +3745,7 @@ function renderDashboard() {
 
   // ── Acciones rápidas ──
   const acciones = [];
-  acciones.push({ ico:'✓', bg:'#F0FDF4', lbl:'Tomar asistencia', fn:"navigate('asistencia')" });
+  acciones.push({ ico:'✓', bg:'#F0FDF4', lbl: tipoDelDia(new Date().getDay()) ? 'Pasar lista de hoy' : 'Tomar asistencia', fn:"pasarListaHoy()" });
   if (soyAdmin) acciones.push({ ico:'👤', bg:'#EEF2FF', lbl:'Nuevo alumno', fn:"navigate('alumnos');setTimeout(abrirNuevoAlumno,150)" });
   if (soyAdmin) acciones.push({ ico:'💳', bg:'#FFF7ED', lbl:'Registrar pago', fn:"navigate('pagos')" });
   acciones.push({ ico:'📚', bg:'#F5F3FF', lbl:'Subir material', fn:"navigate('materiales');setTimeout(function(){openModal('modal-material')},150)" });
@@ -4321,60 +4318,39 @@ function renderAnuncios() {
 }
 
 // ─── RENDER ALUMNO ───
+// Inicio del alumno (auditoría oct-2026): primero el saludo y la próxima clase,
+// después lo pendiente con su botón, y luego cuatro bloques sin repetir datos.
 const BLOQUES_ALUMNO = [
-  { id: 'faltas', titulo: '📋 Mis faltas — límite del programa', contenido: '<div id="al-faltas"></div>' },
-  { id: 'pagos', titulo: '💳 Mi estado de pagos', contenido: '<div id="al-pagos"></div>' },
-  { id: 'cert', titulo: '🎓 Elegibilidad de certificado', contenido: '<div id="al-cert"></div>' },
-  { id: 'grafico', titulo: '📈 Mi asistencia en el tiempo', contenido: '<div class="al-chart-wrap"><canvas id="al-chart"></canvas></div>' },
+  { id: 'asistencia', titulo: '🗓 Mi asistencia', contenido: '<div id="al-faltas"></div><div id="al-asistencia-tl" style="margin-top:6px;"></div>' },
+  { id: 'pagos', titulo: '💳 Mi cuenta', contenido: '<div id="al-pagos"></div>' },
+  { id: 'cert', titulo: '🎓 Mi certificado', contenido: '<div id="al-cert"></div>' },
   { id: 'anuncios', titulo: '🔔 Últimos anuncios', contenido: '<div id="al-anuncios"></div>' },
-  { id: 'asistencia', titulo: '🗓 Mi asistencia reciente', contenido: '<div id="al-asistencia-tl"></div>' },
 ];
-
-function ordenBloques() {
-  const def = BLOQUES_ALUMNO.map(b => b.id);
-  try {
-    const saved = JSON.parse(localStorage.getItem('electi_orden_' + state.user.username) || 'null');
-    if (Array.isArray(saved)) {
-      const valid = saved.filter(id => def.includes(id));
-      def.forEach(id => { if (!valid.includes(id)) valid.push(id); });
-      return valid;
-    }
-  } catch (e) {}
-  return def;
-}
+const FASES_NOMBRE = ['Explorar','Decidir','Planificar','Conseguir','Ejecutar','Cerrar y proyectar'];
 
 function construirBloques() {
-  const orden = ordenBloques();
-  const cont = document.getElementById('al-blocks');
-  cont.innerHTML = orden.map((id, i) => {
-    const b = BLOQUES_ALUMNO.find(x => x.id === id);
-    return `<div class="al-status-card al-block">
-      <div class="al-block-head">
-        <h4>${b.titulo}</h4>
-        <div class="al-block-move">
-          <button ${i === 0 ? 'disabled' : ''} onclick="moverBloque('${id}', -1)" title="Subir">▲</button>
-          <button ${i === orden.length - 1 ? 'disabled' : ''} onclick="moverBloque('${id}', 1)" title="Bajar">▼</button>
-        </div>
-      </div>
-      ${b.contenido}
-    </div>`;
+  document.getElementById('al-blocks').innerHTML = BLOQUES_ALUMNO.map(function(b){
+    return '<div class="al-status-card al-block"><div class="al-block-head"><h4>' + b.titulo + '</h4></div>' + b.contenido + '</div>';
   }).join('');
 }
 
-function moverBloque(id, dir) {
-  const orden = ordenBloques();
-  const i = orden.indexOf(id);
-  const j = i + dir;
-  if (j < 0 || j >= orden.length) return;
-  [orden[i], orden[j]] = [orden[j], orden[i]];
-  localStorage.setItem('electi_orden_' + state.user.username, JSON.stringify(orden));
-  renderAlumnoHome();
+// Enlace de WhatsApp a coordinación con un mensaje ya escrito.
+function waCoordinacion(texto) {
+  const n = (getConfig().whatsapp || '').replace(/\D/g, '');
+  return 'https://wa.me/' + n + (texto ? '?text=' + encodeURIComponent(texto) : '');
 }
 
-function resetOrdenBloques() {
-  localStorage.removeItem('electi_orden_' + state.user.username);
-  renderAlumnoHome();
-  toast('Orden restablecido');
+// Lo realmente vencido: cuotas cuya fecha ya pasó sin pago, y la matrícula si
+// el ciclo ya empezó. Las cuotas futuras no cuentan como deuda.
+function vencidoDe(al) {
+  const r = resumenPago(al);
+  if (!r.mora) return 0;
+  if (al.plan === 'unico') return r.pendiente;
+  const p = getPagos(al);
+  let v = 0;
+  getMeses(al.sede).forEach(function(m){ if (estadoMes(al, m) === 'overdue') v += r.cuota; });
+  if (!p.mat && r.mat > 0 && cicloArrancado(al.sede)) v += r.mat;
+  return v;
 }
 
 function renderAlumnoHome() {
@@ -4386,6 +4362,7 @@ function renderAlumnoHome() {
   const p = getPagos(me);
   const mu = multasResumen(me.username);
   const cfg = getConfig();
+  const vencido = vencidoDe(me);
 
   // ── Hero ──
   const hoy = new Date();
@@ -4399,125 +4376,111 @@ function renderAlumnoHome() {
   heroAv.innerHTML = fotoCache(me.username) ? '<img src="' + fotoCache(me.username) + '" alt="">' : heroIni;
   pintarFotoAsync('al-hero-avatar', me.username, heroIni);
 
-  // Estado del acuerdo: pendiente hasta que coordinacion suba el firmado a acuerdoUrl.
-  const alertaAc = document.getElementById('al-acuerdo-alerta');
-  const okAc = document.getElementById('al-acuerdo-ok');
-  if (alertaAc && okAc) {
-    const yaEsta = !!(me.acuerdoUrl && String(me.acuerdoUrl).trim());
-    alertaAc.style.display = yaEsta ? 'none' : 'block';
-    okAc.style.display = yaEsta ? 'block' : 'none';
-    if (yaEsta) document.getElementById('al-acuerdo-link').href = me.acuerdoUrl;
-  }
+  // Semana del programa (24 semanas desde el primer día de clases)
+  const ini = inicioClases(me.sede);
+  const dif = Math.floor((new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate()) - new Date(ini.getFullYear(), ini.getMonth(), ini.getDate())) / 86400000);
+  const antes = dif < 0;
+  const semana = antes ? 0 : Math.min(24, Math.floor(dif / 7) + 1);
+  const fase = semana ? Math.min(6, Math.ceil(semana / 4)) : 0;
 
   const chips = [];
   chips.push('<span class="al-chip">📍 ' + nombreModalidad(me.sede) + '</span>');
   chips.push('<span class="al-chip">' + cfg.cicloNombre + '</span>');
-  if (me.beca > 0) chips.push('<span class="al-chip accent">🎖 Beca ' + me.beca + '%</span>');
+  if (fase) chips.push('<span class="al-chip accent">Fase ' + fase + ' · ' + FASES_NOMBRE[fase - 1] + '</span>');
   if (me.colegio) chips.push('<span class="al-chip">' + me.colegio + '</span>');
   document.getElementById('al-hero-chips').innerHTML = chips.join('');
 
-  // Progreso del programa: cuotas del ciclo ya transcurridas
-  const M = getMeses(me.sede);
-  let transcurridos = 0;
-  M.forEach(m => { if (hoy >= new Date(m.y, m.n - 1, 1)) transcurridos++; });
-  const progPct = M.length ? Math.min(100, Math.round((transcurridos / M.length) * 100)) : 0;
-  document.getElementById('al-ring-num').textContent = progPct + '%';
+  const progPct = Math.round((semana / 24) * 100);
+  document.getElementById('al-ring-num').textContent = antes ? '—' : semana;
+  document.querySelector('#page-alumno-home .al-ring-lbl').textContent =
+    antes ? 'Inicia ' + ini.getDate() + ' ' + meses[ini.getMonth()].slice(0,3) : 'Semana / 24';
   const circ = 2 * Math.PI * 40;
   const ring = document.getElementById('al-ring-fill');
   ring.setAttribute('stroke-dasharray', circ.toFixed(1));
   setTimeout(function() { ring.setAttribute('stroke-dashoffset', (circ * (1 - progPct / 100)).toFixed(1)); }, 120);
 
-  // Próxima clase según la modalidad: Quito martes + sábado, Nacional martes + jueves.
-  const sig = proximaSesion(sesionesDe(me.sede), hoy);
+  const sig = proximaSesion(sesionesDe(me.sede), antes ? ini : hoy);
   const prox = sig.fecha;
   const mismoDia = prox.toDateString() === hoy.toDateString();
   document.getElementById('al-next-day').textContent =
     (mismoDia ? 'Hoy · ' : '') + dias[prox.getDay()].charAt(0).toUpperCase() + dias[prox.getDay()].slice(1) + ' ' + prox.getDate() + ' ' + meses[prox.getMonth()].slice(0,3);
   document.getElementById('al-next-time').textContent = HORARIO_SESION[sig.tipo];
 
-  // ── Alertas ──
-  const alertas = [];
-  if (total > 0 && faltas > 2) {
-    alertas.push('<div class="al-alert al-alert-red"><span class="al-alert-ico">⚠️</span><div>Superaste el límite de <b>2 faltas equivalentes</b> (vas en ' + faltasTxt(faltas) + '). Esto deriva en una revisión de continuidad en el programa. Comunícate con coordinación.</div></div>');
-  } else if (total > 0 && faltas === 2) {
-    alertas.push('<div class="al-alert al-alert-yellow"><span class="al-alert-ico">⚠️</span><div>Estás <b>en el límite de faltas</b> (' + faltasTxt(faltas) + ' de 2). Una falta más deriva en revisión de continuidad.</div></div>');
-  }
-  if (r.mora) {
-    alertas.push('<div class="al-alert al-alert-red"><span class="al-alert-ico">💳</span><div>Tienes <b>valores vencidos</b> por $' + dinero(r.pendiente) + '. Regulariza tu situación para no perder acceso al portal ni al certificado.</div></div>');
-  }
-  if (mu.pend > 0) {
-    alertas.push('<div class="al-alert al-alert-yellow"><span class="al-alert-ico">⏱</span><div>Tienes <b>$' + dinero(mu.pend) + ' en multas por atraso</b> pendientes del fondo de convivencia.</div></div>');
-  }
-  document.getElementById('al-alertas').innerHTML = alertas.join('');
+  // ── Pendientes ──
+  const pend = [];
+  const yaAcuerdo = !!(me.acuerdoUrl && String(me.acuerdoUrl).trim());
+  if (!yaAcuerdo) pend.push({ ico:'📄', c:'am', t:'Falta tu acuerdo firmado',
+    d:'Descárgalo, fírmalo junto a tu representante y envíalo a coordinación.',
+    b:'<button class="btn btn-sky" onclick="generarAcuerdo(state.user.username)">Descargar acuerdo</button>' });
+  if (total > 0 && faltas > 2) pend.push({ ico:'🗓', c:'am', t:'Pasaste el límite de faltas',
+    d:'Vas en ' + faltasTxt(faltas) + ' de 2. Escríbenos para revisar juntos cómo continuar.',
+    b:'<a class="btn btn-ghost" target="_blank" rel="noopener" href="' + waCoordinacion('Hola, soy ' + me.name + '. Quiero conversar sobre mis faltas en ELECTI.') + '">Escribir a coordinación</a>' });
+  else if (total > 0 && faltas === 2) pend.push({ ico:'🗓', c:'az', t:'Estás en el límite de faltas',
+    d:'Vas en 2 de 2. Cuidemos las próximas sesiones: una falta más abre una revisión de continuidad.', b:'' });
+  if (vencido > 0) pend.push({ ico:'💳', c:'am', t:'Tienes un pago vencido',
+    d:'$' + dinero(vencido) + ' por regularizar. Si necesitas un acuerdo de pago, escríbenos.',
+    b:'<a class="btn btn-ghost" target="_blank" rel="noopener" href="' + waCoordinacion('Hola, soy ' + me.name + '. Quiero regularizar mi pago de ELECTI.') + '">Escribir a coordinación</a>' });
+  if (mu.pend > 0) pend.push({ ico:'⏱', c:'az', t:'Multas por atraso pendientes',
+    d:'$' + dinero(mu.pend) + ' para el fondo de convivencia de tu generación.', b:'' });
+  document.getElementById('al-pendientes').innerHTML = '<div class="al-pend">' +
+    (pend.length
+      ? '<div class="al-pend-h">Pendientes <span class="al-pend-n">' + pend.length + '</span></div>' +
+        pend.map(function(x){ return '<div class="al-pend-it"><div class="al-pend-ico ' + x.c + '">' + x.ico + '</div>' +
+          '<div class="al-pend-tx"><div class="al-pend-tit">' + x.t + '</div><div class="al-pend-des">' + x.d + '</div></div>' + x.b + '</div>'; }).join('')
+      : '<div class="al-pend-ok"><span>✓</span>Estás al día: no tienes nada pendiente.</div>') + '</div>';
 
-  // ── Métricas ──
-  document.getElementById('al-asistencias').textContent = P;
-  document.getElementById('al-asistencias-sub').textContent = total > 0 ? 'De ' + total + ' sesiones' : 'Sin sesiones aún';
-  document.getElementById('al-tardanzas').textContent = T;
-  document.getElementById('al-tardanzas-sub').textContent = T > 0 ? 'Generan multa de $2 c/10 min' : 'Sin llegadas tarde';
-  const fEl = document.getElementById('al-ausencias');
-  fEl.textContent = faltasTxt(faltas) + ' / 2';
-  fEl.style.color = faltas > 2 ? 'var(--red)' : faltas === 2 ? 'var(--yellow)' : 'var(--green)';
-  const pctEl = document.getElementById('al-pct');
-  pctEl.textContent = pct !== null ? pct + '%' : '—';
-  pctEl.style.color = pct === null ? 'var(--text)' : pct >= 80 ? 'var(--green)' : 'var(--yellow)';
-  document.getElementById('al-pct-sub').textContent = pct === null ? 'Sin registro aún' : pct >= 80 ? 'Buen nivel' : 'Puedes mejorar';
-
-  // ── Bloque: faltas ──
-  const barPct = Math.min(100, (faltas / 2) * 100);
+  // ── Bloque: mi asistencia ──
+  const col = faltas > 2 ? 'var(--red)' : faltas === 2 ? 'var(--yellow)' : 'var(--green)';
   document.getElementById('al-faltas').innerHTML =
     '<div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:8px;">' +
-      '<span style="font-size:34px;font-weight:800;letter-spacing:-1.5px;color:' + (faltas > 2 ? 'var(--red)' : faltas === 2 ? 'var(--yellow)' : 'var(--green)') + ';">' + faltasTxt(faltas) + '</span>' +
-      '<span style="font-size:13px;color:var(--gray);">de 2 permitidas</span>' +
+      '<span style="font-size:30px;font-weight:800;letter-spacing:-1.2px;color:' + col + ';">' + faltasTxt(faltas) + ' <span style="font-size:15px;color:var(--gray);font-weight:600;letter-spacing:0;">de 2 faltas</span></span>' +
+      '<span style="font-size:13px;color:var(--gray);">' + (pct === null ? 'Sin registro aún' : pct + '% de asistencia') + '</span>' +
     '</div>' +
-    '<div class="progress-wrap" style="height:9px;margin-bottom:16px;"><div class="progress-bar ' + (faltas > 2 ? 'low' : '') + '" style="width:' + barPct + '%"></div></div>' +
-    '<div class="al-cuota-row"><span>Faltas injustificadas <span style="color:var(--gray);font-size:11.5px;">(1 c/u)</span></span><span style="font-weight:700;color:var(--red);">' + FI + '</span></div>' +
-    '<div class="al-cuota-row"><span>Faltas justificadas <span style="color:var(--gray);font-size:11.5px;">(½ c/u)</span></span><span style="font-weight:700;color:var(--blue);">' + FJ + '</span></div>' +
-    '<div class="al-cuota-row"><span>Tardanzas</span><span style="font-weight:700;color:var(--yellow);">' + T + '</span></div>' +
-    '<div class="al-cuota-row" style="font-weight:700;"><span>Estado</span>' +
-      (total === 0 ? '<span class="badge badge-gray">Sin registro</span>'
-        : faltas > 2 ? '<span class="badge badge-red">Límite superado</span>'
-        : faltas === 2 ? '<span class="badge badge-yellow">En el límite</span>'
-        : '<span class="badge badge-green">Dentro del límite</span>') +
-    '</div>';
+    '<div class="progress-wrap" style="height:8px;margin-bottom:12px;"><div class="progress-bar ' + (faltas > 2 ? 'low' : '') + '" style="width:' + Math.min(100, (faltas / 2) * 100) + '%"></div></div>' +
+    '<div class="al-stats-mini"><span><b>' + P + '</b> presentes</span><span><b>' + T + '</b> tardanzas</span><span><b>' + FJ + '</b> justificadas (½)</span><span><b>' + FI + '</b> injustificadas</span></div>';
 
-  // ── Bloque: pagos ──
+  // ── Bloque: mi cuenta ──
   let pagosHTML = '';
+  const M = getMeses(me.sede);
   if (r.total === 0) {
-    pagosHTML = '<div style="text-align:center;padding:16px 0;"><div style="font-size:30px;margin-bottom:8px;">🎖</div>' +
-      '<span class="badge badge-navy">Beca completa 100%</span>' +
-      '<div style="font-size:12.5px;color:var(--gray);margin-top:8px;">No tienes valores pendientes.</div></div>';
+    pagosHTML = '<div class="al-pend-ok" style="padding:6px 0;"><span>🎖</span>Beca completa: no tienes valores por pagar.</div>';
+  } else if (me.plan === 'unico') {
+    pagosHTML = '<div class="al-prox"><div><div class="al-prox-k">Pago único semestral</div><div class="al-prox-v">$' + dinero(r.total) + '</div></div>' +
+      (r.unicoPagado ? '<span class="badge badge-green">Pagado</span>' : (r.mora ? '<span class="badge badge-red">Vencido</span>' : '<span class="badge badge-yellow">Pendiente</span>')) + '</div>';
   } else {
-    const pagPct = r.total > 0 ? Math.round((r.pagado / r.total) * 100) : 0;
-    pagosHTML += '<div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:8px;">' +
-        '<span style="font-size:26px;font-weight:800;letter-spacing:-1px;">$' + dinero(r.pagado) + '</span>' +
-        '<span style="font-size:13px;color:var(--gray);">de $' + dinero(r.total) + '</span></div>' +
-      '<div class="progress-wrap" style="height:9px;margin-bottom:16px;"><div class="progress-bar" style="width:' + pagPct + '%"></div></div>';
-    if (me.plan === 'unico') {
-      pagosHTML += '<div class="al-cuota-row"><span>Pago único semestral <span style="color:var(--gray);font-size:11.5px;">(10% dcto.)</span></span>' +
-        (r.unicoPagado ? '<span class="badge badge-green">Pagado</span>' : (r.mora ? '<span class="badge badge-red">En mora</span>' : '<span class="badge badge-yellow">Pendiente</span>')) + '</div>';
+    const proxM = M.find(function(m){ const st = estadoMes(me, m); return st !== 'paid' && st !== 'exento'; });
+    if (!p.mat && r.mat > 0) {
+      pagosHTML += '<div class="al-prox"><div><div class="al-prox-k">Próximo pago</div><div class="al-prox-v">Matrícula · $' + dinero(r.mat) + '</div></div><span class="badge badge-yellow">Pendiente</span></div>';
+    } else if (proxM) {
+      const st = estadoMes(me, proxM);
+      pagosHTML += '<div class="al-prox"><div><div class="al-prox-k">Próximo pago</div><div class="al-prox-v">Cuota ' + proxM.label + ' · $' + dinero(r.cuota) + '</div></div>' +
+        (st === 'overdue' ? '<span class="badge badge-red">Vencida</span>' : '<span class="badge badge-gray">' + (st === 'previo' ? 'Antes de inicio' : 'Pendiente') + '</span>') + '</div>';
     } else {
-      if (r.mat > 0) pagosHTML += '<div class="al-cuota-row"><span>Matrícula <span style="color:var(--gray);font-size:11.5px;">$' + dinero(r.mat) + '</span></span>' +
-        (p.mat ? '<span class="badge badge-green">Pagada</span>' : '<span class="badge badge-yellow">Pendiente</span>') + '</div>';
-      M.forEach(function(m) {
-        const st = estadoMes(me, m);
-        if (st === 'exento') return;
-        const b = st === 'paid' ? '<span class="badge badge-green">Pagada</span>'
-                : st === 'overdue' ? '<span class="badge badge-red">En mora</span>'
-                : st === 'previo' ? '<span class="badge badge-gray">Antes de inicio</span>'
-                : '<span class="badge badge-gray">Pendiente</span>';
-        pagosHTML += '<div class="al-cuota-row"><span>Cuota ' + m.label + ' <span style="color:var(--gray);font-size:11.5px;">$' + dinero(r.cuota) + '</span></span>' + b + '</div>';
-      });
+      pagosHTML += '<div class="al-pend-ok" style="padding:6px 0;"><span>✓</span>Todas tus cuotas están pagadas.</div>';
     }
+    let det = '';
+    if (r.mat > 0) det += '<div class="al-cuota-row"><span>Matrícula <span style="color:var(--gray);font-size:11.5px;">$' + dinero(r.mat) + '</span></span>' +
+      (p.mat ? '<span class="badge badge-green">Pagada</span>' : '<span class="badge badge-yellow">Pendiente</span>') + '</div>';
+    M.forEach(function(m) {
+      const st = estadoMes(me, m);
+      if (st === 'exento') return;
+      const b = st === 'paid' ? '<span class="badge badge-green">Pagada</span>'
+              : st === 'overdue' ? '<span class="badge badge-red">Vencida</span>'
+              : st === 'previo' ? '<span class="badge badge-gray">Antes de inicio</span>'
+              : '<span class="badge badge-gray">Pendiente</span>';
+      det += '<div class="al-cuota-row"><span>Cuota ' + m.label + ' <span style="color:var(--gray);font-size:11.5px;">$' + dinero(r.cuota) + '</span></span>' + b + '</div>';
+    });
+    pagosHTML += '<details class="al-det"><summary>Ver todas mis cuotas</summary>' + det + '</details>';
   }
   const misMultas = multasDe(me.username);
   if (misMultas.length > 0) {
-    pagosHTML += '<div style="margin-top:16px;font-size:10.5px;font-weight:700;text-transform:uppercase;color:var(--gray);letter-spacing:0.7px;">Multas por atraso</div>' +
-      '<div style="font-size:11.5px;color:var(--gray);line-height:1.55;margin-bottom:4px;">Van al fondo de convivencia de tu generación.</div>';
+    let mh = '';
     misMultas.forEach(function(m) {
-      pagosHTML += '<div class="al-cuota-row"><span style="font-size:12.5px;">' + m.motivo + '<br><span style="color:var(--gray);font-size:11px;">' + formatDate(m.fecha) + '</span></span>' +
+      mh += '<div class="al-cuota-row"><span style="font-size:12.5px;">' + m.motivo + '<br><span style="color:var(--gray);font-size:11px;">' + formatDate(m.fecha) + '</span></span>' +
         (m.pagada ? '<span class="badge badge-green">Pagada $' + dinero(m.monto) + '</span>' : '<span class="badge badge-red">Pendiente $' + dinero(m.monto) + '</span>') + '</div>';
     });
+    pagosHTML += '<details class="al-det"><summary>Multas por atraso (' + misMultas.length + ')</summary>' +
+      '<div style="font-size:11.5px;color:var(--gray);line-height:1.55;margin-bottom:4px;">Van al fondo de convivencia de tu generación.</div>' + mh + '</details>';
   }
   document.getElementById('al-pagos').innerHTML = pagosHTML;
 
@@ -4525,26 +4488,27 @@ function renderAlumnoHome() {
   const dentro = faltas <= 2;
   const okFaltas = total > 0 && dentro;
   const elegible = okFaltas && r.alDia && mu.pend === 0;
-  function chk(ok, pend, titulo, desc) {
-    const cls = pend ? 'chk-wait' : ok ? 'chk-ok' : 'chk-no';
-    const ico = pend ? '·' : ok ? '✓' : '✕';
+  function chk(ok, pendiente, titulo, desc) {
+    const cls = pendiente ? 'chk-wait' : ok ? 'chk-ok' : 'chk-no';
+    const ico = pendiente ? '·' : ok ? '✓' : '✕';
     return '<div class="al-check"><div class="al-check-ico ' + cls + '">' + ico + '</div>' +
       '<div class="al-check-body"><div class="al-check-title">' + titulo + '</div><div class="al-check-desc">' + desc + '</div></div></div>';
   }
   let certHTML = '';
-  certHTML += chk(okFaltas, total === 0, 'Dentro del límite de faltas',
-    total === 0 ? 'Aún no hay sesiones registradas' : dentro ? 'Vas en ' + faltasTxt(faltas) + ' de 2 permitidas' : 'Superaste el límite (' + faltasTxt(faltas) + ')');
-  certHTML += chk(r.alDia, false, 'Cuenta al día', r.alDia ? 'Sin valores vencidos' : 'Tienes $' + dinero(r.pendiente) + ' pendientes');
-  certHTML += chk(mu.pend === 0, false, 'Multas al día', mu.pend === 0 ? 'Sin multas pendientes' : 'Debes $' + dinero(mu.pend) + ' del fondo de convivencia');
+  certHTML += chk(okFaltas, total === 0, 'Asistencia dentro del límite',
+    total === 0 ? 'Aún no hay sesiones registradas' : dentro ? 'Vas en ' + faltasTxt(faltas) + ' de 2 faltas' : 'Pasaste el límite (' + faltasTxt(faltas) + ')');
+  certHTML += chk(r.alDia, false, 'Cuenta al día', r.alDia ? 'Sin valores vencidos' : '$' + dinero(vencido) + ' vencidos');
+  certHTML += chk(mu.pend === 0, false, 'Multas al día', mu.pend === 0 ? 'Sin multas pendientes' : '$' + dinero(mu.pend) + ' pendientes');
+  certHTML += chk(yaAcuerdo, false, 'Acuerdo firmado', yaAcuerdo ? '<a href="' + me.acuerdoUrl + '" target="_blank" rel="noopener" style="color:var(--blue);font-weight:700;">Ver mi acuerdo →</a>' : 'Pendiente de entrega');
   certHTML += '<div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px;">' +
-    '<span style="font-size:13.5px;font-weight:700;">Estado del certificado</span>' +
-    (elegible ? '<span class="badge badge-green">Elegible 🎓</span>' : '<span class="badge badge-yellow">Aún no elegible</span>') + '</div>';
+    '<span style="font-size:13.5px;font-weight:700;">Estado</span>' +
+    (elegible ? '<span class="badge badge-green">Vas bien 🎓</span>' : '<span class="badge badge-yellow">Aún no elegible</span>') + '</div>';
   if (me.beca > 0) {
-    certHTML += '<div style="margin-top:12px;font-size:12px;color:var(--gray);line-height:1.6;">Tu beca se mantiene activa cumpliendo el Acuerdo: máximo 2 faltas equivalentes (2 justificadas = 1 injustificada), puntualidad y cuenta al día.</div>';
+    certHTML += '<div style="margin-top:12px;font-size:12px;color:var(--gray);line-height:1.6;">Tu beca se mantiene cumpliendo el acuerdo: asistencia, puntualidad y cuenta al día.</div>';
   }
   document.getElementById('al-cert').innerHTML = certHTML;
 
-  // ── Registros de asistencia (para gráfico y timeline) ──
+  // ── Registros de asistencia (línea de tiempo) ──
   const registros = [];
   Object.keys(state.asistencia).forEach(function(key) {
     const sesion = state.asistencia[key];
@@ -4555,54 +4519,9 @@ function renderAlumnoHome() {
   });
   registros.sort(function(a, b) { return b.fecha.localeCompare(a.fecha); });
 
-  // ── Bloque: gráfico ──
-  const cv = document.getElementById('al-chart');
-  if (cv && typeof Chart !== 'undefined') {
-    if (window._alChart) { try { window._alChart.destroy(); } catch (e) {} }
-    const asc = registros.slice().reverse();
-    if (asc.length === 0) {
-      cv.parentElement.innerHTML = '<div class="empty"><p>Aún no hay sesiones registradas para graficar.</p></div>';
-    } else {
-      let acum = 0;
-      const labels = [], data = [], colores = [];
-      asc.forEach(function(x, i) {
-        if (x.status === 'FI' || x.status === 'A') acum += 1;
-        else if (x.status === 'FJ') acum += 0.5;
-        labels.push(formatDate(x.fecha));
-        data.push(acum);
-        colores.push(estadoAtt(x.status).badge === 'badge-green' ? '#22C55E'
-          : estadoAtt(x.status).badge === 'badge-yellow' ? '#F59E0B'
-          : estadoAtt(x.status).badge === 'badge-navy' ? '#1565C0' : '#EF4444');
-      });
-      window._alChart = new Chart(cv, {
-        type: 'line',
-        data: { labels: labels, datasets: [{
-          label: 'Faltas acumuladas', data: data,
-          borderColor: '#0D2A6E', backgroundColor: 'rgba(66,165,245,0.12)',
-          fill: true, tension: 0.35, borderWidth: 2.5,
-          pointBackgroundColor: colores, pointBorderColor: '#fff', pointBorderWidth: 2,
-          pointRadius: 5, pointHoverRadius: 7,
-        }]},
-        options: {
-          responsive: true, maintainAspectRatio: false,
-          plugins: { legend: { display: false },
-            tooltip: { backgroundColor: '#0D2A6E', padding: 10, cornerRadius: 8, displayColors: false,
-              callbacks: { label: function(ctx) { return 'Faltas acumuladas: ' + ctx.parsed.y; } } } },
-          scales: {
-            y: { beginAtZero: true, suggestedMax: 2.5, ticks: { stepSize: 0.5, color: '#7A8BAD', font: { size: 11 } },
-                 grid: { color: '#E2E8F4' } },
-            x: { ticks: { color: '#7A8BAD', font: { size: 10 }, maxRotation: 0, autoSkip: true, maxTicksLimit: 6 },
-                 grid: { display: false } }
-          },
-          animation: { duration: 700 }
-        }
-      });
-    }
-  }
-
   // ── Bloque: anuncios ──
   const todos = state.anuncios.slice().reverse();
-  const rec = todos.slice(0, 4);
+  const rec = todos.slice(0, 3);
   document.getElementById('al-anuncios').innerHTML = rec.length === 0
     ? '<div class="empty"><p>Sin anuncios por ahora.</p></div>'
     : rec.map(function(a) {
@@ -4610,18 +4529,16 @@ function renderAlumnoHome() {
           '<span style="font-size:14px;font-weight:700;color:var(--text);">' + a.titulo + '</span>' +
           '<span style="font-size:11.5px;color:var(--gray);font-family:\'DM Mono\',monospace;">' + formatDate(a.fecha) + '</span></div>' +
           '<div style="font-size:13px;color:var(--gray);line-height:1.6;">' + a.body + '</div></div>';
-      }).join('') + (todos.length > 4
-        ? '<div style="text-align:center;margin-top:14px;">' +
-          '<button class="btn btn-ghost" onclick="navigate(\'alumno-anuncios\')">Ver los ' + todos.length + ' anuncios</button></div>'
+      }).join('') + (todos.length > 3
+        ? '<div style="text-align:center;margin-top:14px;"><button class="btn btn-ghost" onclick="navigate(\'alumno-anuncios\')">Ver los ' + todos.length + ' anuncios</button></div>'
         : '');
 
-  // ── Bloque: asistencia reciente (timeline) ──
-  const r6 = registros.slice(0, 6);
+  const r5 = registros.slice(0, 5);
   const cont = document.getElementById('al-asistencia-tl');
   if (cont) {
-    cont.innerHTML = r6.length === 0
-      ? '<div class="empty"><p>Sin sesiones registradas aún.</p></div>'
-      : '<div class="al-timeline">' + r6.map(function(x) {
+    cont.innerHTML = r5.length === 0
+      ? '<div class="empty" style="padding:10px 0;"><p>Sin sesiones registradas aún.</p></div>'
+      : '<div style="font-size:10.5px;font-weight:700;text-transform:uppercase;color:var(--gray);letter-spacing:.7px;margin:6px 0 2px;">Últimas sesiones</div><div class="al-timeline">' + r5.map(function(x) {
           const e = estadoAtt(x.status);
           const dot = e.badge === 'badge-green' ? 'dot-green' : e.badge === 'badge-yellow' ? 'dot-yellow'
                     : e.badge === 'badge-navy' ? 'dot-blue' : 'dot-red';
@@ -4631,6 +4548,35 @@ function renderAlumnoHome() {
             '<div class="al-tl-date">' + formatDate(x.fecha) + '</div></div>';
         }).join('') + '</div>';
   }
+  marcarAnunciosNuevos();
+}
+
+// ── Anuncios nuevos: número junto a "Anuncios" hasta que el alumno los abre ──
+function claveAnuncios() { return 'electi_anuncios_vistos_' + (state.user && state.user.username); }
+function anunciosNuevos() {
+  let vistos = 0;
+  try { vistos = parseInt(localStorage.getItem(claveAnuncios()) || '0', 10) || 0; } catch (e) {}
+  return Math.max(0, (state.anuncios || []).length - vistos);
+}
+function marcarAnunciosNuevos() {
+  if (!state.user || state.user.role !== 'alumno') return;
+  const n = anunciosNuevos();
+  const nv = document.getElementById('nav-alumno-anuncios');
+  if (nv) {
+    const v = nv.querySelector('.nav-badge');
+    if (v) v.remove();
+    if (n > 0) nv.insertAdjacentHTML('beforeend', '<span class="nav-badge">' + n + '</span>');
+  }
+  const bn = document.getElementById('bn-alumno-anuncios');
+  if (bn) {
+    const d = bn.querySelector('.bn-dot');
+    if (d) d.remove();
+    if (n > 0) bn.insertAdjacentHTML('beforeend', '<span class="bn-dot"></span>');
+  }
+}
+function anunciosVistos() {
+  try { localStorage.setItem(claveAnuncios(), String((state.anuncios || []).length)); } catch (e) {}
+  marcarAnunciosNuevos();
 }
 
 // ─── BECA VARIABLE ───
@@ -5642,6 +5588,17 @@ function enviarMensaje() {
   document.getElementById('ayuda-dirs').textContent = correoAdmin();
   document.getElementById('ayuda-fallback').style.display = 'block';
   toast('Abriendo tu aplicación de correo...');
+}
+
+// WhatsApp: la vía que de verdad usan los alumnos. Va siempre a coordinación,
+// con el mismo texto (y los datos del ciclo) que el correo.
+function enviarWhatsApp() {
+  const d = validarAyuda();
+  if (!d) return;
+  const m = textoMensaje();
+  const w = window.open(waCoordinacion(m.subject + '\n\n' + m.body), '_blank');
+  if (w) { try { w.opener = null; } catch (e) {} }
+  toast('Abriendo WhatsApp...');
 }
 
 function copiarMensaje() {
