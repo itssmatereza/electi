@@ -1833,7 +1833,7 @@ tbody tr:hover td { background: var(--off); }
       <div class="card" style="max-width:620px;">
         <div class="card-head"><div class="card-title">Correo de contacto</div></div>
         <p style="font-size:13px;color:var(--gray);margin-bottom:12px;">Los mensajes que envíen los alumnos desde su portal llegarán a este correo.</p>
-        <input type="email" id="cfg-correo" placeholder="mreza@unionestudiantil.org" style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;">
+        <input type="email" id="cfg-correo" placeholder="electi@unionestudiantil.org" style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;">
         <div style="margin-top:14px;"><button class="btn btn-navy" onclick="guardarCorreo()">Guardar correo</button></div>
       </div>
     </div>
@@ -5179,7 +5179,12 @@ async function repararCuenta() {
 }
 
 // ─── CONFIGURACIÓN ───
-function correoAdmin() { return (state.config && state.config.correo) || 'mreza@unionestudiantil.org'; }
+// Correo institucional de contacto. Si la configuración guardada aún tiene el
+// correo personal anterior, se usa el institucional.
+function correoAdmin() {
+  const c = state.config && state.config.correo;
+  return (c && c !== 'mreza@unionestudiantil.org') ? c : 'electi@unionestudiantil.org';
+}
 
 function renderConfig() {
   const cfg = getConfig();
@@ -5437,9 +5442,10 @@ function profesoresDisponibles() {
 
 // Copia de cada solicitud a todos los administradores y al dueno.
 function correosCoordinacion() {
-  const lista = directorio().coordinacion.slice();
+  // El correo institucional va primero: es el destinatario principal.
   const base = correoAdmin();
-  if (base && lista.indexOf(base) === -1) lista.push(base);
+  const lista = directorio().coordinacion.filter(function(x){ return x !== base; });
+  if (base) lista.unshift(base);
   return lista;
 }
 

@@ -226,13 +226,13 @@ function enviarInstituciones(ev){
     'Mensaje:', (d.mensaje || '—')
   ].join('\n');
 
-  window.location.href = 'mailto:mreza@unionestudiantil.org'
+  window.location.href = 'mailto:electi@unionestudiantil.org'
     + '?subject=' + encodeURIComponent('Solicitud institucional · ' + d.institucion)
     + '&body=' + encodeURIComponent(cuerpo);
 
   aviso.className = 'inst-aviso-envio ok';
   aviso.textContent = 'Se abrirá su cliente de correo con la solicitud lista para enviar. '
-    + 'Si no se abre, escríbanos a mreza@unionestudiantil.org.';
+    + 'Si no se abre, escríbanos a electi@unionestudiantil.org.';
   return false;
 }
 
