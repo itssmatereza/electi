@@ -2468,9 +2468,9 @@ body:has(.hero-foto) nav{transition:background .3s,border-color .3s,box-shadow .
 .exp-cell::before{background:linear-gradient(transparent 40%,rgba(6,21,57,.35))}
 .exp-a{background:linear-gradient(180deg,rgba(6,21,57,.15) 0%,rgba(6,21,57,.55) 45%,rgba(6,21,57,.92) 100%),url(/assets/fotos/exp-a.jpg) center 35%/cover}
 .exp-b{background:linear-gradient(180deg,rgba(6,21,57,.15) 0%,rgba(6,21,57,.55) 45%,rgba(6,21,57,.92) 100%),url(/assets/fotos/exp-b.jpg) center 35%/cover}
-.exp-c{background:linear-gradient(180deg,rgba(6,21,57,.15) 0%,rgba(6,21,57,.55) 45%,rgba(6,21,57,.92) 100%),url(/assets/fotos/exp-c.jpg) center 35%/cover}
+.exp-c{background:linear-gradient(180deg,rgba(6,21,57,.15) 0%,rgba(6,21,57,.55) 45%,rgba(6,21,57,.92) 100%),url(/assets/fotos/exp-c2.jpg) center 35%/cover}
 .exp-d{background:linear-gradient(180deg,rgba(6,21,57,.15) 0%,rgba(6,21,57,.55) 45%,rgba(6,21,57,.92) 100%),url(/assets/fotos/exp-d.jpg) center 35%/cover}
-.exp-e{background:linear-gradient(180deg,rgba(6,21,57,.15) 0%,rgba(6,21,57,.55) 45%,rgba(6,21,57,.92) 100%),url(/assets/fotos/exp-e.jpg) center 35%/cover}
+.exp-e{background:linear-gradient(180deg,rgba(6,21,57,.15) 0%,rgba(6,21,57,.55) 45%,rgba(6,21,57,.92) 100%),url(/assets/fotos/exp-e2.jpg) center 35%/cover}
 .exp-f{background:linear-gradient(180deg,rgba(6,21,57,.15) 0%,rgba(6,21,57,.55) 45%,rgba(6,21,57,.92) 100%),url(/assets/fotos/exp-f.jpg) center 35%/cover}
 .exp-ico{opacity:.7}
 .sk:not(.sk-big) .sk-ico{background:#EEF4FF;color:var(--blue)}
