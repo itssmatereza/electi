@@ -1833,7 +1833,7 @@ tbody tr:hover td { background: var(--off); }
           <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
             <select id="reg-dias" onchange="renderRegistro()" class="reg-sel"><option value="7" selected>Últimos 7 días</option><option value="30">Últimos 30 días</option><option value="mes0">Este mes</option><option value="mes1">Mes anterior</option></select>
             <select id="reg-persona" onchange="renderRegistro()" class="reg-sel"><option value="">Todas las personas</option></select>
-            <select id="reg-tipo" onchange="renderRegistro()" class="reg-sel"><option value="">Todas las áreas</option><option value="alumnos">Alumnos</option><option value="pagos">Pagos</option><option value="asistencia">Asistencia</option><option value="multas">Multas</option><option value="anuncios">Anuncios</option><option value="materiales">Materiales</option><option value="equipo">Equipo</option><option value="config">Configuración</option><option value="acceso">Acceso</option><option value="datos">Datos</option></select>
+            <select id="reg-tipo" onchange="renderRegistro()" class="reg-sel"><option value="">Todas las áreas</option><option value="alumnos">Alumnos</option><option value="pagos">Pagos</option><option value="asistencia">Asistencia</option><option value="multas">Multas</option><option value="equipo">Equipo</option><option value="config">Configuración</option><option value="acceso">Acceso</option><option value="datos">Datos</option></select>
             <input type="text" id="reg-buscar" placeholder="Buscar…" onkeyup="renderRegistro()" class="reg-sel" style="width:160px;">
             <button class="btn btn-ghost" onclick="renderRegistro(true)">↻ Actualizar</button>
             <button class="btn btn-ghost" onclick="exportRegistroExcel()">⬇ Excel</button>
@@ -2720,8 +2720,10 @@ function bitValor(v) {
   return String(v);
 }
 // Campos que se muestran con su valor; el resto (datos personales) solo se nombra.
-const BIT_CAMPOS = { name: 'Nombre', sede: 'Modalidad', beca: 'Beca (%)', plan: 'Plan de pago', colegio: 'Colegio',
-  suspendido: 'Acceso suspendido', acuerdoUrl: 'Acuerdo firmado', matricula: 'Matrícula', rol: 'Rol', label: 'Cargo' };
+// Solo se anota lo que toca dinero, condiciones o acceso. Correos, teléfonos,
+// colegio y demás datos de contacto no generan entrada: serían ruido.
+const BIT_CAMPOS = { sede: 'Modalidad', beca: 'Beca (%)', plan: 'Plan de pago',
+  suspendido: 'Acceso suspendido', acuerdoUrl: 'Acuerdo firmado', matricula: 'Matrícula', rol: 'Rol' };
 const BIT_PRIVADOS = { email: 'correo de acceso', correo: 'correo', telefono: 'teléfono', cedula: 'cédula',
   fechaNacimiento: 'fecha de nacimiento', repNombre: 'nombre del representante', repCedula: 'cédula del representante',
   repTel: 'teléfono del representante', repCorreo: 'correo del representante', facturacion: 'datos de facturación',
@@ -2732,6 +2734,18 @@ const BIT_CONFIG = { cuotaBase: 'Cuota mensual ($)', matricula: 'Matrícula ($)'
   whatsapp: 'WhatsApp de coordinación', firmante: 'Firmante', firmanteRol: 'Cargo del firmante', bloques: 'Calendario del ciclo',
   correo: 'Correo de coordinación', directorio: 'Directorio de ayuda' };
 
+const BIT_CONFIG_CLAVE = ['cuotaBase', 'matricula', 'dtoAdelanto', 'numCuotas', 'inicioMes', 'inicioAnio', 'bloques'];
+
+// Entradas antiguas que ya no se anotan (de los primeros días): no se muestran.
+function bitRelevante(r) {
+  const t = String(r.texto || '');
+  if (r.tipo === 'anuncios' || r.tipo === 'materiales') return false;
+  if (t === 'Inició sesión' || t.indexOf('Descargó el Excel') === 0 || t.indexOf('Envió un correo de restablecimiento') === 0) return false;
+  if (r.tipo === 'alumnos' && (t.indexOf('Creó la cuenta de') === 0 || t.indexOf('Guardó el perfil de') === 0)) return false;
+  if (r.tipo === 'asistencia' && t.indexOf('marca') !== -1 && t.indexOf('cambio') === -1 && t.indexOf('borrada') === -1 && t.indexOf('Borró') !== 0) return false;
+  return true;
+}
+
 function bitCambio(col, id, previoTxt, nuevo) {
   try {
     if (!state.user || state.user.role === 'alumno') return;
@@ -2740,19 +2754,16 @@ function bitCambio(col, id, previoTxt, nuevo) {
     const partes = [];
     if (col === 'usuarios') {
       const nombre = bitNombre(id);
-      if (!antes) { registrar('alumnos', 'Guardó el perfil de ' + nombre, nombre); return; }
+      if (!antes) return;
       const claves = {};
       Object.keys(antes).concat(Object.keys(nuevo)).forEach(function(k){ claves[k] = 1; });
-      const privados = [];
       Object.keys(claves).forEach(function(k){
         if (k === '_id' || k === 'pass' || k === 'fotoUrl' || META_ALUMNO.indexOf(k) !== -1) return;
         const a = JSON.stringify(antes[k]), b = JSON.stringify(nuevo[k]);
         if (a === b) return;
         if (k === 'acuerdoUrl') { partes.push(nuevo[k] ? 'subió el acuerdo firmado' : 'quitó el acuerdo firmado'); return; }
-        if (BIT_CAMPOS[k]) { partes.push(BIT_CAMPOS[k] + ': ' + bitValor(antes[k]) + ' → ' + bitValor(nuevo[k])); return; }
-        privados.push(BIT_PRIVADOS[k] || k);
+        if (BIT_CAMPOS[k]) partes.push(BIT_CAMPOS[k] + ': ' + bitValor(antes[k]) + ' → ' + bitValor(nuevo[k]));
       });
-      if (privados.length) partes.push('actualizó ' + privados.join(', '));
       if (partes.length) registrar('alumnos', nombre + ' · ' + partes.join(' · '), nombre);
       return;
     }
@@ -2782,10 +2793,15 @@ function bitCambio(col, id, previoTxt, nuevo) {
         if (ra[u] && rb[u] !== ra[u]) cambios.push(bitNombre(u) + ': ' + estadoAtt(ra[u]).label + ' → ' + estadoAtt(rb[u]).label);
       });
       Object.keys(ra).forEach(function(u){ if (!rb[u]) cambios.push(bitNombre(u) + ': marca borrada'); });
-      if (!nuevas && !cambios.length) return;
+      // Pasar lista es rutina y ya queda en el Excel ("Tomada por"). Aquí solo
+      // entran las correcciones: una marca cambiada o borrada después, o por
+      // otra persona distinta de quien tomó la lista ese día.
+      if (!cambios.length) return;
+      const quienTomo = antes && antes.creadoPorNombre;
+      const mismoDia = antes && antes.creadoT && String(antes.creadoT).slice(0, 10) === new Date().toISOString().slice(0, 10);
+      if (quienTomo && quienTomo === quienSoy() && mismoDia) return;
       let txt = nombreTipo(tp[0]) + ' ' + formatDate(tp[1]) + ': ';
       const t2 = [];
-      if (nuevas) t2.push(nuevas + (nuevas === 1 ? ' marca nueva' : ' marcas nuevas') + ' (' + Object.keys(tipos).map(function(k){ return tipos[k] + ' ' + k.toLowerCase(); }).join(', ') + ')');
       if (cambios.length) t2.push(cambios.length + (cambios.length === 1 ? ' cambio' : ' cambios') + ' (' + cambios.slice(0, 6).join('; ') + (cambios.length > 6 ? '…' : '') + ')');
       registrar('asistencia', txt + t2.join(', '));
       return;
@@ -2806,7 +2822,7 @@ function bitCambio(col, id, previoTxt, nuevo) {
       if (partes.length) registrar('multas', partes.join(' · '));
       return;
     }
-    if (col === 'colecciones' && (id === 'anuncios' || id === 'materiales')) {
+    if (false) {
       const la = (antes && antes.items) || [], lb = (nuevo && nuevo.items) || [];
       const k = function(x){ return (x.titulo || '') + '|' + (x.fecha || x.url || ''); };
       const A = {}; la.forEach(function(x){ A[k(x)] = 1; });
@@ -2823,6 +2839,7 @@ function bitCambio(col, id, previoTxt, nuevo) {
         const a = JSON.stringify(A[x]), b = JSON.stringify(B[x]);
         if (a === b) return;
         const simple = (A[x] === undefined || typeof A[x] !== 'object') && (B[x] === undefined || typeof B[x] !== 'object');
+        if (BIT_CONFIG_CLAVE.indexOf(x) === -1) return;
         const nom = BIT_CONFIG[x] || x;
         partes.push(simple ? nom + ': ' + bitValor(A[x]) + ' → ' + bitValor(B[x]) : 'cambió ' + nom.toLowerCase());
       });
@@ -2849,6 +2866,7 @@ function registroFiltrado() {
   const ft = document.getElementById('reg-tipo').value;
   const q = document.getElementById('reg-buscar').value.trim().toLowerCase();
   return (_bitCache || []).filter(function(r){
+    if (!bitRelevante(r)) return false;
     if (fp && r.uid !== fp) return false;
     if (ft && r.tipo !== ft) return false;
     if (q && (String(r.texto) + ' ' + String(r.nombre)).toLowerCase().indexOf(q) === -1) return false;
@@ -3483,7 +3501,6 @@ function launchApp() {
   if (bma) bma.style.display = (state.user.role === 'alumno' && !onboardingPendiente(state.user)) ? 'block' : 'none';
   buildNav();
   buildBottomNav();
-  if (state.user.role !== 'alumno') registrar('acceso', 'Inició sesión');
   navigate(state.user.role === 'alumno' ? 'alumno-home' : 'dashboard');
 }
 
@@ -5081,7 +5098,6 @@ async function addAlumno() {
       state.alumnos.push(nuevo);
       closeModal('modal-alumno');
       renderAlumnos();
-      registrar('alumnos', 'Creó la cuenta de ' + name + (beca ? ' (beca ' + beca + '%)' : ''), name);
       toast('✓ Alumno creado — ya puede iniciar sesión');
     } catch (e) {
       if (uidCreado) await window.fb.cancelarUsuarioAuth();
@@ -5332,13 +5348,14 @@ async function addMiembro() {
     if (!yo && rolFinal !== rol) { toast('No puedes asignar un rol igual o superior al tuyo'); return; }
     const perfilEdit = { name, email: m.email, rol: rolFinal, label: label || NOMBRE_ROL[rolFinal],
                          initials: name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() };
+    const rolAntes = m.rol;
     try {
       await window.fb.setDoc('usuarios', editUid, perfilEdit);
       if (fotoUrl !== fotoCache(editUid)) await guardarFoto(editUid, fotoUrl).catch(function(){});
       Object.assign(m, perfilEdit);
       closeModal('modal-miembro');
       renderEquipo();
-      registrar('equipo', 'Actualizó la cuenta de ' + name + ' · rol: ' + (NOMBRE_ROL[(perfilEdit && perfilEdit.rol) || rol] || rol), name);
+      if (rolAntes !== perfilEdit.rol) registrar('equipo', 'Cambió el rol de ' + name + ': ' + (NOMBRE_ROL[rolAntes] || rolAntes || '—') + ' → ' + (NOMBRE_ROL[perfilEdit.rol] || perfilEdit.rol), name);
       toast('✓ Miembro actualizado');
     } catch (e) { toast('No se pudo guardar el cambio'); }
     return;
@@ -5371,7 +5388,7 @@ async function addMiembro() {
 async function resetMiembro(email) {
   const objetivo = state.equipo.find(m => m.email === email);
   if (objetivo && !puedeGestionarA(objetivo)) { toast('No tienes permisos sobre esa cuenta'); return; }
-  try { await window.fb.resetPass(email); registrar('acceso', 'Envió un correo de restablecimiento de contraseña a ' + email, email); toast('✓ Correo de restablecimiento enviado a ' + email); }
+  try { await window.fb.resetPass(email); toast('✓ Correo de restablecimiento enviado a ' + email); }
   catch (e) { toast('No se pudo enviar el correo'); }
 }
 
@@ -6590,7 +6607,6 @@ function _finLibro(sheets, filename) {
   const wb = XLSX.utils.book_new();
   sheets.forEach(s => XLSX.utils.book_append_sheet(wb, hojaExcel(s.data), s.name));
   XLSX.writeFile(wb, filename);
-  registrar('datos', 'Descargó el Excel ' + filename);
   toast('✓ Excel descargado');
 }
 function nombreAlumno(uid) {
