@@ -1831,11 +1831,12 @@ tbody tr:hover td { background: var(--off); }
         <div class="card-head" style="flex-wrap:wrap;gap:10px;">
           <div class="card-title" id="reg-cuenta">—</div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-            <select id="reg-dias" onchange="renderRegistro()" class="reg-sel"><option value="7">Últimos 7 días</option><option value="30" selected>Últimos 30 días</option><option value="90">Últimos 90 días</option></select>
+            <select id="reg-dias" onchange="renderRegistro()" class="reg-sel"><option value="7" selected>Últimos 7 días</option><option value="30">Últimos 30 días</option><option value="mes0">Este mes</option><option value="mes1">Mes anterior</option></select>
             <select id="reg-persona" onchange="renderRegistro()" class="reg-sel"><option value="">Todas las personas</option></select>
             <select id="reg-tipo" onchange="renderRegistro()" class="reg-sel"><option value="">Todas las áreas</option><option value="alumnos">Alumnos</option><option value="pagos">Pagos</option><option value="asistencia">Asistencia</option><option value="multas">Multas</option><option value="anuncios">Anuncios</option><option value="materiales">Materiales</option><option value="equipo">Equipo</option><option value="config">Configuración</option><option value="acceso">Acceso</option><option value="datos">Datos</option></select>
             <input type="text" id="reg-buscar" placeholder="Buscar…" onkeyup="renderRegistro()" class="reg-sel" style="width:160px;">
             <button class="btn btn-ghost" onclick="renderRegistro(true)">↻ Actualizar</button>
+            <button class="btn btn-ghost" onclick="exportRegistroExcel()">⬇ Excel</button>
           </div>
         </div>
         <div id="reg-lista"></div>
@@ -2569,7 +2570,7 @@ Object.defineProperty(window, 'MESES', { get: getMeses });
 
 let state = {
   user: null, equipo: [], alumnos: [], asistencia: {}, materiales: [],
-  anuncios: [], pagos: {}, multas: [], config: {}, attSession: {},
+  anuncios: [], pagos: {}, multas: [], config: {}, attSession: {}, asistenciaMeta: {},
   fotos: {},   // cache en memoria: uid -> dataUrl. Se llena bajo demanda.
 };
 
@@ -2605,7 +2606,9 @@ function guardarDoc(col, id, data) {
   const huella = JSON.stringify(data);
   if (_escrito[clave] === huella) return Promise.resolve();
   const previo = _escrito[clave];
-  _escrito[clave] = huella;
+  sellar(col, id, data, previo);
+  const huellaFinal = JSON.stringify(data);
+  _escrito[clave] = huellaFinal;
   return window.fb.setDoc(col, id, data).then(function(){ bitCambio(col, id, previo, data); return true; }).catch(e => {
     delete _escrito[clave];
     console.error('Error guardando ' + clave, e);
@@ -2615,6 +2618,68 @@ function guardarDoc(col, id, data) {
   });
 }
 
+
+// ─── QUIÉN Y CUÁNDO ───
+// Cada registro guarda quién lo hizo, para que los Excel lo muestren en su
+// propia columna: la asistencia, quién la tomó; cada cuota, quién la marcó
+// pagada; cada multa, quién la puso y quién la cobró; cada alumno, quién lo
+// modificó por última vez. Se sella solo al guardar, comparando con lo anterior.
+const META_ALUMNO = ['creadoPor', 'creadoT', 'modificadoPor', 'modificadoT'];
+function quienSoy() { return (state.user && (state.user.name || state.user.username)) || ''; }
+
+function sellar(col, id, data, previoTxt) {
+  try {
+    if (!state.user || state.user.role === 'alumno' || !data) return;
+    let antes = null;
+    try { antes = previoTxt ? JSON.parse(previoTxt) : null; } catch (e) { antes = null; }
+    const quien = quienSoy(), t = new Date().toISOString();
+    if (col === 'asistencia') {
+      if (JSON.stringify((antes && antes.registros) || {}) === JSON.stringify(data.registros || {})) return;
+      const meta = state.asistenciaMeta[id] = state.asistenciaMeta[id] || {};
+      if (!meta.creadoPorNombre) { meta.creadoPorNombre = quien; meta.creadoT = t; }
+      meta.porNombre = quien; meta.actualizado = t;
+      Object.assign(data, meta);
+      return;
+    }
+    if (col === 'pagos') {
+      const A = antes || {};
+      const reg = data.reg = data.reg || {};
+      if (!!A.mat !== !!data.mat) reg.mat = { n: quien, t: t };
+      if (!!A.unico !== !!data.unico) reg.unico = { n: quien, t: t };
+      const ma = A.m || {}, mb = data.m || {};
+      const ks = {}; Object.keys(ma).concat(Object.keys(mb)).forEach(function(k){ ks[k] = 1; });
+      Object.keys(ks).forEach(function(k){ if (!!ma[k] !== !!mb[k]) reg[k] = { n: quien, t: t }; });
+      return;
+    }
+    if (col === 'colecciones' && id === 'multas') {
+      const prev = {};
+      ((antes && antes.items) || []).forEach(function(m){ prev[m.id || (m.username + '|' + m.fecha + '|' + m.motivo)] = m; });
+      (data.items || []).forEach(function(m){
+        const p = prev[m.id || (m.username + '|' + m.fecha + '|' + m.motivo)];
+        if (!p && !m.porNombre) { m.porNombre = quien; m.porT = t; }
+        if (p && !!p.pagada !== !!m.pagada) {
+          if (m.pagada) { m.cobradaPor = quien; m.cobradaT = t; } else { delete m.cobradaPor; delete m.cobradaT; }
+        }
+      });
+      return;
+    }
+    if (col === 'usuarios' && antes) {
+      const ks = {}; Object.keys(antes).concat(Object.keys(data)).forEach(function(k){ ks[k] = 1; });
+      const cambio = Object.keys(ks).some(function(k){
+        return META_ALUMNO.indexOf(k) === -1 && JSON.stringify(antes[k]) !== JSON.stringify(data[k]);
+      });
+      if (!cambio) return;
+      data.modificadoPor = quien; data.modificadoT = t;
+      const al = (state.alumnos || []).find(function(a){ return a.username === id; });
+      if (al) { al.modificadoPor = quien; al.modificadoT = t; }
+    }
+  } catch (e) { console.warn('sellar', e); }
+}
+
+// Documento de una sesión de asistencia: las marcas y quién las registró.
+function docAsistencia(k) {
+  return Object.assign({ registros: state.asistencia[k] || {} }, state.asistenciaMeta[k] || {});
+}
 
 // ─── REGISTRO DE CAMBIOS (bitácora) ───
 // Cada cambio que hace el equipo queda anotado en la colección 'bitacora':
@@ -2656,8 +2721,10 @@ function bitValor(v) {
 // Campos que se muestran con su valor; el resto (datos personales) solo se nombra.
 const BIT_CAMPOS = { name: 'Nombre', sede: 'Modalidad', beca: 'Beca (%)', plan: 'Plan de pago', colegio: 'Colegio',
   suspendido: 'Acceso suspendido', acuerdoUrl: 'Acuerdo firmado', matricula: 'Matrícula', rol: 'Rol', label: 'Cargo' };
-const BIT_PRIVADOS = { email: 'correo', telefono: 'teléfono', cedula: 'cédula', fechaNac: 'fecha de nacimiento',
-  representante: 'datos del representante', direccion: 'dirección' };
+const BIT_PRIVADOS = { email: 'correo de acceso', correo: 'correo', telefono: 'teléfono', cedula: 'cédula',
+  fechaNacimiento: 'fecha de nacimiento', repNombre: 'nombre del representante', repCedula: 'cédula del representante',
+  repTel: 'teléfono del representante', repCorreo: 'correo del representante', facturacion: 'datos de facturación',
+  mayorAutonomo: 'mayoría de edad', onboarding: 'activación', initials: 'iniciales', claveCambiada: 'contraseña temporal' };
 
 const BIT_CONFIG = { cuotaBase: 'Cuota mensual ($)', matricula: 'Matrícula ($)', dtoAdelanto: 'Descuento pago único (%)',
   cicloNombre: 'Nombre del ciclo', inicioMes: 'Mes de inicio', inicioAnio: 'Año de inicio', numCuotas: 'Número de cuotas',
@@ -2677,7 +2744,7 @@ function bitCambio(col, id, previoTxt, nuevo) {
       Object.keys(antes).concat(Object.keys(nuevo)).forEach(function(k){ claves[k] = 1; });
       const privados = [];
       Object.keys(claves).forEach(function(k){
-        if (k === '_id' || k === 'pass' || k === 'fotoUrl') return;
+        if (k === '_id' || k === 'pass' || k === 'fotoUrl' || META_ALUMNO.indexOf(k) !== -1) return;
         const a = JSON.stringify(antes[k]), b = JSON.stringify(nuevo[k]);
         if (a === b) return;
         if (k === 'acuerdoUrl') { partes.push(nuevo[k] ? 'subió el acuerdo firmado' : 'quitó el acuerdo firmado'); return; }
@@ -2765,17 +2832,38 @@ function bitCambio(col, id, previoTxt, nuevo) {
 }
 
 // ─── Vista "Registro de cambios" (solo administración) ───
-let _bitCache = null, _bitDias = 30;
+let _bitCache = null, _bitPeriodo = '';
+function rangoRegistro(v) {
+  const hoy = new Date();
+  if (v === 'mes0' || v === 'mes1') {
+    const ini = new Date(hoy.getFullYear(), hoy.getMonth() - (v === 'mes1' ? 1 : 0), 1);
+    const fin = new Date(ini.getFullYear(), ini.getMonth() + 1, 1);
+    return { desde: fechaISO(ini), hasta: fechaISO(fin) };
+  }
+  const dias = parseInt(v, 10) || 7;
+  return { desde: fechaISO(new Date(Date.now() - dias * 86400000)), hasta: '9999' };
+}
+function registroFiltrado() {
+  const fp = document.getElementById('reg-persona').value;
+  const ft = document.getElementById('reg-tipo').value;
+  const q = document.getElementById('reg-buscar').value.trim().toLowerCase();
+  return (_bitCache || []).filter(function(r){
+    if (fp && r.uid !== fp) return false;
+    if (ft && r.tipo !== ft) return false;
+    if (q && (String(r.texto) + ' ' + String(r.nombre)).toLowerCase().indexOf(q) === -1) return false;
+    return true;
+  });
+}
 async function renderRegistro(forzar) {
   const cont = document.getElementById('reg-lista');
   if (!cont) return;
-  const dias = parseInt(document.getElementById('reg-dias').value, 10) || 30;
-  if (forzar || !_bitCache || dias !== _bitDias) {
-    _bitDias = dias;
+  const periodo = document.getElementById('reg-dias').value;
+  if (forzar || !_bitCache || periodo !== _bitPeriodo) {
+    _bitPeriodo = periodo;
     cont.innerHTML = '<div class="empty"><p>Cargando el registro…</p></div>';
-    const desde = new Date(Date.now() - dias * 86400000).toISOString().slice(0, 10);
+    const r0 = rangoRegistro(periodo);
     try {
-      _bitCache = await window.fb.getDocsRango('bitacora', desde, '9999');
+      _bitCache = await window.fb.getDocsRango('bitacora', r0.desde, r0.hasta);
     } catch (e) {
       console.error(e);
       cont.innerHTML = '<div class="empty"><p>No se pudo leer el registro. Si es la primera vez, faltan las reglas de Firestore para la colección <b>bitacora</b>.</p></div>';
@@ -2790,15 +2878,7 @@ async function renderRegistro(forzar) {
       return '<option value="' + u + '">' + personas[u] + '</option>'; }).join('');
     sel.value = previa;
   }
-  const fp = document.getElementById('reg-persona').value;
-  const ft = document.getElementById('reg-tipo').value;
-  const q = document.getElementById('reg-buscar').value.trim().toLowerCase();
-  const lista = _bitCache.filter(function(r){
-    if (fp && r.uid !== fp) return false;
-    if (ft && r.tipo !== ft) return false;
-    if (q && (String(r.texto) + ' ' + String(r.nombre)).toLowerCase().indexOf(q) === -1) return false;
-    return true;
-  });
+  const lista = registroFiltrado();
   document.getElementById('reg-cuenta').textContent = lista.length + (lista.length === 1 ? ' cambio' : ' cambios');
   if (!lista.length) { cont.innerHTML = '<div class="empty"><p>No hay cambios registrados con esos filtros.</p></div>'; return; }
   const esc = function(t){ return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;'); };
@@ -2825,7 +2905,7 @@ function save() {
     Object.keys(state.pagos).forEach(uid => tareas.push(guardarDoc('pagos', uid, state.pagos[uid])));
     tareas.push(guardarDoc('colecciones', 'multas', { items: state.multas }));
   }
-  Object.keys(state.asistencia).forEach(k => tareas.push(guardarDoc('asistencia', k, { registros: state.asistencia[k] })));
+  Object.keys(state.asistencia).forEach(k => tareas.push(guardarDoc('asistencia', k, docAsistencia(k))));
   tareas.push(guardarDoc('colecciones', 'anuncios', { items: state.anuncios }));
   tareas.push(guardarDoc('colecciones', 'materiales', { items: state.materiales }));
   return Promise.all(tareas).then(function(r){ return r.indexOf(false) === -1; });
@@ -2973,6 +3053,7 @@ async function cargarDatosAlumno(uid, previa) {
   if (misPagos) { const o = Object.assign({}, misPagos); delete o._id; state.pagos[uid] = o; }
   state.asistencia = {};
   asistencia.forEach(s => { state.asistencia[s._id] = s.registros || {}; });
+  state.asistenciaMeta = {};
   state.multas     = ((multasD && multasD.items) || []).filter(m => m.username === uid);
   state.anuncios   = (anunciosD && anunciosD.items) || [];
   state.materiales = (materialesD && materialesD.items) || [];
@@ -3018,7 +3099,13 @@ async function cargarDatos(rol, previa) {
   state.pagos = {};
   (pagos || []).forEach(p => { const o = Object.assign({}, p); delete o._id; state.pagos[p._id] = o; });
   state.asistencia = {};
-  (asistencia || []).forEach(s => { state.asistencia[s._id] = s.registros || {}; });
+  state.asistenciaMeta = {};
+  (asistencia || []).forEach(s => {
+    state.asistencia[s._id] = s.registros || {};
+    const m = {};
+    ['porNombre', 'actualizado', 'creadoPorNombre', 'creadoT'].forEach(function(k){ if (s[k]) m[k] = s[k]; });
+    if (Object.keys(m).length) state.asistenciaMeta[s._id] = m;
+  });
   state.multas     = esAdministrador ? ((multasD && multasD.items) || []) : [];
   state.anuncios   = (anunciosD && anunciosD.items) || [];
   state.materiales = (materialesD && materialesD.items) || [];
@@ -3026,7 +3113,7 @@ async function cargarDatos(rol, previa) {
   // Registrar huellas para no reescribir lo ya cargado
   state.alumnos.forEach(a => { _escrito['usuarios/' + a.username] = JSON.stringify(limpiarAlumno(a)); });
   Object.keys(state.pagos).forEach(uid => { _escrito['pagos/' + uid] = JSON.stringify(state.pagos[uid]); });
-  Object.keys(state.asistencia).forEach(k => { _escrito['asistencia/' + k] = JSON.stringify({ registros: state.asistencia[k] }); });
+  Object.keys(state.asistencia).forEach(k => { _escrito['asistencia/' + k] = JSON.stringify(docAsistencia(k)); });
   _escrito['colecciones/multas'] = JSON.stringify({ items: state.multas });
   _escrito['colecciones/anuncios'] = JSON.stringify({ items: state.anuncios });
   _escrito['colecciones/materiales'] = JSON.stringify({ items: state.materiales });
@@ -4985,7 +5072,7 @@ async function addAlumno() {
     let uidCreado = null;
     try {
       uidCreado = await window.fb.crearUsuarioAuth(email, pass);
-      const nuevo = Object.assign({ username: uidCreado, email: email, rol: 'alumno' }, datos);
+      const nuevo = Object.assign({ username: uidCreado, email: email, rol: 'alumno', creadoPor: quienSoy(), creadoT: new Date().toISOString() }, datos);
       await window.fb.setDoc('usuarios', uidCreado, limpiarAlumno(nuevo));
       await window.fb.confirmarUsuarioAuth();
       _escrito['usuarios/' + uidCreado] = JSON.stringify(limpiarAlumno(nuevo));
@@ -5036,7 +5123,7 @@ async function deleteAlumno(u) {
     });
     await window.fb.delDoc('usuarios', u).catch(() => {});
     await window.fb.delDoc('pagos', u).catch(() => {});
-    sesionesTocadas.forEach(k => guardarDoc('asistencia', k, { registros: state.asistencia[k] }));
+    sesionesTocadas.forEach(k => guardarDoc('asistencia', k, docAsistencia(k)));
     guardarDoc('colecciones', 'multas', { items: state.multas });
   }
   delPend = null;
@@ -5959,6 +6046,7 @@ async function procesarImport(rows) {
     catch (e) { err++; continue; }
     let filaOk = true;
     const nuevo = {
+      creadoPor: quienSoy(), creadoT: new Date().toISOString(),
       name: nombre,
       username: uid,
       email: email,
@@ -6425,10 +6513,48 @@ function addMulta() {
 }
 
 // ─── EXPORTAR EXCEL ───
+// Formato pensado para archivar cada mes: encabezado con filtros, columnas con
+// ancho a la medida, montos y porcentajes como números (se pueden sumar), fechas
+// como fechas, y en cada tabla una columna con quién hizo cada cosa. Cada
+// archivo lleva en el nombre el día en que se descargó.
+function hoyArchivo() { return fechaISO(new Date()); }
+function aFecha(iso) {
+  if (!iso) return '';
+  const d = new Date(String(iso).length <= 10 ? iso + 'T00:00:00' : iso);
+  return isNaN(d.getTime()) ? String(iso) : d;
+}
+function hojaExcel(data) {
+  const ws = XLSX.utils.aoa_to_sheet(data, { cellDates: true, dateNF: 'dd/mm/yyyy' });
+  const anchos = [];
+  data.forEach(function(fila){
+    fila.forEach(function(v, i){
+      const largo = v instanceof Date ? 16 : String(v === null || v === undefined ? '' : v).length;
+      anchos[i] = Math.min(60, Math.max(anchos[i] || 8, largo + 2));
+    });
+  });
+  ws['!cols'] = anchos.map(function(w){ return { wch: w }; });
+  if (data.length > 1 && data[0].length) ws['!autofilter'] = { ref: XLSX.utils.encode_range({ s: { r: 0, c: 0 }, e: { r: data.length - 1, c: data[0].length - 1 } }) };
+  // Formato por columna según el encabezado: % y $
+  const rango = XLSX.utils.decode_range(ws['!ref'] || 'A1');
+  (data[0] || []).forEach(function(h, c){
+    const fmt = /^%|%$/.test(String(h).trim()) && String(h).indexOf('Beca') === -1 ? '0%' : /\$/.test(String(h)) ? '#,##0.00' : null;
+    if (!fmt) return;
+    for (let r = 1; r <= rango.e.r; r++) {
+      const cel = ws[XLSX.utils.encode_cell({ r: r, c: c })];
+      if (cel && cel.t === 'n') cel.z = fmt;
+    }
+  });
+  // Fechas con hora donde corresponde
+  Object.keys(ws).forEach(function(k){
+    const c = ws[k];
+    if (k[0] !== '!' && c && c.t === 'd' && c.v instanceof Date && (c.v.getHours() || c.v.getMinutes())) c.z = 'dd/mm/yyyy hh:mm';
+  });
+  return ws;
+}
 function descargarLibro(sheets, filename) {
   if (typeof XLSX === 'undefined') {
-    const csv = sheets[0].data.map(r => r.map(c => '"' + String(c ?? '').replace(/"/g, '""') + '"').join(',')).join('\n');
-    const blob = new Blob(['\ufeff' + csv], { type: 'text/csv' });
+    const csv = sheets[0].data.map(r => r.map(c => '"' + String(c instanceof Date ? c.toISOString().slice(0, 16).replace('T', ' ') : (c ?? '')).replace(/"/g, '""') + '"').join(',')).join('\n');
+    const blob = new Blob(['﻿' + csv], { type: 'text/csv' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
     a.download = filename.replace('.xlsx', '.csv');
@@ -6437,43 +6563,74 @@ function descargarLibro(sheets, filename) {
     return;
   }
   const wb = XLSX.utils.book_new();
-  sheets.forEach(s => XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(s.data), s.name));
+  sheets.forEach(s => XLSX.utils.book_append_sheet(wb, hojaExcel(s.data), s.name));
   XLSX.writeFile(wb, filename);
+  registrar('datos', 'Descargó el Excel ' + filename);
   toast('✓ Excel descargado');
+}
+function nombreAlumno(uid) {
+  const al = state.alumnos.find(function(a){ return a.username === uid; });
+  return al ? al.name : uid;
 }
 
 function exportAlumnosExcel() {
   if (!soloAdmin()) return;
-  const data = [['Nombre','Usuario','Cédula','Sede','Colegio / Universidad','Beca %','Plan de pago','Matrícula','Teléfono alumno','Correo alumno','Representante','Cédula representante','Tel. representante','Correo representante','URL acuerdo firmado']];
-  state.alumnos.forEach(a => data.push([
-    a.name, a.username, a.cedula || '', a.sede || 'UIO', a.colegio || '', a.beca || 0,
-    a.plan === 'unico' ? 'Pago único' : 'Mensual',
-    a.matricula === 'exenta' ? 'Exenta' : '$15',
-    a.telefono || '', a.correo || '', a.repNombre || '', a.repCedula || '', a.repTel || '', a.repCorreo || '', a.acuerdoUrl || '']));
-  descargarLibro([{ name: 'Alumnos', data }], 'electi-alumnos.xlsx');
+  const data = [['Nombre', 'Correo de acceso', 'Correo de contacto', 'Cédula', 'Fecha de nacimiento', 'Teléfono', 'Modalidad',
+    'Colegio / Universidad', 'Beca %', 'Plan de pago', 'Matrícula $', 'Representante', 'Cédula representante',
+    'Tel. representante', 'Correo representante', 'Activación', 'Acuerdo firmado', 'Enlace del acuerdo', 'Acceso',
+    'Creado por', 'Creado el', 'Última modificación por', 'Modificado el']];
+  state.alumnos.slice().sort(function(a, b){ return String(a.name).localeCompare(String(b.name)); }).forEach(function(a){
+    data.push([a.name || '', a.email || '', a.correo || '', a.cedula || '', aFecha(a.fechaNacimiento), a.telefono || '',
+      nombreModalidad(a.sede), a.colegio || '', a.beca || 0, a.plan === 'unico' ? 'Pago único' : 'Mensual',
+      matriculaDe(a), a.repNombre || '', a.repCedula || '', a.repTel || '', a.repCorreo || '',
+      onboardingPendiente(Object.assign({ rol: 'alumno' }, a)) ? 'Pendiente' : 'Completa',
+      a.acuerdoUrl ? 'Sí' : 'No', a.acuerdoUrl || '', a.suspendido ? 'Suspendido' : 'Activo',
+      a.creadoPor || '', aFecha(a.creadoT), a.modificadoPor || '', aFecha(a.modificadoT)]);
+  });
+  descargarLibro([{ name: 'Alumnos', data }], 'ELECTI-alumnos-' + hoyArchivo() + '.xlsx');
 }
 
 function exportAsistenciaExcel() {
   const sesiones = Object.keys(state.asistencia).sort((a, b) => a.split('_')[1].localeCompare(b.split('_')[1]));
-  const head = ['Alumno', 'Sede', ...sesiones.map(k => { const [t, f] = k.split('_'); return f + ' (' + (TIPO_CORTO[t] || t) + ')'; }), 'Presentes', 'Tardanzas', 'F. Justificadas', 'F. Injustificadas', 'Faltas equiv.', '% Asistencia'];
+  // Hoja 1: una fila por alumno, una columna por sesión
+  const head = ['Alumno', 'Modalidad'].concat(sesiones.map(function(k){ const p = k.split('_'); return formatDate(p[1]) + ' · ' + (TIPO_CORTO[p[0]] || p[0]); }),
+    ['Presentes', 'Tardanzas', 'F. justificadas', 'F. injustificadas', 'Faltas equivalentes (máx. 2)', '% asistencia', 'Estado']);
   const data = [head];
-  state.alumnos.forEach(a => {
-    const fila = [a.name, a.sede || 'UIO'];
-    sesiones.forEach(k => {
-      const v = state.asistencia[k][a.username];
-      fila.push(v ? estadoAtt(v).label : '');
-    });
-    const { P, T, FJ, FI, faltas, pct } = getAlumnoStats(a.username);
-    fila.push(P, T, FJ, FI, faltasTxt(faltas) + ' / 2', pct !== null ? pct + '%' : '');
+  state.alumnos.slice().sort(function(a, b){ return String(a.name).localeCompare(String(b.name)); }).forEach(function(a){
+    const fila = [a.name, nombreModalidad(a.sede)];
+    sesiones.forEach(function(k){ const v = state.asistencia[k][a.username]; fila.push(v ? estadoAtt(v).label : ''); });
+    const st = getAlumnoStats(a.username);
+    fila.push(st.P, st.T, st.FJ, st.FI, st.faltas, st.pct === null ? '' : st.pct / 100,
+      st.total === 0 ? 'Sin registro' : st.faltas > 2 ? 'Límite superado' : st.faltas === 2 ? 'En el límite' : 'Dentro del límite');
     data.push(fila);
   });
-  descargarLibro([{ name: 'Asistencia', data }], 'electi-asistencia.xlsx');
+  // Hoja 2: una fila por sesión, con quién la tomó
+  const ses = [['Fecha', 'Día', 'Sesión', 'Registrados', 'Presentes', 'Tardanzas', 'F. justificadas', 'F. injustificadas', '% asistencia',
+    'Tomada por', 'Tomada el', 'Última modificación por', 'Modificada el']];
+  sesiones.forEach(function(k){
+    const p = k.split('_'); const reg = state.asistencia[k] || {}; const meta = state.asistenciaMeta[k] || {};
+    let P = 0, T = 0, FJ = 0, FI = 0;
+    Object.keys(reg).forEach(function(u){ const v = reg[u]; if (v === 'P') P++; else if (v === 'FJ') FJ++; else if (v === 'FI' || v === 'A') FI++; else if (typeof v === 'string' && v.startsWith('T')) T++; });
+    const n = P + T + FJ + FI;
+    ses.push([aFecha(p[1]), (TIPO_DIA[p[0]] || p[0]).split(' ·')[0], nombreTipo(p[0]), n, P, T, FJ, FI, n ? (P + T) / n : '',
+      meta.creadoPorNombre || '', aFecha(meta.creadoT), meta.porNombre || '', aFecha(meta.actualizado)]);
+  });
+  // Hoja 3: detalle marca por marca
+  const det = [['Fecha', 'Sesión', 'Alumno', 'Modalidad', 'Estado', 'Minutos de atraso', 'Registrada por']];
+  sesiones.forEach(function(k){
+    const p = k.split('_'); const reg = state.asistencia[k] || {}; const meta = state.asistenciaMeta[k] || {};
+    Object.keys(reg).forEach(function(u){
+      const v = reg[u]; if (!v) return;
+      const al = state.alumnos.find(function(a){ return a.username === u; }) || {};
+      const min = typeof v === 'string' && v.startsWith('T') ? (parseInt(v.split(':')[1] || '10', 10) || 10) : '';
+      det.push([aFecha(p[1]), nombreTipo(p[0]), al.name || u, nombreModalidad(al.sede), estadoAtt(v).label, min, meta.porNombre || '']);
+    });
+  });
+  descargarLibro([{ name: 'Por alumno', data }, { name: 'Por sesión', data: ses }, { name: 'Detalle', data: det }],
+    'ELECTI-asistencia-' + hoyArchivo() + '.xlsx');
 }
 
 function exportFinancieroExcel() {
-  // Un juego de hojas por bloque cuando los calendarios difieren: mezclar
-  // "Cuota Octubre" de Costa con "Cuota Noviembre" de Sierra en una sola
-  // tabla produce columnas que no significan lo mismo en cada fila.
   const dif = bloquesDifieren();
   const grupos = dif
     ? Object.keys(BLOQUES).map(function(b){
@@ -6483,53 +6640,78 @@ function exportFinancieroExcel() {
     : [{ suf: '', ref: null, lista: state.alumnos }];
 
   const hojas = [];
+  const movs = [['Alumno', 'Modalidad', 'Concepto', 'Monto $', 'Estado', 'Registrado por', 'Fecha del registro']];
   grupos.forEach(function(g){
     if (dif && g.lista.length === 0) return;
     const M = getMeses(g.ref);
-    const det = [['Alumno','Sede','Beca %','Plan','Cuota mensual $','Matrícula'].concat(
+    const det = [['Alumno', 'Modalidad', 'Beca %', 'Plan', 'Cuota mensual $', 'Matrícula'].concat(
       M.map(function(m){ return 'Cuota ' + m.label; }),
-      ['Pagado $','Pendiente $','Total ciclo $','Multas pend. $','Estado'])];
-    g.lista.forEach(function(a){
+      ['Pagado $', 'Por pagar $', 'Vencido $', 'Total ciclo $', 'Multas pendientes $', 'Estado'])];
+    g.lista.slice().sort(function(a, b){ return String(a.name).localeCompare(String(b.name)); }).forEach(function(a){
       const r = resumenPago(a);
       const p = getPagos(a);
-      const fila = [a.name, a.sede || 'UIO', a.beca || 0, a.plan === 'unico' ? 'Pago único' : 'Mensual', r.cuota,
+      const reg = p.reg || {};
+      const fila = [a.name, nombreModalidad(a.sede), a.beca || 0, a.plan === 'unico' ? 'Pago único' : 'Mensual', r.cuota,
         r.mat === 0 ? 'Exenta' : (p.mat ? 'Pagada' : 'Pendiente')];
       M.forEach(function(m){
         const st = estadoMes(a, m);
-        fila.push(st === 'exento' ? 'Exento' : st === 'paid' ? 'Pagada' : st === 'overdue' ? 'EN MORA' : 'Pendiente');
+        fila.push(st === 'exento' ? 'Exento' : st === 'paid' ? 'Pagada' : st === 'overdue' ? 'VENCIDA' : st === 'previo' ? 'Antes de inicio' : 'Pendiente');
       });
       const mu = multasResumen(a.username);
-      fila.push(r.pagado, r.pendiente, r.total, mu.pend, r.mora ? 'En mora' : ((a.beca || 0) === 100 ? 'Beca 100%' : 'Al día'));
+      const venc = vencidoDe(a);
+      fila.push(r.pagado, r.pendiente, venc, r.total, mu.pend, venc > 0 ? 'Con valores vencidos' : ((a.beca || 0) === 100 ? 'Beca 100%' : 'Al día'));
       det.push(fila);
+      // Movimientos: cada pago marcado, con quién lo registró
+      if (a.plan === 'unico') {
+        if (p.unico) movs.push([a.name, nombreModalidad(a.sede), 'Pago único (semestre)', r.total, 'Pagado', (reg.unico && reg.unico.n) || '', aFecha(reg.unico && reg.unico.t)]);
+      } else {
+        if (p.mat && r.mat > 0) movs.push([a.name, nombreModalidad(a.sede), 'Matrícula', r.mat, 'Pagada', (reg.mat && reg.mat.n) || '', aFecha(reg.mat && reg.mat.t)]);
+        M.forEach(function(m){
+          if (p.m && p.m[m.k]) movs.push([a.name, nombreModalidad(a.sede), 'Cuota ' + m.label, r.cuota, 'Pagada', (reg[m.k] && reg[m.k].n) || '', aFecha(reg[m.k] && reg[m.k].t)]);
+        });
+      }
     });
 
-    const cob = [['Concepto','Esperado $','Cobrado $','Pendiente $']];
+    const cob = [['Concepto', 'Esperado $', 'Cobrado $', 'Pendiente $', '% cobrado']];
     const mens = g.lista.filter(function(a){ return a.plan !== 'unico'; });
     const unis = g.lista.filter(function(a){ return a.plan === 'unico'; });
     let matEsp = 0, matCob = 0;
     mens.forEach(function(a){ const m = matriculaDe(a); matEsp += m; if (getPagos(a).mat) matCob += m; });
-    cob.push(['Matrícula', matEsp, matCob, matEsp - matCob]);
+    cob.push(['Matrícula', matEsp, matCob, matEsp - matCob, matEsp ? matCob / matEsp : '']);
     M.forEach(function(mo){
       let esp = 0, c2 = 0;
       mens.forEach(function(a){ const c = cuotaDe(a); esp += c; if (getPagos(a).m[mo.k]) c2 += c; });
-      cob.push(['Cuota ' + mo.label, esp, c2, esp - c2]);
+      cob.push(['Cuota ' + mo.label, esp, c2, esp - c2, esp ? c2 / esp : '']);
     });
     if (unis.length > 0) {
       let uEsp = 0, uCob = 0;
       unis.forEach(function(a){ const r2 = resumenPago(a); uEsp += r2.total; if (r2.unicoPagado) uCob += r2.total; });
-      cob.push(['Pago único (semestre)', uEsp, uCob, uEsp - uCob]);
+      cob.push(['Pago único (semestre)', uEsp, uCob, uEsp - uCob, uEsp ? uCob / uEsp : '']);
     }
-    hojas.push({ name: ('Detalle' + g.suf).slice(0, 31), data: det });
+    hojas.push({ name: ('Estado por alumno' + g.suf).slice(0, 31), data: det });
     hojas.push({ name: ('Cobranza' + g.suf).slice(0, 31), data: cob });
   });
+  hojas.push({ name: 'Pagos registrados', data: movs });
 
-  const mul = [['Alumno','Fecha','Motivo','Monto $','Estado']];
+  const mul = [['Alumno', 'Fecha', 'Motivo', 'Monto $', 'Estado', 'Tipo', 'Registrada por', 'Cobrada por', 'Cobrada el']];
   (state.multas || []).forEach(function(m){
-    const al = state.alumnos.find(function(a){ return a.username === m.username; });
-    mul.push([al ? al.name : m.username, m.fecha, m.motivo, m.monto, m.pagada ? 'Pagada' : 'Pendiente']);
+    mul.push([nombreAlumno(m.username), aFecha(m.fecha), m.motivo, m.monto, m.pagada ? 'Pagada' : 'Pendiente',
+      m.auto ? 'Automática (atraso)' : 'Manual', m.porNombre || '', m.cobradaPor || '', aFecha(m.cobradaT)]);
   });
   hojas.push({ name: 'Multas', data: mul });
-  descargarLibro(hojas, 'electi-financiero.xlsx');
+  descargarLibro(hojas, 'ELECTI-financiero-' + hoyArchivo() + '.xlsx');
+}
+
+// Registro de cambios en Excel: lo filtrado en pantalla.
+function exportRegistroExcel() {
+  if (!esAdmin() || !_bitCache) return;
+  const lista = registroFiltrado();
+  const data = [['Fecha y hora', 'Persona', 'Rol', 'Área', 'Qué cambió']];
+  lista.slice().reverse().forEach(function(r){
+    data.push([aFecha(r.t), r.nombre || r.uid, NOMBRE_ROL[r.rol] || r.rol || '', BIT_TIPOS[r.tipo] || r.tipo, r.texto]);
+  });
+  const per = document.getElementById('reg-dias');
+  descargarLibro([{ name: 'Registro de cambios', data }], 'ELECTI-registro-de-cambios-' + (per.value.indexOf('mes') === 0 ? per.options[per.selectedIndex].text.replace(/\s+/g, '-').toLowerCase() : hoyArchivo()) + '.xlsx');
 }
 
 // ─── CAMBIO DE CONTRASEÑA (usuario propio) ───
