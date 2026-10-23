@@ -2261,8 +2261,9 @@ tbody tr:hover td { background: var(--off); }
 
 <div class="toast" id="toast"></div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<!-- Chart.js baja sin frenar la pantalla. La librería de Excel (casi 1 MB)
+     solo se descarga cuando alguien importa o descarga un Excel. -->
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
@@ -5999,6 +6000,11 @@ function importarAlumnos(input) {
   if (!soloAdmin()) return;
   const file = input.files[0];
   if (!file) return;
+  if (typeof XLSX === 'undefined' && /\.(xlsx|xls)$/i.test(file.name)) {
+    toast('Preparando lector de Excel…');
+    cargarXLSX().then(function(ok){ if (ok) importarAlumnos(input); else { toast('Sin conexión al lector de Excel. Usa la plantilla en CSV.'); input.value = ''; } });
+    return;
+  }
   const reader = new FileReader();
   reader.onload = e => {
     try {
@@ -6551,8 +6557,27 @@ function hojaExcel(data) {
   });
   return ws;
 }
+let _xlsxCarga = null;
+function cargarXLSX() {
+  if (typeof XLSX !== 'undefined') return Promise.resolve(true);
+  if (!_xlsxCarga) _xlsxCarga = new Promise(function(ok) {
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+    s.onload = function(){ ok(true); };
+    s.onerror = function(){ _xlsxCarga = null; ok(false); };
+    document.head.appendChild(s);
+  });
+  return _xlsxCarga;
+}
 function descargarLibro(sheets, filename) {
   if (typeof XLSX === 'undefined') {
+    toast('Preparando Excel…');
+    cargarXLSX().then(function(ok){ if (ok) descargarLibro(sheets, filename); else descargarCSV(sheets, filename); });
+    return;
+  }
+  _finLibro(sheets, filename);
+}
+function descargarCSV(sheets, filename) {
     const csv = sheets[0].data.map(r => r.map(c => '"' + String(c instanceof Date ? c.toISOString().slice(0, 16).replace('T', ' ') : (c ?? '')).replace(/"/g, '""') + '"').join(',')).join('\n');
     const blob = new Blob(['﻿' + csv], { type: 'text/csv' });
     const a = document.createElement('a');
@@ -6560,8 +6585,8 @@ function descargarLibro(sheets, filename) {
     a.download = filename.replace('.xlsx', '.csv');
     a.click();
     toast('Sin conexión a librería Excel — descargado como CSV');
-    return;
-  }
+}
+function _finLibro(sheets, filename) {
   const wb = XLSX.utils.book_new();
   sheets.forEach(s => XLSX.utils.book_append_sheet(wb, hojaExcel(s.data), s.name));
   XLSX.writeFile(wb, filename);
