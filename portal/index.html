@@ -1046,6 +1046,7 @@ tbody tr:hover td { background: var(--off); }
   .att-barra .btn{flex-shrink:0}
   #page-asistencia{padding-bottom:90px}
 }
+.reg-sel{padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;font-family:'DM Sans',sans-serif;color:var(--text);background:var(--white);outline:none}
 .nav-badge{display:inline-block;min-width:18px;padding:1px 6px;margin-left:6px;border-radius:10px;background:var(--sky);color:#fff;font-size:10.5px;font-weight:800;text-align:center;vertical-align:1px}
 .bn-item{position:relative}.bn-dot{position:absolute;top:6px;left:calc(50% + 6px);width:8px;height:8px;border-radius:50%;background:var(--sky);box-shadow:0 0 0 2px #fff}
 </style>
@@ -1822,6 +1823,25 @@ tbody tr:hover td { background: var(--off); }
     </div>
 
     <!-- CONFIGURACIÓN -->
+    <!-- REGISTRO DE CAMBIOS -->
+    <div class="page" id="page-registro">
+      <div class="page-title">Registro de cambios</div>
+      <div class="page-sub">Quién cambió qué y cuándo. Se guarda solo y nadie puede editarlo ni borrarlo desde el portal.</div>
+      <div class="card">
+        <div class="card-head" style="flex-wrap:wrap;gap:10px;">
+          <div class="card-title" id="reg-cuenta">—</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+            <select id="reg-dias" onchange="renderRegistro()" class="reg-sel"><option value="7">Últimos 7 días</option><option value="30" selected>Últimos 30 días</option><option value="90">Últimos 90 días</option></select>
+            <select id="reg-persona" onchange="renderRegistro()" class="reg-sel"><option value="">Todas las personas</option></select>
+            <select id="reg-tipo" onchange="renderRegistro()" class="reg-sel"><option value="">Todas las áreas</option><option value="alumnos">Alumnos</option><option value="pagos">Pagos</option><option value="asistencia">Asistencia</option><option value="multas">Multas</option><option value="anuncios">Anuncios</option><option value="materiales">Materiales</option><option value="equipo">Equipo</option><option value="config">Configuración</option><option value="acceso">Acceso</option><option value="datos">Datos</option></select>
+            <input type="text" id="reg-buscar" placeholder="Buscar…" onkeyup="renderRegistro()" class="reg-sel" style="width:160px;">
+            <button class="btn btn-ghost" onclick="renderRegistro(true)">↻ Actualizar</button>
+          </div>
+        </div>
+        <div id="reg-lista"></div>
+      </div>
+    </div>
+
     <div class="page" id="page-config">
       <div class="page-title">Configuración del programa</div>
       <div class="page-sub">Define el ciclo activo y los valores. Aplica a todo el portal.</div>
@@ -2584,14 +2604,214 @@ function guardarDoc(col, id, data) {
   const clave = col + '/' + id;
   const huella = JSON.stringify(data);
   if (_escrito[clave] === huella) return Promise.resolve();
+  const previo = _escrito[clave];
   _escrito[clave] = huella;
-  return window.fb.setDoc(col, id, data).then(function(){ return true; }).catch(e => {
+  return window.fb.setDoc(col, id, data).then(function(){ bitCambio(col, id, previo, data); return true; }).catch(e => {
     delete _escrito[clave];
     console.error('Error guardando ' + clave, e);
     const permiso = e && e.code && String(e.code).indexOf('permission-denied') !== -1;
     toast(permiso ? '⚠ Tu cuenta no tiene permiso para este cambio' : '⚠ No se pudo guardar. Revisa tu conexión.');
     return false;
   });
+}
+
+
+// ─── REGISTRO DE CAMBIOS (bitácora) ───
+// Cada cambio que hace el equipo queda anotado en la colección 'bitacora':
+// quién, cuándo y qué cambió, en palabras. Es de solo agregar: nadie la edita
+// ni la borra desde el portal. El ID empieza con la fecha y hora, así que se
+// consulta por rango de fechas sin índices extra.
+// Los cambios que pasan por guardarDoc() se describen solos comparando el
+// documento antes y después; las altas y bajas de cuentas se anotan a mano.
+let _bitAviso = false;
+const BIT_TIPOS = { alumnos: 'Alumnos', pagos: 'Pagos', asistencia: 'Asistencia', multas: 'Multas',
+  anuncios: 'Anuncios', materiales: 'Materiales', equipo: 'Equipo', config: 'Configuración', acceso: 'Acceso', datos: 'Datos' };
+
+function registrar(tipo, texto, objetivo) {
+  if (!state.user || state.user.role === 'alumno' || !window.fb || !window.fb.setDoc) return;
+  const t = new Date().toISOString();
+  const id = t.replace(/[:.]/g, '-') + '_' + String(state.user.username).slice(0, 10) + '_' + Math.random().toString(36).slice(2, 6);
+  const doc = { t: t, uid: state.user.username, nombre: state.user.name || '', rol: state.user.role,
+                tipo: tipo, texto: String(texto).slice(0, 900), objetivo: objetivo || '' };
+  window.fb.setDoc('bitacora', id, doc).catch(function(e){
+    console.warn('No se pudo anotar en la bitácora', e);
+    if (!_bitAviso && esAdmin()) {
+      _bitAviso = true;
+      toast('⚠ El registro de cambios no se está guardando. Revisa las reglas de Firestore (colección bitacora).');
+    }
+  });
+}
+
+function bitNombre(uid) {
+  const a = (state.alumnos || []).concat(state.equipo || []).find(function(x){ return x.username === uid; });
+  return a ? (a.name || uid) : uid;
+}
+function bitValor(v) {
+  if (v === undefined || v === null || v === '') return '—';
+  if (v === true) return 'sí';
+  if (v === false) return 'no';
+  if (typeof v === 'object') return '(datos)';
+  return String(v);
+}
+// Campos que se muestran con su valor; el resto (datos personales) solo se nombra.
+const BIT_CAMPOS = { name: 'Nombre', sede: 'Modalidad', beca: 'Beca (%)', plan: 'Plan de pago', colegio: 'Colegio',
+  suspendido: 'Acceso suspendido', acuerdoUrl: 'Acuerdo firmado', matricula: 'Matrícula', rol: 'Rol', label: 'Cargo' };
+const BIT_PRIVADOS = { email: 'correo', telefono: 'teléfono', cedula: 'cédula', fechaNac: 'fecha de nacimiento',
+  representante: 'datos del representante', direccion: 'dirección' };
+
+const BIT_CONFIG = { cuotaBase: 'Cuota mensual ($)', matricula: 'Matrícula ($)', dtoAdelanto: 'Descuento pago único (%)',
+  cicloNombre: 'Nombre del ciclo', inicioMes: 'Mes de inicio', inicioAnio: 'Año de inicio', numCuotas: 'Número de cuotas',
+  whatsapp: 'WhatsApp de coordinación', firmante: 'Firmante', firmanteRol: 'Cargo del firmante', bloques: 'Calendario del ciclo',
+  correo: 'Correo de coordinación', directorio: 'Directorio de ayuda' };
+
+function bitCambio(col, id, previoTxt, nuevo) {
+  try {
+    if (!state.user || state.user.role === 'alumno') return;
+    let antes = null;
+    try { antes = previoTxt ? JSON.parse(previoTxt) : null; } catch (e) { antes = null; }
+    const partes = [];
+    if (col === 'usuarios') {
+      const nombre = bitNombre(id);
+      if (!antes) { registrar('alumnos', 'Guardó el perfil de ' + nombre, nombre); return; }
+      const claves = {};
+      Object.keys(antes).concat(Object.keys(nuevo)).forEach(function(k){ claves[k] = 1; });
+      const privados = [];
+      Object.keys(claves).forEach(function(k){
+        if (k === '_id' || k === 'pass' || k === 'fotoUrl') return;
+        const a = JSON.stringify(antes[k]), b = JSON.stringify(nuevo[k]);
+        if (a === b) return;
+        if (k === 'acuerdoUrl') { partes.push(nuevo[k] ? 'subió el acuerdo firmado' : 'quitó el acuerdo firmado'); return; }
+        if (BIT_CAMPOS[k]) { partes.push(BIT_CAMPOS[k] + ': ' + bitValor(antes[k]) + ' → ' + bitValor(nuevo[k])); return; }
+        privados.push(BIT_PRIVADOS[k] || k);
+      });
+      if (privados.length) partes.push('actualizó ' + privados.join(', '));
+      if (partes.length) registrar('alumnos', nombre + ' · ' + partes.join(' · '), nombre);
+      return;
+    }
+    if (col === 'pagos') {
+      const nombre = bitNombre(id);
+      const al = (state.alumnos || []).find(function(x){ return x.username === id; }) || {};
+      const etiqueta = {};
+      try { getMeses(al.sede).forEach(function(m){ etiqueta[m.k] = m.label; }); } catch (e) {}
+      const A = antes || {}, B = nuevo || {};
+      if (!!A.mat !== !!B.mat) partes.push('Matrícula ' + (B.mat ? 'pagada' : 'marcada pendiente'));
+      if (!!A.unico !== !!B.unico) partes.push('Pago único ' + (B.unico ? 'pagado' : 'marcado pendiente'));
+      const ma = A.m || {}, mb = B.m || {};
+      const ks = {}; Object.keys(ma).concat(Object.keys(mb)).forEach(function(k){ ks[k] = 1; });
+      Object.keys(ks).forEach(function(k){
+        if (!!ma[k] === !!mb[k]) return;
+        partes.push('Cuota ' + (etiqueta[k] || k) + ' ' + (mb[k] ? 'pagada' : 'marcada pendiente'));
+      });
+      if (partes.length) registrar('pagos', nombre + ' · ' + partes.join(' · '), nombre);
+      return;
+    }
+    if (col === 'asistencia') {
+      const tp = id.split('_');
+      const ra = (antes && antes.registros) || {}, rb = (nuevo && nuevo.registros) || {};
+      let nuevas = 0; const cambios = []; const tipos = {};
+      Object.keys(rb).forEach(function(u){
+        if (!ra[u] && rb[u]) { nuevas++; const lb = estadoAtt(rb[u]).label; tipos[lb] = (tipos[lb] || 0) + 1; return; }
+        if (ra[u] && rb[u] !== ra[u]) cambios.push(bitNombre(u) + ': ' + estadoAtt(ra[u]).label + ' → ' + estadoAtt(rb[u]).label);
+      });
+      Object.keys(ra).forEach(function(u){ if (!rb[u]) cambios.push(bitNombre(u) + ': marca borrada'); });
+      if (!nuevas && !cambios.length) return;
+      let txt = nombreTipo(tp[0]) + ' ' + formatDate(tp[1]) + ': ';
+      const t2 = [];
+      if (nuevas) t2.push(nuevas + (nuevas === 1 ? ' marca nueva' : ' marcas nuevas') + ' (' + Object.keys(tipos).map(function(k){ return tipos[k] + ' ' + k.toLowerCase(); }).join(', ') + ')');
+      if (cambios.length) t2.push(cambios.length + (cambios.length === 1 ? ' cambio' : ' cambios') + ' (' + cambios.slice(0, 6).join('; ') + (cambios.length > 6 ? '…' : '') + ')');
+      registrar('asistencia', txt + t2.join(', '));
+      return;
+    }
+    if (col === 'colecciones' && id === 'multas') {
+      const la = (antes && antes.items) || [], lb = (nuevo && nuevo.items) || [];
+      const clave = function(m){ return m.id || (m.username + '|' + m.fecha + '|' + m.motivo); };
+      const mapa = {}; la.forEach(function(m){ mapa[clave(m)] = m; });
+      const vistos = {};
+      lb.forEach(function(m){
+        const k = clave(m); vistos[k] = 1; const p = mapa[k];
+        const quien = bitNombre(m.username);
+        if (!p) { if (!m.auto) partes.push('nueva multa a ' + quien + ' ($' + dinero(m.monto) + ', ' + m.motivo + ')'); return; }
+        if (!!p.pagada !== !!m.pagada) partes.push('multa de ' + quien + ' ' + (m.pagada ? 'pagada' : 'marcada pendiente') + ' ($' + dinero(m.monto) + ')');
+        else if (p.monto !== m.monto && !m.auto) partes.push('multa de ' + quien + ': $' + dinero(p.monto) + ' → $' + dinero(m.monto));
+      });
+      la.forEach(function(m){ if (!vistos[clave(m)] && !m.auto) partes.push('eliminó la multa de ' + bitNombre(m.username) + ' ($' + dinero(m.monto) + ')'); });
+      if (partes.length) registrar('multas', partes.join(' · '));
+      return;
+    }
+    if (col === 'colecciones' && (id === 'anuncios' || id === 'materiales')) {
+      const la = (antes && antes.items) || [], lb = (nuevo && nuevo.items) || [];
+      const k = function(x){ return (x.titulo || '') + '|' + (x.fecha || x.url || ''); };
+      const A = {}; la.forEach(function(x){ A[k(x)] = 1; });
+      const B = {}; lb.forEach(function(x){ B[k(x)] = 1; });
+      lb.forEach(function(x){ if (!A[k(x)]) partes.push('publicó "' + x.titulo + '"'); });
+      la.forEach(function(x){ if (!B[k(x)]) partes.push('eliminó "' + x.titulo + '"'); });
+      if (partes.length) registrar(id, partes.join(' · '));
+      return;
+    }
+    if (col === 'config') {
+      const A = antes || {}, B = nuevo || {};
+      const ks = {}; Object.keys(A).concat(Object.keys(B)).forEach(function(x){ ks[x] = 1; });
+      Object.keys(ks).forEach(function(x){
+        const a = JSON.stringify(A[x]), b = JSON.stringify(B[x]);
+        if (a === b) return;
+        const simple = (A[x] === undefined || typeof A[x] !== 'object') && (B[x] === undefined || typeof B[x] !== 'object');
+        const nom = BIT_CONFIG[x] || x;
+        partes.push(simple ? nom + ': ' + bitValor(A[x]) + ' → ' + bitValor(B[x]) : 'cambió ' + nom.toLowerCase());
+      });
+      if (partes.length) registrar('config', partes.join(' · '));
+      return;
+    }
+  } catch (e) { console.warn('bitCambio', e); }
+}
+
+// ─── Vista "Registro de cambios" (solo administración) ───
+let _bitCache = null, _bitDias = 30;
+async function renderRegistro(forzar) {
+  const cont = document.getElementById('reg-lista');
+  if (!cont) return;
+  const dias = parseInt(document.getElementById('reg-dias').value, 10) || 30;
+  if (forzar || !_bitCache || dias !== _bitDias) {
+    _bitDias = dias;
+    cont.innerHTML = '<div class="empty"><p>Cargando el registro…</p></div>';
+    const desde = new Date(Date.now() - dias * 86400000).toISOString().slice(0, 10);
+    try {
+      _bitCache = await window.fb.getDocsRango('bitacora', desde, '9999');
+    } catch (e) {
+      console.error(e);
+      cont.innerHTML = '<div class="empty"><p>No se pudo leer el registro. Si es la primera vez, faltan las reglas de Firestore para la colección <b>bitacora</b>.</p></div>';
+      return;
+    }
+    _bitCache.sort(function(a, b){ return String(b.t).localeCompare(String(a.t)); });
+    const sel = document.getElementById('reg-persona');
+    const previa = sel.value;
+    const personas = {};
+    _bitCache.forEach(function(r){ personas[r.uid] = r.nombre || r.uid; });
+    sel.innerHTML = '<option value="">Todas las personas</option>' + Object.keys(personas).map(function(u){
+      return '<option value="' + u + '">' + personas[u] + '</option>'; }).join('');
+    sel.value = previa;
+  }
+  const fp = document.getElementById('reg-persona').value;
+  const ft = document.getElementById('reg-tipo').value;
+  const q = document.getElementById('reg-buscar').value.trim().toLowerCase();
+  const lista = _bitCache.filter(function(r){
+    if (fp && r.uid !== fp) return false;
+    if (ft && r.tipo !== ft) return false;
+    if (q && (String(r.texto) + ' ' + String(r.nombre)).toLowerCase().indexOf(q) === -1) return false;
+    return true;
+  });
+  document.getElementById('reg-cuenta').textContent = lista.length + (lista.length === 1 ? ' cambio' : ' cambios');
+  if (!lista.length) { cont.innerHTML = '<div class="empty"><p>No hay cambios registrados con esos filtros.</p></div>'; return; }
+  const esc = function(t){ return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;'); };
+  cont.innerHTML = '<div class="tabla-wrap"><table><thead><tr><th>Fecha</th><th>Persona</th><th>Área</th><th>Qué cambió</th></tr></thead><tbody>' +
+    lista.slice(0, 500).map(function(r){
+      const d = new Date(r.t);
+      const fecha = d.toLocaleDateString('es-EC', { day: '2-digit', month: 'short' }) + ' · ' + d.toLocaleTimeString('es-EC', { hour: '2-digit', minute: '2-digit' });
+      return '<tr><td style="white-space:nowrap;font-size:12.5px;color:var(--gray);">' + fecha + '</td>' +
+        '<td style="white-space:nowrap;"><b>' + esc(r.nombre || r.uid) + '</b><div style="font-size:11px;color:var(--gray);">' + (NOMBRE_ROL[r.rol] || r.rol || '') + '</div></td>' +
+        '<td><span class="badge badge-gray">' + (BIT_TIPOS[r.tipo] || r.tipo) + '</span></td>' +
+        '<td style="font-size:13px;line-height:1.5;">' + esc(r.texto) + '</td></tr>';
+    }).join('') + '</tbody></table></div>' +
+    (lista.length > 500 ? '<div style="font-size:12px;color:var(--gray);padding:10px 0;">Se muestran los 500 más recientes. Usa los filtros para ver el resto.</div>' : '');
 }
 
 // save() sincroniza a Firestore solo lo que cambió
@@ -2810,6 +3030,7 @@ async function cargarDatos(rol, previa) {
   _escrito['colecciones/multas'] = JSON.stringify({ items: state.multas });
   _escrito['colecciones/anuncios'] = JSON.stringify({ items: state.anuncios });
   _escrito['colecciones/materiales'] = JSON.stringify({ items: state.materiales });
+  _escrito['config/general'] = JSON.stringify(state.config);
   _cargaCompleta = _erroresCarga.length === 0;
   if (!_cargaCompleta) avisarCargaIncompleta();
 }
@@ -3174,6 +3395,7 @@ function launchApp() {
   if (bma) bma.style.display = (state.user.role === 'alumno' && !onboardingPendiente(state.user)) ? 'block' : 'none';
   buildNav();
   buildBottomNav();
+  if (state.user.role !== 'alumno') registrar('acceso', 'Inició sesión');
   navigate(state.user.role === 'alumno' ? 'alumno-home' : 'dashboard');
 }
 
@@ -3191,6 +3413,7 @@ const ADMIN_NAV = [
   { id: 'materiales', label: '📚 Materiales' },
   { id: 'anuncios', label: '🔔 Anuncios' },
   { id: 'equipo', label: '👤 Equipo' },
+  { id: 'registro', label: '🕘 Registro de cambios' },
   { id: 'config', label: '⚙ Configuración' },
 ];
 const PROFE_NAV = [
@@ -3234,7 +3457,7 @@ const BN_ICONS = {
 const BN_TITULOS = {
   dashboard: 'Dashboard', asistencia: 'Tomar asistencia', historial: 'Historial',
   pagos: 'Pagos y cuotas', multas: 'Multas y fondo', alumnos: 'Alumnos',
-  materiales: 'Materiales', anuncios: 'Anuncios', config: 'Configuración', equipo: 'Equipo',
+  materiales: 'Materiales', anuncios: 'Anuncios', config: 'Configuración', equipo: 'Equipo', registro: 'Registro de cambios',
   'alumno-home': 'Inicio', 'alumno-materiales': 'Materiales',
   'alumno-anuncios': 'Anuncios', mensaje: 'Centro de ayuda',
 };
@@ -3275,7 +3498,7 @@ function navigate(page) {
     }
     state.attSession = {};
   }
-  if ((page === 'pagos' || page === 'multas' || page === 'config' || page === 'equipo') && !esAdmin()) { toast('Sección exclusiva de administración'); return; }
+  if ((page === 'pagos' || page === 'multas' || page === 'config' || page === 'equipo' || page === 'registro') && !esAdmin()) { toast('Sección exclusiva de administración'); return; }
   // Alumnos: los profesores entran en modo consulta (sin datos financieros ni de representantes)
   if (page === 'alumnos' && miNivel() < NIVEL_ROL.profesor) { toast('Sección exclusiva del equipo'); return; }
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -3299,6 +3522,7 @@ function navigate(page) {
   if (page === 'multas') renderMultas();
   if (page === 'config') renderConfig();
   if (page === 'equipo') renderEquipo();
+  if (page === 'registro') renderRegistro();
   if (page === 'mensaje') renderMensaje();
   if (page === 'alumnos') renderAlumnos();
   if (page === 'materiales') renderMateriales('admin');
@@ -4769,6 +4993,7 @@ async function addAlumno() {
       state.alumnos.push(nuevo);
       closeModal('modal-alumno');
       renderAlumnos();
+      registrar('alumnos', 'Creó la cuenta de ' + name + (beca ? ' (beca ' + beca + '%)' : ''), name);
       toast('✓ Alumno creado — ya puede iniciar sesión');
     } catch (e) {
       if (uidCreado) await window.fb.cancelarUsuarioAuth();
@@ -4815,6 +5040,7 @@ async function deleteAlumno(u) {
     guardarDoc('colecciones', 'multas', { items: state.multas });
   }
   delPend = null;
+  if (i >= 0) registrar('alumnos', 'Eliminó del portal a ' + bitNombre(u) + (correoBorrado ? ' (' + correoBorrado + ')' : ''), u);
   renderAlumnos();
   mostrarAvisoBorrado(correoBorrado);
 }
@@ -4916,6 +5142,7 @@ function exportData() {
   a.href = URL.createObjectURL(blob);
   a.download = `electi-respaldo-${new Date().toISOString().split('T')[0]}.json`;
   a.click();
+  registrar('datos', 'Descargó un respaldo completo de los datos del portal');
   toast('✓ Respaldo descargado');
 }
 
@@ -5023,6 +5250,7 @@ async function addMiembro() {
       Object.assign(m, perfilEdit);
       closeModal('modal-miembro');
       renderEquipo();
+      registrar('equipo', 'Actualizó la cuenta de ' + name + ' · rol: ' + (NOMBRE_ROL[(perfilEdit && perfilEdit.rol) || rol] || rol), name);
       toast('✓ Miembro actualizado');
     } catch (e) { toast('No se pudo guardar el cambio'); }
     return;
@@ -5043,6 +5271,7 @@ async function addMiembro() {
     state.equipo.push(Object.assign({ username: uidCreado }, perfil));
     closeModal('modal-miembro');
     renderEquipo();
+    registrar('equipo', 'Creó la cuenta de ' + name + ' como ' + (NOMBRE_ROL[rol] || rol), name);
     toast('✓ Cuenta creada — ya puede iniciar sesión');
   } catch (e) {
     if (uidCreado) await window.fb.cancelarUsuarioAuth();
@@ -5054,7 +5283,7 @@ async function addMiembro() {
 async function resetMiembro(email) {
   const objetivo = state.equipo.find(m => m.email === email);
   if (objetivo && !puedeGestionarA(objetivo)) { toast('No tienes permisos sobre esa cuenta'); return; }
-  try { await window.fb.resetPass(email); toast('✓ Correo de restablecimiento enviado a ' + email); }
+  try { await window.fb.resetPass(email); registrar('acceso', 'Envió un correo de restablecimiento de contraseña a ' + email, email); toast('✓ Correo de restablecimiento enviado a ' + email); }
   catch (e) { toast('No se pudo enviar el correo'); }
 }
 
@@ -5078,6 +5307,7 @@ async function quitarMiembro(uid) {
   if (i >= 0) { state.equipo.splice(i, 1); await window.fb.delDoc('usuarios', uid).catch(() => {}); }
   delPendEq = null;
   renderEquipo();
+  registrar('equipo', 'Retiró del portal a ' + ((objetivo && objetivo.name) || uid), uid);
   toast('Miembro retirado del portal');
 }
 
@@ -5115,6 +5345,7 @@ async function repararCuenta() {
     if (rol === 'alumno') { state.alumnos.push(Object.assign({ username: uid }, perfil)); renderAlumnos(); }
     else { state.equipo.push(Object.assign({ username: uid }, perfil)); renderEquipo(); }
     closeModal('modal-reparar');
+    registrar('acceso', 'Reparó la cuenta de ' + name + ' (' + email + ')', name);
     toast('✓ Cuenta reparada — ya puede iniciar sesión normal');
   } catch (e) {
     const c = e && e.code ? e.code : '';
@@ -5267,6 +5498,7 @@ async function purgarAsistencias() {
   }
   previewPurga();
   render();
+  registrar('asistencia', 'Borró ' + ok + ' sesiones de asistencia anteriores al ' + formatDate(iso));
   toast(fallo === 0 ? '✓ ' + ok + ' sesiones borradas'
                     : ok + ' borradas · ' + fallo + ' fallaron (revisa permisos)');
 }
@@ -5758,6 +5990,7 @@ async function procesarImport(rows) {
     }
   }
   renderAlumnos();
+  registrar('alumnos', 'Importó alumnos desde Excel: ' + ok + ' creados, ' + dup + ' ya existían');
   toast('Importación: ' + ok + ' creados · ' + dup + ' ya existían · ' + sin + ' filas sin nombre o correo' + (err ? ' · ' + err + ' con error' : ''));
 }
 
