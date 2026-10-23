@@ -406,6 +406,9 @@ tbody tr:hover td { background: var(--off); }
 .att-btn.selected-t { background: var(--yellow); color: white; border-color: var(--yellow); }
 .att-btn.fj { background: #EEF2FF; color: var(--navy); border: 1.5px solid #c7d2fe; }
 .att-btn.selected-fj { background: var(--blue); color: white; border-color: var(--blue); }
+.att-btn.na { background: var(--off); color: var(--gray); border: 1.5px dashed #CBD5E1; }
+.att-btn.selected-na { background: #475569; color: white; border-color: #475569; border-style: solid; }
+.att-btn.na:disabled { cursor: default; opacity: 1; }
 
 /* ══════════════════════════════════════════════════════════
    CENTRO DE AYUDA
@@ -1657,7 +1660,7 @@ tbody tr:hover td { background: var(--off); }
       <div class="page-title">Pagos y cuotas</div>
       <div class="page-sub" id="pagos-sub">Clic en cada casilla para marcar pagado. Mora: cuota impaga después del día 5 del mes.</div>
       <div class="stats-row">
-        <div class="stat-card"><div class="stat-card-label">Facturable del ciclo</div><div class="stat-card-val" id="pf-total">$0</div></div>
+        <div class="stat-card"><div class="stat-card-label" id="pf-total-lbl">Facturable del ciclo</div><div class="stat-card-val" id="pf-total">$0</div></div>
         <div class="stat-card"><div class="stat-card-label">Cobrado</div><div class="stat-card-val green" id="pf-cobrado">$0</div></div>
         <div class="stat-card"><div class="stat-card-label">Pendiente</div><div class="stat-card-val yellow" id="pf-pendiente">$0</div></div>
         <div class="stat-card"><div class="stat-card-label">Tasa de cobro</div><div class="stat-card-val sky" id="pf-tasa">—</div></div>
@@ -2762,7 +2765,8 @@ function bitCambio(col, id, previoTxt, nuevo) {
         const a = JSON.stringify(antes[k]), b = JSON.stringify(nuevo[k]);
         if (a === b) return;
         if (k === 'acuerdoUrl') { partes.push(nuevo[k] ? 'subió el acuerdo firmado' : 'quitó el acuerdo firmado'); return; }
-        if (BIT_CAMPOS[k]) partes.push(BIT_CAMPOS[k] + ': ' + bitValor(antes[k]) + ' → ' + bitValor(nuevo[k]));
+        const vv = function(x){ return k === 'plan' ? ({ unico: 'pago único', mensual: 'mensual' }[x] || bitValor(x)) : bitValor(x); };
+        if (BIT_CAMPOS[k]) partes.push(BIT_CAMPOS[k] + ': ' + vv(antes[k]) + ' → ' + vv(nuevo[k]));
       });
       if (partes.length) registrar('alumnos', nombre + ' · ' + partes.join(' · '), nombre);
       return;
@@ -2789,6 +2793,7 @@ function bitCambio(col, id, previoTxt, nuevo) {
       const ra = (antes && antes.registros) || {}, rb = (nuevo && nuevo.registros) || {};
       let nuevas = 0; const cambios = []; const tipos = {};
       Object.keys(rb).forEach(function(u){
+        if (!ra[u] && rb[u] === 'NA') { cambios.push(bitNombre(u) + ': marcado N/A (no cuenta)'); return; }
         if (!ra[u] && rb[u]) { nuevas++; const lb = estadoAtt(rb[u]).label; tipos[lb] = (tipos[lb] || 0) + 1; return; }
         if (ra[u] && rb[u] !== ra[u]) cambios.push(bitNombre(u) + ': ' + estadoAtt(ra[u]).label + ' → ' + estadoAtt(rb[u]).label);
       });
@@ -2799,7 +2804,8 @@ function bitCambio(col, id, previoTxt, nuevo) {
       if (!cambios.length) return;
       const quienTomo = antes && antes.creadoPorNombre;
       const mismoDia = antes && antes.creadoT && String(antes.creadoT).slice(0, 10) === new Date().toISOString().slice(0, 10);
-      if (quienTomo && quienTomo === quienSoy() && mismoDia) return;
+      const tocaNA = Object.keys(rb).concat(Object.keys(ra)).some(function(u){ return (rb[u] === 'NA') !== (ra[u] === 'NA'); });
+      if (quienTomo && quienTomo === quienSoy() && mismoDia && !tocaNA) return;
       let txt = nombreTipo(tp[0]) + ' ' + formatDate(tp[1]) + ': ';
       const t2 = [];
       if (cambios.length) t2.push(cambios.length + (cambios.length === 1 ? ' cambio' : ' cambios') + ' (' + cambios.slice(0, 6).join('; ') + (cambios.length > 6 ? '…' : '') + ')');
@@ -3711,7 +3717,7 @@ function fechaISO(d) {
 function resumenSesion(tipo, fecha) {
   const reg = state.asistencia[tipo + '_' + fecha];
   if (!reg) return null;
-  const uids = Object.keys(reg).filter(function(u){ return reg[u]; });
+  const uids = Object.keys(reg).filter(function(u){ return reg[u] && reg[u] !== 'NA'; });
   if (uids.length === 0) return null;
   let presentes = 0;
   uids.forEach(function(u){
@@ -3865,6 +3871,8 @@ function loadAttendance() {
           style="width:58px;padding:5px 6px;border:1px solid var(--border);border-radius:6px;font-size:12px;font-family:'DM Sans',sans-serif;display:${esT?'inline-block':'none'};">
         <button class="att-btn fj ${cur==='FJ'?'selected-fj':''}" onclick="setAtt('${al.username}','FJ',this)">📋 F. Just.</button>
         <button class="att-btn ausente ${(cur==='FI'||cur==='A')?'selected-a':''}" onclick="setAtt('${al.username}','FI',this)">✗ F. Injust.</button>
+        ${esAdmin() ? `<button class="att-btn na ${cur==='NA'?'selected-na':''}" onclick="setAtt('${al.username}','NA',this)" title="No asistió, pero no cuenta como falta ni afecta su asistencia. Solo para casos excepcionales.">N/A</button>`
+          : (cur==='NA' ? '<button class="att-btn na selected-na" disabled title="Coordinación marcó esta ausencia como N/A: no cuenta como falta.">N/A</button>' : '')}
       </div>
     </div>`;
   }).join('');
@@ -3878,10 +3886,11 @@ function pintarMarcador() {
   const sedeF = document.getElementById('att-sede').value;
   const d = state.attSession.data;
   const lista = alumnosDeSesion(state.attSession.tipo, sedeF, d);
-  let P = 0, T = 0, FJ = 0, FI = 0, sin = 0;
+  let P = 0, T = 0, FJ = 0, FI = 0, NA = 0, sin = 0;
   lista.forEach(function(al){
     const v = d[al.username];
-    if (v === 'P') P++;
+    if (v === 'NA') NA++;
+    else if (v === 'P') P++;
     else if (typeof v === 'string' && v.startsWith('T')) T++;
     else if (v === 'FJ') FJ++;
     else if (v === 'FI' || v === 'A') FI++;
@@ -3892,6 +3901,7 @@ function pintarMarcador() {
           chip(T + ' con tardanza', 'var(--yellow-bg)', '#92400E') +
           chip(FJ + ' justificadas', '#EEF2FF', 'var(--navy)') +
           chip(FI + ' injustificadas', 'var(--red-bg)', 'var(--red)');
+  if (NA > 0) h += chip(NA + ' N/A', 'var(--off)', '#475569');
   if (sin > 0) h += chip(sin + ' sin marcar', 'var(--off)', 'var(--gray)');
   const barra = document.getElementById('att-barra');
   if (barra) {
@@ -3920,8 +3930,10 @@ function marcarTodosPresentes() {
 }
 
 function setAtt(username, status, btn) {
+  if (state.attSession.data[username] === 'NA' && !esAdmin()) { toast('Coordinación marcó esta ausencia como N/A. Solo administración puede cambiarla.'); return; }
+  if (status === 'NA' && !esAdmin()) return;
   const row = btn.closest('.att-toggle');
-  row.querySelectorAll('.att-btn').forEach(b => b.classList.remove('selected-p','selected-a','selected-t','selected-fj'));
+  row.querySelectorAll('.att-btn').forEach(b => b.classList.remove('selected-p','selected-a','selected-t','selected-fj','selected-na'));
   const minInp = document.getElementById('min-' + username);
   if (status === 'T') {
     btn.classList.add('selected-t');
@@ -3929,7 +3941,7 @@ function setAtt(username, status, btn) {
     state.attSession.data[username] = 'T:' + ((minInp && parseInt(minInp.value)) || 10);
   } else {
     if (minInp) minInp.style.display = 'none';
-    btn.classList.add({ P:'selected-p', FI:'selected-a', FJ:'selected-fj' }[status]);
+    btn.classList.add({ P:'selected-p', FI:'selected-a', FJ:'selected-fj', NA:'selected-na' }[status]);
     state.attSession.data[username] = status;
   }
   pintarMarcador();
@@ -3973,11 +3985,12 @@ function sincronizarMultas(sessKey) {
 }
 
 function getAlumnoStats(username) {
-  let P=0, T=0, FJ=0, FI=0;
+  let P=0, T=0, FJ=0, FI=0, NA=0;
   Object.values(state.asistencia).forEach(s => {
     const v = s[username];
     if (!v) return;
-    if (v === 'P') P++;
+    if (v === 'NA') NA++;
+    else if (v === 'P') P++;
     else if (v === 'FJ') FJ++;
     else if (v === 'FI' || v === 'A') FI++;
     else if (typeof v === 'string' && v.startsWith('T')) T++;
@@ -3986,7 +3999,7 @@ function getAlumnoStats(username) {
   // Acuerdo ELECTI: 1 falta injustificada = 1 falta · 2 justificadas = 1 injustificada. Límite: 2.
   const faltas = FI + FJ * 0.5;
   const pct = total ? Math.round(((P + T) / total) * 100) : null;
-  return { P, T, FJ, FI, total, faltas, pct };
+  return { P, T, FJ, FI, NA, total, faltas, pct };
 }
 
 function faltasTxt(f) { return f % 1 === 0 ? String(f) : f.toFixed(1); }
@@ -4003,6 +4016,9 @@ function estadoAtt(v) {
   if (v === 'P') return { label: 'Presente', badge: 'badge-green' };
   if (v === 'FJ') return { label: 'F. Justificada', badge: 'badge-navy' };
   if (v === 'FI' || v === 'A') return { label: 'F. Injustificada', badge: 'badge-red' };
+  // N/A: no asistió, pero coordinación decidió que no cuente. No suma a
+  // ninguna falta ni entra en el porcentaje de asistencia.
+  if (v === 'NA') return { label: 'N/A (no cuenta)', badge: 'badge-gray' };
   if (typeof v === 'string' && v.startsWith('T')) {
     const min = v.includes(':') ? v.split(':')[1] : '';
     return { label: 'Tardanza' + (min ? ' (' + min + ' min)' : ''), badge: 'badge-yellow' };
@@ -4107,7 +4123,7 @@ function renderDashboard() {
     state.alumnos.forEach(function(a){ const r = resumenPago(a); cobrado += r.pagado; pendiente += r.pendiente; total += r.total; });
     const tasa = total > 0 ? Math.round((cobrado / total) * 100) : 0;
     metricas.push({ ico:'<line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>',
-      cls:'ico-green', lbl:'Cobrado', val:'$' + dinero(cobrado), sub: tasa + '% de $' + dinero(total) });
+      cls:'ico-green', lbl:'Cobrado', val:'$' + dinero(cobrado), sub: tasa + '% de $' + dinero(total) + ' facturable' });
     metricas.push({ ico:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
       cls:'ico-yellow', lbl:'Por cobrar', val:'$' + dinero(pendiente), sub: enRiesgo > 0 ? enRiesgo + ' en riesgo de faltas' : 'Sin alumnos en riesgo' });
   } else {
@@ -4144,6 +4160,14 @@ function renderDashboard() {
         mens.forEach(function(a){ const q = cuotaDe(a); e += q; if (getPagos(a).m[mo.k]) c += q; });
         labels.push(mo.label); esperado.push(e); cobrado2.push(c);
       });
+      // Sin esta barra, quien eligió pago único quedaba fuera del gráfico y la
+      // suma no cuadraba con el facturable de Pagos.
+      const unicosD = state.alumnos.filter(function(a){ return a.plan === 'unico'; });
+      if (unicosD.length) {
+        let uE = 0, uC = 0;
+        unicosD.forEach(function(a){ const r = resumenPago(a); uE += r.total; if (r.unicoPagado) uC += r.total; });
+        labels.push('P. único'); esperado.push(uE); cobrado2.push(uC);
+      }
       window._chCob = new Chart(cv, {
         type:'bar',
         data:{ labels:labels, datasets:[
@@ -4331,6 +4355,8 @@ function renderPagos() {
   let tTotal = 0, tCobrado = 0, tPend = 0;
   lista.forEach(a => { const r = resumenPago(a); tTotal += r.total; tCobrado += r.pagado; tPend += r.pendiente; });
   document.getElementById('pf-total').textContent = '$' + dinero(tTotal);
+  // Si hay un filtro puesto, que se note: el Dashboard siempre muestra a todos.
+  document.getElementById('pf-total-lbl').textContent = sedeF === 'ALL' ? 'Facturable del ciclo' : 'Facturable · solo ' + (esBloque ? nombreBloque(sedeF) : nombreModalidad(sedeF));
   document.getElementById('pf-cobrado').textContent = '$' + dinero(tCobrado);
   document.getElementById('pf-pendiente').textContent = '$' + dinero(tPend);
   document.getElementById('pf-tasa').textContent = tTotal > 0 ? Math.round(tCobrado/tTotal*100) + '%' : '—';
@@ -6635,25 +6661,25 @@ function exportAsistenciaExcel() {
   const sesiones = Object.keys(state.asistencia).sort((a, b) => a.split('_')[1].localeCompare(b.split('_')[1]));
   // Hoja 1: una fila por alumno, una columna por sesión
   const head = ['Alumno', 'Modalidad'].concat(sesiones.map(function(k){ const p = k.split('_'); return formatDate(p[1]) + ' · ' + (TIPO_CORTO[p[0]] || p[0]); }),
-    ['Presentes', 'Tardanzas', 'F. justificadas', 'F. injustificadas', 'Faltas equivalentes (máx. 2)', '% asistencia', 'Estado']);
+    ['Presentes', 'Tardanzas', 'F. justificadas', 'F. injustificadas', 'N/A (no cuentan)', 'Faltas equivalentes (máx. 2)', '% asistencia', 'Estado']);
   const data = [head];
   state.alumnos.slice().sort(function(a, b){ return String(a.name).localeCompare(String(b.name)); }).forEach(function(a){
     const fila = [a.name, nombreModalidad(a.sede)];
     sesiones.forEach(function(k){ const v = state.asistencia[k][a.username]; fila.push(v ? estadoAtt(v).label : ''); });
     const st = getAlumnoStats(a.username);
-    fila.push(st.P, st.T, st.FJ, st.FI, st.faltas, st.pct === null ? '' : st.pct / 100,
+    fila.push(st.P, st.T, st.FJ, st.FI, st.NA, st.faltas, st.pct === null ? '' : st.pct / 100,
       st.total === 0 ? 'Sin registro' : st.faltas > 2 ? 'Límite superado' : st.faltas === 2 ? 'En el límite' : 'Dentro del límite');
     data.push(fila);
   });
   // Hoja 2: una fila por sesión, con quién la tomó
-  const ses = [['Fecha', 'Día', 'Sesión', 'Registrados', 'Presentes', 'Tardanzas', 'F. justificadas', 'F. injustificadas', '% asistencia',
+  const ses = [['Fecha', 'Día', 'Sesión', 'Registrados', 'Presentes', 'Tardanzas', 'F. justificadas', 'F. injustificadas', 'N/A (no cuentan)', '% asistencia',
     'Tomada por', 'Tomada el', 'Última modificación por', 'Modificada el']];
   sesiones.forEach(function(k){
     const p = k.split('_'); const reg = state.asistencia[k] || {}; const meta = state.asistenciaMeta[k] || {};
-    let P = 0, T = 0, FJ = 0, FI = 0;
-    Object.keys(reg).forEach(function(u){ const v = reg[u]; if (v === 'P') P++; else if (v === 'FJ') FJ++; else if (v === 'FI' || v === 'A') FI++; else if (typeof v === 'string' && v.startsWith('T')) T++; });
+    let P = 0, T = 0, FJ = 0, FI = 0, NA = 0;
+    Object.keys(reg).forEach(function(u){ const v = reg[u]; if (v === 'NA') NA++; else if (v === 'P') P++; else if (v === 'FJ') FJ++; else if (v === 'FI' || v === 'A') FI++; else if (typeof v === 'string' && v.startsWith('T')) T++; });
     const n = P + T + FJ + FI;
-    ses.push([aFecha(p[1]), (TIPO_DIA[p[0]] || p[0]).split(' ·')[0], nombreTipo(p[0]), n, P, T, FJ, FI, n ? (P + T) / n : '',
+    ses.push([aFecha(p[1]), (TIPO_DIA[p[0]] || p[0]).split(' ·')[0], nombreTipo(p[0]), n, P, T, FJ, FI, NA, n ? (P + T) / n : '',
       meta.creadoPorNombre || '', aFecha(meta.creadoT), meta.porNombre || '', aFecha(meta.actualizado)]);
   });
   // Hoja 3: detalle marca por marca
