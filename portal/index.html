@@ -2501,7 +2501,10 @@ function getConfig(sede) {
     whatsapp: cfg.whatsapp || '593962893857',
     bloque: null,
   };
-  if (!sede) return base;
+  // Hay un solo calendario para todas las modalidades: sin sede se usa el
+  // mismo de Configuración. Antes devolvía el calendario por defecto y la
+  // vista "Todas las modalidades" de Pagos mostraba meses que no eran.
+  if (!sede) sede = 'UIO';
   const b = bloqueDe(sede);
   const o = ((cfg.bloques || {})[b]) || {};
   // El primer dia de clases es el unico dato de fecha que se configura:
@@ -4155,6 +4158,7 @@ function renderDashboard() {
       let matE = 0, matC = 0;
       mens.forEach(function(a){ const mm = matriculaDe(a); matE += mm; if (getPagos(a).mat) matC += mm; });
       labels.push('Matríc.'); esperado.push(matE); cobrado2.push(matC);
+      const M = getMeses('UIO');
       M.forEach(function(mo){
         let e = 0, c = 0;
         mens.forEach(function(a){ const q = cuotaDe(a); e += q; if (getPagos(a).m[mo.k]) c += q; });
