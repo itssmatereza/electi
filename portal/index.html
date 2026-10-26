@@ -1733,6 +1733,29 @@ tbody tr:hover td { background: var(--off); }
       </div>
     </div>
 
+
+    <!-- POSTULACIONES WEB: consulta de solo lectura para administración -->
+    <div class="page" id="page-postulaciones">
+      <div class="page-title">Postulaciones web</div>
+      <div class="page-sub">Solicitudes recibidas desde la página de ELECTI</div>
+      <div class="card">
+        <div class="card-head">
+          <div class="card-title">Postulaciones <span id="postulaciones-count" style="font-size:13px;font-weight:500;color:var(--gray)"></span></div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <div class="buscador"><input type="search" id="postulaciones-buscar" placeholder="Buscar postulación..." aria-label="Buscar postulaciones" oninput="filtrarPostulaciones()"></div>
+            <button type="button" class="btn btn-ghost" onclick="cargarPostulaciones()">↻ Actualizar</button>
+          </div>
+        </div>
+        <p id="postulaciones-estado" role="status" aria-live="polite" style="padding:10px 16px;font-size:13px;color:var(--gray)"></p>
+        <div class="tabla-wrap">
+          <table>
+            <thead><tr><th>Fecha</th><th>Nombre</th><th>WhatsApp</th><th>Quién llena</th><th>Curso</th><th>Modalidad</th><th>Origen</th></tr></thead>
+            <tbody id="postulaciones-table"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
     <!-- ALUMNOS -->
     <div class="page" id="page-alumnos">
       <div class="page-title">Alumnos</div>
@@ -3524,6 +3547,7 @@ const ADMIN_NAV = [
   { id: 'pagos', label: '$ Pagos y cuotas' },
   { id: 'multas', label: '⚖ Multas y fondo' },
   { id: 'alumnos', label: '👥 Alumnos' },
+  { id: 'postulaciones', label: '📋 Postulaciones web' },
   { id: 'materiales', label: '📚 Materiales' },
   { id: 'anuncios', label: '🔔 Anuncios' },
   { id: 'equipo', label: '👤 Equipo' },
@@ -3612,7 +3636,7 @@ function navigate(page) {
     }
     state.attSession = {};
   }
-  if ((page === 'pagos' || page === 'multas' || page === 'config' || page === 'equipo' || page === 'registro') && !esAdmin()) { toast('Sección exclusiva de administración'); return; }
+  if ((page === 'pagos' || page === 'multas' || page === 'config' || page === 'equipo' || page === 'registro' || page === 'postulaciones') && !esAdmin()) { toast('Sección exclusiva de administración'); return; }
   // Alumnos: los profesores entran en modo consulta (sin datos financieros ni de representantes)
   if (page === 'alumnos' && miNivel() < NIVEL_ROL.profesor) { toast('Sección exclusiva del equipo'); return; }
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -3639,6 +3663,7 @@ function navigate(page) {
   if (page === 'registro') renderRegistro();
   if (page === 'mensaje') renderMensaje();
   if (page === 'alumnos') renderAlumnos();
+  if (page === 'postulaciones') cargarPostulaciones();
   if (page === 'materiales') renderMateriales('admin');
   if (page === 'anuncios') renderAnuncios();
   if (page === 'alumno-home') renderAlumnoHome();
@@ -3648,6 +3673,86 @@ function navigate(page) {
     const barra = document.getElementById('att-barra');
     if (barra && !(state.attSession && state.attSession.key)) barra.classList.remove('on');
     renderCalendario();
+  }
+}
+
+// ─── POSTULACIONES WEB: datos independientes de alumnos / pagos / asistencia ───
+let postulacionesWeb = [];
+let postulacionesSolicitud = 0;
+function textoPostulacion(v) { return typeof v === 'string' ? v : ''; }
+function celdaPostulacion(tr, valor) {
+  const td = document.createElement('td');
+  td.textContent = textoPostulacion(valor) || '—';
+  tr.appendChild(td);
+  return td;
+}
+function filtrarPostulaciones() {
+  if (!esAdmin()) return;
+  const tbody = document.getElementById('postulaciones-table');
+  if (!tbody) return;
+  const input = document.getElementById('postulaciones-buscar');
+  const q = (input ? input.value : '').trim().toLocaleLowerCase('es');
+  const filas = postulacionesWeb.filter(p => [p.nombre,p.whatsapp,p.quien,p.curso,p.modalidad,p.origen]
+    .some(v => textoPostulacion(v).toLocaleLowerCase('es').includes(q)));
+  document.getElementById('postulaciones-count').textContent =
+    '(' + filas.length + (q ? ' de ' + postulacionesWeb.length : '') + ')';
+  tbody.replaceChildren();
+  if (!filas.length) {
+    const tr = document.createElement('tr');
+    const td = document.createElement('td');
+    td.colSpan = 7;
+    td.textContent = q ? 'Ninguna postulación coincide con la búsqueda.' : 'Aún no hay postulaciones.';
+    tr.appendChild(td);
+    tbody.appendChild(tr);
+    return;
+  }
+  const fragment = document.createDocumentFragment();
+  filas.forEach(p => {
+    const tr = document.createElement('tr');
+    let fecha = textoPostulacion(p.fecha);
+    if (fecha && !Number.isNaN(Date.parse(fecha))) {
+      fecha = new Date(fecha).toLocaleString('es-EC',{dateStyle:'short',timeStyle:'short'});
+    }
+    celdaPostulacion(tr,fecha);
+    celdaPostulacion(tr,p.nombre);
+    const td = celdaPostulacion(tr,'');
+    td.textContent = '';
+    const tel = textoPostulacion(p.whatsapp);
+    if (/^\+[0-9]{9,15}$/.test(tel)) {
+      const link = document.createElement('a');
+      link.href = 'https://wa.me/' + tel.slice(1);
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      link.textContent = tel;
+      td.appendChild(link);
+    } else td.textContent = tel || '—';
+    celdaPostulacion(tr,p.quien);
+    celdaPostulacion(tr,p.curso);
+    celdaPostulacion(tr,p.modalidad);
+    celdaPostulacion(tr,p.origen);
+    fragment.appendChild(tr);
+  });
+  tbody.appendChild(fragment);
+}
+async function cargarPostulaciones() {
+  if (!esAdmin()) { toast('Solo administración puede consultar postulaciones'); return; }
+  const estado = document.getElementById('postulaciones-estado');
+  if (!estado) return;
+  const version = ++postulacionesSolicitud;
+  estado.textContent = 'Cargando postulaciones…';
+  try {
+    const resultados = await window.fb.getDocs('postulaciones');
+    if (version !== postulacionesSolicitud || !esAdmin()) return;
+    postulacionesWeb = resultados.slice().sort((a,b) =>
+      textoPostulacion(b.fecha).localeCompare(textoPostulacion(a.fecha)));
+    filtrarPostulaciones();
+    estado.textContent = postulacionesWeb.length + ' postulación(es) · consulta de solo lectura.';
+  } catch (e) {
+    if (version !== postulacionesSolicitud) return;
+    console.error('Error consultando postulaciones', e);
+    estado.textContent = 'No se pudo cargar la lista. Comprueba la conexión y las reglas de Firestore.';
+    document.getElementById('postulaciones-table').replaceChildren();
+    document.getElementById('postulaciones-count').textContent = '';
   }
 }
 
