@@ -26,13 +26,15 @@
 <meta name="theme-color" content="#0D2A6E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<!-- La fuente no bloquea el primer pintado: se carga en paralelo y se aplica al llegar. -->
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"></noscript>
 <!-- Marca que el JavaScript corre. Si por lo que sea no corre (error,
      bloqueador, red caída), la clase nunca se pone y todo el contenido
      que se revela con animación se muestra visible por defecto. Sin esto,
      un solo error de JS deja la página en blanco. -->
 <script>document.documentElement.className += ' js';</script>
-<link rel="stylesheet" href="/assets/electi.css?v=dbf3f82f">
+<link rel="stylesheet" href="/assets/electi.css?v=8e657621">
 <noscript><style>.rv{opacity:1!important;transform:none!important}</style></noscript>
 <script>
 /* Compatibilidad con los enlaces antiguos que llevaban # (QR, bios, mensajes ya enviados).
@@ -51,15 +53,16 @@
 })();
 </script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "EducationalOrganization", "name": "ELECTI", "alternateName": "ELECTI — Escuela de liderazgo y gestión de proyectos", "url": "https://electi.unionestudiantil.org/", "logo": "https://electi.unionestudiantil.org/icon-512.png", "image": "https://electi.unionestudiantil.org/og.jpg", "description": "Escuela de liderazgo y gestión de proyectos para jóvenes en Quito: 24 semanas, seis fases y un proyecto real ejecutado. Programa de Fundación Unión Estudiantil.", "email": "electi@unionestudiantil.org", "telephone": "+593962893857", "sameAs": ["https://instagram.com/electi.ec", "https://instagram.com/estudiantil_union"], "parentOrganization": {"@type": "Organization", "name": "Fundación Unión Estudiantil"}, "areaServed": [{"@type": "City", "name": "Quito"}], "address": {"@type": "PostalAddress", "addressCountry": "EC", "addressLocality": "Quito", "addressRegion": "Pichincha"}}</script>
-<!-- Píxel de Meta (dataset 810388034766209): mide visitas, clics en Postular (forms.gle) y en WhatsApp (wa.me). No envía datos personales. Va una sola vez, aquí. -->
+<!-- Píxel de Meta (dataset 810388034766209): mide visitas (PageView en todas las páginas), clics en Postular (/postular/), postulaciones enviadas (Lead, en /gracias/) y WhatsApp (wa.me). No envía datos personales. Va una sola vez, aquí. -->
 <script>
 !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
 fbq('init','810388034766209');
 fbq('track','PageView');
-document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;var h=a.getAttribute('href')||'';if(h.indexOf('forms.gle')>-1)fbq('trackCustom','ClickPostular');if(h.indexOf('wa.me')>-1)fbq('track','Contact');});
+document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;var h=a.getAttribute('href')||'';if(h.indexOf('/postular')>-1)fbq('trackCustom','ClickPostular');if(h.indexOf('wa.me')>-1)fbq('track','Contact');});
 </script>
 </head>
-<body>
+<body class="con-topbar">
+<a class="topbar" href="/postular/"><span>Postulaciones hasta el <b>10 de noviembre</b></span><span class="tb-sep">·</span><span>Becas de hasta <b>100 %</b></span><span class="tb-cta">Postular →</span></a>
 
 <!-- ══════ NAV ══════ -->
 <nav id="nav">
@@ -150,7 +153,7 @@ document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)
     </li>
     <li><a href="/preguntas/">Preguntas</a></li>
     <li><a href="/portal" class="nav-portal">Portal alumnos</a></li>
-    <li><a href="https://forms.gle/SdaHtjDcyFuYEa3T7" target="_blank" rel="noopener" class="nav-cta">Postular</a></li>
+    <li><a href="/postular/" class="nav-cta">Postular</a></li>
   </ul>
   <button class="burger" id="burger" onclick="menuMovil()" aria-label="Menú">
     <span></span><span></span><span></span>
@@ -192,7 +195,7 @@ document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)
   <a href="/preguntas/">Preguntas frecuentes</a>
   <a href="https://instagram.com/electi.ec" target="_blank" rel="noopener">Instagram · @electi.ec</a>
   <a href="/portal" class="mob-portal"><svg viewBox="0 0 24 24" aria-hidden="true" style="width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-2px;margin-right:7px"><rect x="4" y="10.5" width="16" height="10.5" rx="2"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></svg> Portal de alumnos</a>
-  <a href="https://forms.gle/SdaHtjDcyFuYEa3T7" target="_blank" rel="noopener" class="mob-cta">Postular ahora →</a>
+  <a href="/postular/" class="mob-cta">Postular ahora →</a>
 </div>
 
 
@@ -209,8 +212,8 @@ document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)
         <div><b>24</b><span>semanas de programa</span></div>
         <div><b>$0</b><span>de matrícula</span></div>
       </div>
-      <a href="https://forms.gle/SdaHtjDcyFuYEa3T7" target="_blank" rel="noopener" class="btn btn-primary btn-lg" style="margin-top:36px">Postular con mi beca</a>
-      <p class="al-sub" style="margin-top:14px;font-size:14.5px;opacity:.7">Toma cinco minutos y no te compromete a nada.</p>
+      <a href="/postular/?origen=presidenciables" class="btn btn-primary btn-lg" style="margin-top:36px">Postular con mi beca</a>
+      <p class="al-sub" style="margin-top:14px;font-size:14.5px;opacity:.7">Toma un minuto y no te compromete a nada.</p>
     </div>
   </section>
 
@@ -241,7 +244,7 @@ document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)
         <p class="al-eyebrow rv">Desde cualquier ciudad</p>
         <h2 class="al-h2 rv rv-d1">ELECTI también es en línea.<br>Y empieza contigo.</h2>
         <p class="al-lead rv rv-d2">Puedes cursar ELECTI en línea sin importar dónde vivas. Quienes se suman desde ciudades donde ELECTI todavía no tiene sede son los primeros en llevar la escuela a su ciudad, y pueden llegar a liderar su red cuando ELECTI abra allí. El primer paso es el tuyo.</p>
-        <a href="https://forms.gle/SdaHtjDcyFuYEa3T7" target="_blank" rel="noopener" class="btn btn-primary btn-lg rv rv-d3" style="margin-top:28px">Postular con mi beca</a>
+        <a href="/postular/?origen=presidenciables" class="btn btn-primary btn-lg rv rv-d3" style="margin-top:28px">Postular con mi beca</a>
       </div>
     </div>
   </section>
@@ -253,7 +256,7 @@ document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)
         <h2 class="al-h2 rv rv-d1">Tres pasos.</h2>
       </div>
       <div class="al-pasos tres">
-        <div class="al-paso rv"><b>01</b><h3>Postula en línea</h3><p>El formulario toma cinco minutos. Indica que viniste a Presidenciables, presencial o en línea, para que se registre tu beca.</p></div>
+        <div class="al-paso rv"><b>01</b><h3>Postula en línea</h3><p>El formulario toma un minuto. Postula desde esta página para que quede registrado que vienes de Presidenciables y se aplique tu beca.</p></div>
         <div class="al-paso rv rv-d1"><b>02</b><h3>Validamos tu asistencia</h3><p>Cruzamos tu nombre con el registro o la lista de conectados del evento. No necesitas presentar nada más.</p></div>
         <div class="al-paso rv rv-d2"><b>03</b><h3>Entrevista y cupo</h3><p>Conversamos veinte minutos, en persona o por videollamada, y confirmamos tu cupo con la beca aplicada.</p></div>
       </div>
@@ -263,8 +266,8 @@ document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)
   <section class="al-cta">
     <div class="wrap">
       <h2>El liderazgo se aprende<br>ejecutando.</h2>
-      <p>Postular toma cinco minutos y no te compromete a nada.</p>
-      <a href="https://forms.gle/SdaHtjDcyFuYEa3T7" target="_blank" rel="noopener" class="btn btn-primary btn-lg">Postular con mi beca</a>
+      <p>Postular toma un minuto y no te compromete a nada.</p>
+      <a href="/postular/?origen=presidenciables" class="btn btn-primary btn-lg">Postular con mi beca</a>
       <p class="al-nota">Beca exclusiva para participantes de Presidenciables (presencial o en línea), sujeta a verificación de asistencia.<br>El 40% se aplica sobre la mensualidad e incluye exención de la matrícula. No es acumulable con otras becas o convenios: se aplica la condición más favorable.</p>
     </div>
   </section>
@@ -316,7 +319,7 @@ document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)
         <div class="ft-col">
           <h5>Acceso</h5>
           <a href="/portal">Portal de alumnos</a>
-          <a href="https://forms.gle/SdaHtjDcyFuYEa3T7" target="_blank" rel="noopener">Postular</a>
+          <a href="/postular/">Postular</a>
           <a href="/institucional/">Unión Estudiantil</a>
           <a href="/privacidad.html">Política de privacidad</a>
         </div>

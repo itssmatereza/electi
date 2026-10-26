@@ -139,12 +139,12 @@
     .contact-box a { display: block; margin: 8px 0; }
   }
 </style>
-<!-- Píxel de Meta (dataset 810388034766209): mide visitas, clics en Postular (forms.gle) y en WhatsApp (wa.me). No envía datos personales. Va una sola vez, aquí. -->
+<!-- Píxel de Meta (dataset 810388034766209): mide visitas, clics en Postular (/postular/) y en WhatsApp (wa.me). No envía datos personales. Va una sola vez, aquí. -->
 <script>
 !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
 fbq('init','810388034766209');
 fbq('track','PageView');
-document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;var h=a.getAttribute('href')||'';if(h.indexOf('forms.gle')>-1)fbq('trackCustom','ClickPostular');if(h.indexOf('wa.me')>-1)fbq('track','Contact');});
+document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;var h=a.getAttribute('href')||'';if(h.indexOf('/postular')>-1)fbq('trackCustom','ClickPostular');if(h.indexOf('wa.me')>-1)fbq('track','Contact');});
 </script>
 </head>
 <body>
@@ -274,7 +274,7 @@ document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)
     <p><strong>No vendemos, alquilamos ni cedemos tus datos personales a terceros con fines comerciales.</strong> Tus datos pueden ser accedidos únicamente por:</p>
     <ul>
       <li>El equipo de coordinación y docencia de ELECTI, según el nivel de acceso de su rol.</li>
-      <li><strong>Proveedores tecnológicos</strong> que almacenan o procesan la información por cuenta nuestra, bajo obligaciones contractuales de confidencialidad: Google (formularios de postulación y almacenamiento de documentos), Google Firebase (base de datos y autenticación del portal) y Cloudflare (alojamiento del sitio web).</li>
+      <li><strong>Proveedores tecnológicos</strong> que almacenan o procesan la información por cuenta nuestra, bajo obligaciones contractuales de confidencialidad: Google (formularios y almacenamiento de documentos), Google Firebase (formulario de postulación del sitio, base de datos y autenticación del portal) y Cloudflare (alojamiento del sitio web).</li>
       <li>Autoridades competentes, cuando exista una obligación legal que así lo exija.</li>
     </ul>
   </div>
@@ -333,7 +333,7 @@ document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)
   <div class="doc-section" id="s13">
     <h2><span class="num">13</span>Cookies y datos de navegación</h2>
     <p>El sitio informativo de ELECTI utiliza el píxel de Meta, descrito a continuación, para medir visitas y anuncios. El portal de gestión utiliza únicamente los mecanismos técnicos indispensables para mantener tu sesión iniciada de forma segura mientras usas la plataforma.</p>
-    <p><strong>Píxel de Meta.</strong> Este sitio utiliza el píxel de Meta, una herramienta de Meta Platforms, Inc. (empresa responsable de Facebook e Instagram), para medir las visitas a sus páginas y el resultado de nuestros anuncios, y así mejorar nuestra publicidad. Al navegar por el sitio, el píxel registra de forma automática la página visitada, la fecha y hora, el tipo de navegador y de dispositivo, la dirección IP y los identificadores de las cookies de Meta, además de dos acciones: el clic en los botones de postulación y el clic en los enlaces de WhatsApp. No enviamos a Meta nombres, correos electrónicos, números de teléfono ni respuestas de formularios. Meta trata esta información conforme a su propia <a href="https://www.facebook.com/privacy/policy/" target="_blank" rel="noopener">Política de privacidad</a> y puede almacenarla fuera del Ecuador. Puedes evitar que esta actividad se use para mostrarte anuncios desde la configuración de anuncios de tu cuenta de Meta (Centro de cuentas › Preferencias de anuncios › información de actividad de socios publicitarios), desde la opción «Tu actividad fuera de las tecnologías de Meta», bloqueando las cookies de terceros en tu navegador o usando una extensión que bloquee el rastreo.</p>
+    <p><strong>Píxel de Meta.</strong> Este sitio utiliza el píxel de Meta, una herramienta de Meta Platforms, Inc. (empresa responsable de Facebook e Instagram), para medir las visitas a sus páginas y el resultado de nuestros anuncios, y así mejorar nuestra publicidad. Al navegar por el sitio, el píxel registra de forma automática la página visitada, la fecha y hora, el tipo de navegador y de dispositivo, la dirección IP y los identificadores de las cookies de Meta, además de tres acciones: el clic en los botones de postulación, el envío del formulario de postulación (solo el hecho de que se envió, sin sus respuestas) y el clic en los enlaces de WhatsApp. No enviamos a Meta nombres, correos electrónicos, números de teléfono ni respuestas de formularios. Meta trata esta información conforme a su propia <a href="https://www.facebook.com/privacy/policy/" target="_blank" rel="noopener">Política de privacidad</a> y puede almacenarla fuera del Ecuador. Puedes evitar que esta actividad se use para mostrarte anuncios desde la configuración de anuncios de tu cuenta de Meta (Centro de cuentas › Preferencias de anuncios › información de actividad de socios publicitarios), desde la opción «Tu actividad fuera de las tecnologías de Meta», bloqueando las cookies de terceros en tu navegador o usando una extensión que bloquee el rastreo.</p>
     <p>Si en el futuro incorporamos herramientas de analítica web para entender cómo se usa el sitio, actualizaremos esta sección indicando qué herramienta se utiliza, qué datos recoge y cómo puedes oponerte a ese tratamiento.</p>
   </div>
 
