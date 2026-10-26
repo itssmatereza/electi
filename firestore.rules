@@ -1,0 +1,373 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ═══════════════ FUNCIONES ═══════════════
+
+    function autenticado() {
+      return request.auth != null;
+    }
+
+    function existePerfil(uid) {
+      return autenticado() &&
+        exists(/databases/$(database)/documents/usuarios/$(uid));
+    }
+
+    function perfil(uid) {
+      return get(
+        /databases/$(database)/documents/usuarios/$(uid)
+      ).data;
+    }
+
+    function rolValido(rol) {
+      return rol == 'dueno'
+          || rol == 'admin'
+          || rol == 'profesor'
+          || rol == 'alumno';
+    }
+
+    function nivel(rol) {
+      return rol == 'dueno' ? 3 :
+             rol == 'admin' ? 2 :
+             rol == 'profesor' ? 1 :
+             rol == 'alumno' ? 0 :
+             -1;
+    }
+
+    function miRol() {
+      return existePerfil(request.auth.uid)
+        ? perfil(request.auth.uid).rol
+        : '';
+    }
+
+    function miNivel() {
+      return nivel(miRol());
+    }
+
+    function esDueno() {
+      return miRol() == 'dueno';
+    }
+
+    function esAdmin() {
+      return miNivel() >= 2;
+    }
+
+    function esEquipo() {
+      return miNivel() >= 1;
+    }
+
+    function nivelActualUsuario(uid) {
+      return exists(
+        /databases/$(database)/documents/usuarios/$(uid)
+      )
+      ? nivel(
+          get(
+            /databases/$(database)/documents/usuarios/$(uid)
+          ).data.rol
+        )
+      : -1;
+    }
+
+    // Un profesor puede añadir cuanto quiera y quitar como máximo un
+    // elemento por escritura. Las reglas no pueden recorrer una lista,
+    // así que aquí no hay forma de comprobar de quién es el elemento
+    // que se retira: esa parte la impone el portal. Esto evita el daño
+    // grande, que es borrar el tablero completo de una sola vez.
+    function cambioAcotado() {
+      return request.resource.data.items is list
+          && resource.data.items is list
+          && request.resource.data.items.size() >= resource.data.items.size() - 1;
+    }
+
+    // ─── Activación de cupo ───
+    //
+    // El alumno recibe una cuenta ya creada, con su beca definida por
+    // coordinación. La primera vez que entra completa sus datos, registra a
+    // su representante, elige modalidad de pago y acepta las condiciones.
+    // Esa escritura la hace él mismo, así que aquí se acota con precisión:
+    // qué campos puede tocar, qué campos quedan intactos y cuántas veces.
+
+    function camposDeActivacion() {
+      return [
+        'name', 'initials', 'cedula', 'telefono', 'colegio',
+        'fechaNacimiento', 'mayorAutonomo',
+        'repNombre', 'repCedula', 'repTel', 'repCorreo',
+        'facturacion', 'plan', 'onboarding', 'claveCambiada'
+      ];
+    }
+
+    // Se ejecuta una sola vez: si el documento ya tiene onboarding.hecho
+    // en true, esta rama deja de conceder permiso para siempre. Sin esto,
+    // un alumno podría volver a correr el flujo para cambiarse de plan.
+    function yaActivado() {
+      return resource.data.keys().hasAny(['onboarding'])
+          && resource.data.onboarding.get('hecho', false) == true;
+    }
+
+    function activaSuCupo(uid) {
+      return autenticado()
+          && request.auth.uid == uid
+          && resource.data.get('rol', '') == 'alumno'
+          && !yaActivado()
+          && request.resource.data.diff(resource.data)
+               .affectedKeys().hasOnly(camposDeActivacion())
+          // Lo que decide coordinación, coordinación lo conserva.
+          && request.resource.data.rol       == resource.data.rol
+          && request.resource.data.get('beca', 0)             == resource.data.get('beca', 0)
+          && request.resource.data.get('sede', '')            == resource.data.get('sede', '')
+          && request.resource.data.get('matricula', 'normal') == resource.data.get('matricula', 'normal')
+          && request.resource.data.get('acuerdoUrl', '')      == resource.data.get('acuerdoUrl', '')
+          && request.resource.data.get('suspendido', false)   == resource.data.get('suspendido', false)
+          // Y lo que sí elige el alumno, dentro de lo permitido.
+          && request.resource.data.plan in ['mensual', 'unico']
+          && request.resource.data.onboarding.hecho == true
+          && request.resource.data.claveCambiada == true;
+    }
+
+    // ─── Contraseña temporal ───
+    //
+    // Todo el equipo entra por primera vez con una clave que le entregó
+    // coordinación. El portal obliga a cambiarla antes de dar acceso, y
+    // marca este campo para no volver a pedirlo. Es lo único que un
+    // profesor puede escribir sobre su propio documento.
+
+    function marcaSuClave(uid) {
+      return autenticado()
+          && request.auth.uid == uid
+          && request.resource.data.diff(resource.data)
+               .affectedKeys().hasOnly(['claveCambiada'])
+          && request.resource.data.claveCambiada == true;
+    }
+
+
+    // ═══════════════ USUARIOS ═══════════════
+
+    match /usuarios/{uid} {
+
+      // Alumno: solo su perfil. Equipo: todos.
+      allow get: if autenticado()
+        && (
+          request.auth.uid == uid ||
+          esEquipo()
+        );
+
+      // El portal usa getDocs('usuarios') para profesores/admin.
+      allow list: if esEquipo();
+
+      // Dueño crea admin/profesor/alumno. Admin crea profesor/alumno.
+      allow create: if esAdmin()
+        && request.resource.data.keys().hasAll(['rol'])
+        && rolValido(request.resource.data.rol)
+        && nivel(request.resource.data.rol) < miNivel();
+
+      allow update: if autenticado()
+        && (
+
+          // ─── Administración ───
+          (
+            esAdmin()
+            && miNivel() > nivelActualUsuario(uid)
+            && rolValido(request.resource.data.rol)
+            && nivel(request.resource.data.rol) < miNivel()
+          )
+
+          ||
+
+          // ─── Dueño editándose a sí mismo ───
+          (
+            esDueno()
+            && request.auth.uid == uid
+            && request.resource.data.rol == resource.data.rol
+          )
+
+          ||
+
+          // ─── Admin editándose a sí mismo ───
+          (
+            miRol() == 'admin'
+            && request.auth.uid == uid
+            && request.resource.data.rol == resource.data.rol
+          )
+
+          ||
+
+          // ─── El alumno activa su propio cupo, una sola vez ───
+          activaSuCupo(uid)
+
+          ||
+
+          // ─── Cualquiera marca su contraseña como cambiada ───
+          marcaSuClave(uid)
+        );
+
+      allow delete: if esAdmin()
+        && request.auth.uid != uid
+        && miNivel() > nivelActualUsuario(uid);
+    }
+
+
+    // ═══════════════ FOTOS DE PERFIL ═══════════════
+    //
+    // Las fotos salieron del perfil para que getDocs('usuarios')
+    // no arrastre megabytes de imágenes en cada inicio de sesión.
+
+    match /fotos/{uid} {
+
+      // Se leen de a una, nunca la colección entera.
+      allow get: if autenticado();
+      allow list: if false;
+
+      // Cada quien cambia su propia foto.
+      // Administración, la de cuentas inferiores.
+      allow create, update, delete: if autenticado()
+        && (
+          request.auth.uid == uid ||
+          (esAdmin() && miNivel() > nivelActualUsuario(uid))
+        );
+    }
+
+
+    // ═══════════════ PAGOS ═══════════════
+
+    match /pagos/{uid} {
+
+      allow get: if autenticado()
+        && (
+          request.auth.uid == uid ||
+          esAdmin()
+        );
+
+      allow list: if esAdmin();
+
+      allow create, update, delete: if esAdmin();
+    }
+
+
+    // ═══════════════ ASISTENCIA ═══════════════
+
+    match /asistencia/{sesion} {
+
+      allow read: if autenticado();
+
+      allow create, update: if esEquipo();
+
+      allow delete: if esAdmin();
+    }
+
+
+    // ═══════════════ MULTAS ═══════════════
+
+    match /colecciones/multas {
+
+      /*
+       * COMPATIBILIDAD TEMPORAL.
+       * El alumno lee el documento completo y filtra sus multas
+       * en JavaScript. Funciona, pero no da privacidad real
+       * entre alumnos a nivel Firestore.
+       */
+
+      allow read: if autenticado();
+
+      allow create, update, delete: if esAdmin();
+    }
+
+
+    // ═══════════════ ANUNCIOS ═══════════════
+
+    match /colecciones/anuncios {
+
+      allow read: if autenticado();
+
+      // Publicar y eliminar ocurren reescribiendo el documento, o sea
+      // con un update. Sin la condición, un profesor podría vaciar
+      // el tablero entero de un golpe.
+      allow create: if esEquipo();
+      allow update: if esAdmin() || (esEquipo() && cambioAcotado());
+      allow delete: if esAdmin();
+    }
+
+
+    // ═══════════════ MATERIALES ═══════════════
+
+    match /colecciones/materiales {
+
+      allow read: if autenticado();
+
+      allow create: if esEquipo();
+      allow update: if esAdmin() || (esEquipo() && cambioAcotado());
+      allow delete: if esAdmin();
+    }
+
+
+    // ═══════════════ OTROS DOCUMENTOS ═══════════════
+
+    match /colecciones/{documento} {
+
+      // Ningún documento nuevo aparece automáticamente.
+      allow read, write: if false;
+    }
+
+
+    // ═══════════════ CONFIGURACIÓN ═══════════════
+
+    match /config/{doc} {
+
+      allow read: if autenticado();
+
+      allow create, update, delete: if esAdmin();
+    }
+
+
+    // ═══════════════ REGISTRO DE CAMBIOS (bitácora) ═══════════════
+    //
+    // Cada cambio que hace el equipo queda anotado aquí: quién, cuándo y qué.
+    // Es de solo agregar: nadie puede editar ni borrar una entrada, ni
+    // siquiera el dueño. Cada quien anota solo a su propio nombre.
+
+    match /bitacora/{entrada} {
+
+      // Solo dueño y administración leen el registro.
+      allow get, list: if esAdmin();
+
+      // Todo el equipo anota sus propios cambios, con un formato fijo.
+      allow create: if esEquipo()
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.keys().hasOnly(['t', 'uid', 'nombre', 'rol', 'tipo', 'texto', 'objetivo'])
+        && request.resource.data.texto is string
+        && request.resource.data.texto.size() <= 1000;
+
+      allow update, delete: if false;
+    }
+
+
+    // ═══════════════ POSTULACIONES (formulario público /postular) ═══════════════
+    //
+    // Cualquiera puede ENVIAR una postulación desde la web, sin iniciar sesión,
+    // pero solo con estos campos, estos valores y estos tamaños. Nadie de
+    // afuera puede leer, cambiar ni borrar postulaciones: solo administración.
+
+    match /postulaciones/{id} {
+      allow create: if request.resource.data.keys().hasOnly(['nombre', 'whatsapp', 'quien', 'curso', 'modalidad', 'fecha', 'origen'])
+        && request.resource.data.keys().hasAll(['nombre', 'whatsapp', 'quien', 'curso', 'modalidad'])
+        && request.resource.data.nombre is string
+        && request.resource.data.nombre.size() >= 3 && request.resource.data.nombre.size() <= 80
+        && request.resource.data.whatsapp is string
+        && request.resource.data.whatsapp.matches('^\\+[0-9]{9,15}$')
+        && request.resource.data.quien in ['Estudiante', 'Representante']
+        && request.resource.data.curso in ['10.º de básica', '1.º de bachillerato', '2.º de bachillerato', '3.º de bachillerato', 'Bachiller graduado (aún no inicio la universidad)', '1.er semestre de universidad', '2.º semestre de universidad', '3.er semestre de universidad']
+        && request.resource.data.modalidad in ['Quito presencial', 'En línea']
+        && request.resource.data.get('fecha', '') is string && request.resource.data.get('fecha', '').size() <= 40
+        && request.resource.data.get('origen', '') is string && request.resource.data.get('origen', '').size() <= 200;
+
+      allow get, list, update, delete: if esAdmin();
+    }
+
+
+    // ═══════════════ CIERRE TOTAL ═══════════════
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
