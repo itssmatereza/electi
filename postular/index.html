@@ -60,8 +60,7 @@ fbq('track','PageView');
 document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;var h=a.getAttribute('href')||'';if(h.indexOf('/postular')>-1)fbq('trackCustom','ClickPostular');if(h.indexOf('wa.me')>-1)fbq('track','Contact');});
 </script>
 </head>
-<body class="con-topbar">
-<a class="topbar" href="/postular/"><span>Postulaciones hasta el <b>10 de noviembre</b></span><span class="tb-sep">·</span><span>Becas de hasta <b>100 %</b></span><span class="tb-cta">Postular →</span></a>
+<body>
 
 <!-- ══════ NAV ══════ -->
 <nav id="nav">
@@ -228,6 +227,8 @@ document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)
         <fieldset class="pf"><legend>Modalidad</legend>
           <div class="pf-op"><label><input type="radio" name="modalidad" value="Quito presencial" required><span>Quito presencial<small>Martes por Zoom y sábados en Quito</small></span></label>
           <label><input type="radio" name="modalidad" value="En línea"><span>En línea<small>Martes y jueves por Zoom, desde todo el país</small></span></label></div></fieldset>
+        <label class="pf"><span>¿Alguien te recomendó ELECTI? <small>(opcional)</small></span>
+          <input name="recomendado" maxlength="80" autocomplete="off" placeholder="Nombre de quien te recomendó"></label>
         <input class="pf-hp" name="empresa" tabindex="-1" autocomplete="off" aria-hidden="true">
         <p class="pf-err" id="pf-err" role="alert"></p>
         <button class="btn btn-primary btn-lg pf-btn" type="submit" id="pf-btn">Enviar postulación <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
@@ -249,7 +250,9 @@ document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)
     if(!d.whatsapp){err.textContent='Revisa el número de WhatsApp (ej.: 0991234567).';f.whatsapp.focus();return;}
     if(!d.quien||!d.curso||!d.modalidad){err.textContent='Completa los cinco datos para continuar.';return;}
     if(f.empresa.value){ location.href='/gracias/'; return; }
-    var origen=(location.search||'').slice(0,190)||document.referrer.slice(0,190);
+    var recomendado=(f.elements['recomendado'].value||'').trim().slice(0,80);
+    var origenBase=(location.search||'').slice(0,90)||document.referrer.slice(0,90);
+    var origen=(origenBase+(recomendado ? (origenBase ? ' | ' : '')+'Recomendado por: '+recomendado : '')).slice(0,200);
     var body={fields:{nombre:{stringValue:d.nombre},whatsapp:{stringValue:d.whatsapp},quien:{stringValue:d.quien},curso:{stringValue:d.curso},modalidad:{stringValue:d.modalidad},fecha:{stringValue:new Date().toISOString()},origen:{stringValue:origen}}};
     btn.disabled=true; btn.textContent='Enviando…';
     fetch(URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}).then(function(r){
