@@ -1,0 +1,73 @@
+<!--
+titulo: Postular · ELECTI 6.ª generación
+descripcion: Postula a la 6.ª generación de ELECTI (ciclo 2027). Inicio el 14 de noviembre, en Quito presencial o en línea. Toma un minuto.
+compartir: Postula a ELECTI · 6.ª generación
+whatsapp: Hola, quiero postular a ELECTI y tengo una pregunta.
+ruta: /postular/
+archivo: postular/index.html
+-->
+<div class="pg" id="pg-postular">
+  <section class="pos">
+    <div class="wrap pos-in">
+      <div class="pos-txt">
+        <p class="eyebrow">6.ª generación · ciclo 2027</p>
+        <h1>Postula a ELECTI.<br><span>Toma un minuto.</span></h1>
+        <p class="pos-lead">Déjanos tus datos y te escribimos por WhatsApp para agendar una entrevista corta. Ahí conversamos de la beca.</p>
+        <ul class="pos-datos">
+          <li><b>14 de noviembre</b><span>Primera sesión</span></li>
+          <li><b>10 de noviembre</b><span>Cierre de postulaciones</span></li>
+          <li><b>Hasta 100 %</b><span>Becas, con condiciones</span></li>
+        </ul>
+      </div>
+      <form class="pos-form" id="form-postular" novalidate>
+        <label class="pf"><span>Nombre completo del estudiante</span>
+          <input name="nombre" autocomplete="name" required minlength="3" maxlength="80" placeholder="Ej.: Sofía Andrade"></label>
+        <label class="pf"><span>WhatsApp de contacto</span>
+          <input name="whatsapp" type="tel" inputmode="tel" autocomplete="tel" required placeholder="09XXXXXXXX"></label>
+        <fieldset class="pf"><legend>¿Quién llena este formulario?</legend>
+          <div class="pf-op"><label><input type="radio" name="quien" value="Estudiante" required><span>Estudiante</span></label>
+          <label><input type="radio" name="quien" value="Representante"><span>Representante</span></label></div></fieldset>
+        <label class="pf"><span>Curso actual</span>
+          <select name="curso" required>
+            <option value="" disabled selected>Elige el curso</option>
+            <option>10.º de básica</option><option>1.º de bachillerato</option><option>2.º de bachillerato</option><option>3.º de bachillerato</option>
+            <option>1.er semestre de universidad</option><option>2.º semestre de universidad</option><option>3.er semestre de universidad</option>
+          </select></label>
+        <fieldset class="pf"><legend>Modalidad</legend>
+          <div class="pf-op"><label><input type="radio" name="modalidad" value="Quito presencial" required><span>Quito presencial<small>Martes por Zoom y sábados en Quito</small></span></label>
+          <label><input type="radio" name="modalidad" value="En línea"><span>En línea<small>Martes y jueves por Zoom, desde todo el país</small></span></label></div></fieldset>
+        <input class="pf-hp" name="empresa" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <p class="pf-err" id="pf-err" role="alert"></p>
+        <button class="btn btn-primary btn-lg pf-btn" type="submit" id="pf-btn">Enviar postulación <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+        <p class="pf-fine">No te compromete a nada. Usamos tus datos solo para contactarte sobre ELECTI (<a href="/privacidad.html">política de privacidad</a>).</p>
+      </form>
+    </div>
+  </section>
+</div>
+<script>
+(function(){
+  var f=document.getElementById('form-postular'), err=document.getElementById('pf-err'), btn=document.getElementById('pf-btn');
+  var URL='https://firestore.googleapis.com/v1/projects/portal-electi/databases/(default)/documents/postulaciones?key=AIzaSyCeov2IPL6N_iT8qI3Eo_y2h1DKjWlATSg';
+  function tel(v){ v=(v||'').replace(/[^\d+]/g,''); if(/^09\d{8}$/.test(v)) return '+593'+v.slice(1); if(/^5939\d{8}$/.test(v)) return '+'+v; if(/^\+\d{9,15}$/.test(v)) return v; return ''; }
+  function wa(d){ return 'https://wa.me/593962893857?text='+encodeURIComponent('Hola, quiero postular a ELECTI.\nNombre: '+d.nombre+'\nLlena: '+d.quien+'\nCurso: '+d.curso+'\nModalidad: '+d.modalidad); }
+  f.addEventListener('submit',function(e){
+    e.preventDefault(); err.textContent='';
+    var d={nombre:f.nombre.value.trim(), whatsapp:tel(f.whatsapp.value), quien:(f.quien.value||''), curso:f.curso.value, modalidad:(f.modalidad.value||'')};
+    if(d.nombre.length<3){err.textContent='Escribe el nombre completo del estudiante.';f.nombre.focus();return;}
+    if(!d.whatsapp){err.textContent='Revisa el número de WhatsApp (ej.: 0991234567).';f.whatsapp.focus();return;}
+    if(!d.quien||!d.curso||!d.modalidad){err.textContent='Completa los cinco datos para continuar.';return;}
+    if(f.empresa.value){ location.href='/gracias/'; return; }
+    var origen=(location.search||'').slice(0,190)||document.referrer.slice(0,190);
+    var body={fields:{nombre:{stringValue:d.nombre},whatsapp:{stringValue:d.whatsapp},quien:{stringValue:d.quien},curso:{stringValue:d.curso},modalidad:{stringValue:d.modalidad},fecha:{stringValue:new Date().toISOString()},origen:{stringValue:origen}}};
+    btn.disabled=true; btn.textContent='Enviando…';
+    fetch(URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}).then(function(r){
+      if(!r.ok) throw new Error(r.status);
+      try{sessionStorage.setItem('electi_postulo','1');}catch(x){}
+      location.href='/gracias/';
+    }).catch(function(){
+      btn.disabled=false; btn.textContent='Enviar postulación';
+      err.innerHTML='No pudimos enviar tu postulación. <a href="'+wa(d)+'" target="_blank" rel="noopener">Envíala por WhatsApp</a> y la registramos nosotros.';
+    });
+  });
+})();
+</script>

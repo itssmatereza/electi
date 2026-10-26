@@ -25,13 +25,15 @@
 <meta name="theme-color" content="#0D2A6E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<!-- La fuente no bloquea el primer pintado: se carga en paralelo y se aplica al llegar. -->
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"></noscript>
 <!-- Marca que el JavaScript corre. Si por lo que sea no corre (error,
      bloqueador, red caída), la clase nunca se pone y todo el contenido
      que se revela con animación se muestra visible por defecto. Sin esto,
      un solo error de JS deja la página en blanco. -->
 <script>document.documentElement.className += ' js';</script>
-<link rel="stylesheet" href="/assets/electi.css?v=dbf3f82f">
+<link rel="stylesheet" href="/assets/electi.css?v=8e657621">
 <noscript><style>.rv{opacity:1!important;transform:none!important}</style></noscript>
 <script>
 /* Compatibilidad con los enlaces antiguos que llevaban # (QR, bios, mensajes ya enviados).
@@ -50,15 +52,16 @@
 })();
 </script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "EducationalOrganization", "name": "ELECTI", "alternateName": "ELECTI — Escuela de liderazgo y gestión de proyectos", "url": "https://electi.unionestudiantil.org/", "logo": "https://electi.unionestudiantil.org/icon-512.png", "image": "https://electi.unionestudiantil.org/og.jpg", "description": "Escuela de liderazgo y gestión de proyectos para jóvenes en Quito: 24 semanas, seis fases y un proyecto real ejecutado. Programa de Fundación Unión Estudiantil.", "email": "electi@unionestudiantil.org", "telephone": "+593962893857", "sameAs": ["https://instagram.com/electi.ec", "https://instagram.com/estudiantil_union"], "parentOrganization": {"@type": "Organization", "name": "Fundación Unión Estudiantil"}, "areaServed": [{"@type": "City", "name": "Quito"}], "address": {"@type": "PostalAddress", "addressCountry": "EC", "addressLocality": "Quito", "addressRegion": "Pichincha"}}</script>
-<!-- Píxel de Meta (dataset 810388034766209): mide visitas, clics en Postular (forms.gle) y en WhatsApp (wa.me). No envía datos personales. Va una sola vez, aquí. -->
+<!-- Píxel de Meta (dataset 810388034766209): mide visitas (PageView en todas las páginas), clics en Postular (/postular/), postulaciones enviadas (Lead, en /gracias/) y WhatsApp (wa.me). No envía datos personales. Va una sola vez, aquí. -->
 <script>
 !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
 fbq('init','810388034766209');
 fbq('track','PageView');
-document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;var h=a.getAttribute('href')||'';if(h.indexOf('forms.gle')>-1)fbq('trackCustom','ClickPostular');if(h.indexOf('wa.me')>-1)fbq('track','Contact');});
+document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;var h=a.getAttribute('href')||'';if(h.indexOf('/postular')>-1)fbq('trackCustom','ClickPostular');if(h.indexOf('wa.me')>-1)fbq('track','Contact');});
 </script>
 </head>
-<body>
+<body class="con-topbar">
+<a class="topbar" href="/postular/"><span>Postulaciones hasta el <b>10 de noviembre</b></span><span class="tb-sep">·</span><span>Becas de hasta <b>100 %</b></span><span class="tb-cta">Postular →</span></a>
 
 <!-- ══════ NAV ══════ -->
 <nav id="nav">
@@ -149,7 +152,7 @@ document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)
     </li>
     <li><a href="/preguntas/">Preguntas</a></li>
     <li><a href="/portal" class="nav-portal">Portal alumnos</a></li>
-    <li><a href="https://forms.gle/SdaHtjDcyFuYEa3T7" target="_blank" rel="noopener" class="nav-cta">Postular</a></li>
+    <li><a href="/postular/" class="nav-cta">Postular</a></li>
   </ul>
   <button class="burger" id="burger" onclick="menuMovil()" aria-label="Menú">
     <span></span><span></span><span></span>
@@ -191,7 +194,7 @@ document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)
   <a href="/preguntas/">Preguntas frecuentes</a>
   <a href="https://instagram.com/electi.ec" target="_blank" rel="noopener">Instagram · @electi.ec</a>
   <a href="/portal" class="mob-portal"><svg viewBox="0 0 24 24" aria-hidden="true" style="width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-2px;margin-right:7px"><rect x="4" y="10.5" width="16" height="10.5" rx="2"/><path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></svg> Portal de alumnos</a>
-  <a href="https://forms.gle/SdaHtjDcyFuYEa3T7" target="_blank" rel="noopener" class="mob-cta">Postular ahora →</a>
+  <a href="/postular/" class="mob-cta">Postular ahora →</a>
 </div>
 
 
@@ -211,7 +214,7 @@ document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)
         <h1>No aprendas sobre<br>liderazgo. <span>Ejecútalo.</span></h1>
         <p class="hf-sub">6 meses para liderar un proyecto real. Desde 10.º de básica hasta 3.er semestre, en Quito o en línea.</p>
         <div class="hf-btns">
-          <a href="https://forms.gle/SdaHtjDcyFuYEa3T7" target="_blank" rel="noopener" class="btn btn-primary btn-lg">Postular ahora <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
+          <a href="/postular/" class="btn btn-primary btn-lg">Postular ahora <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></a>
           <a class="btn btn-ghost-d btn-lg" href="/#malla">Ver la malla</a>
         </div>
         <p class="hf-movil">Inicio <b>14 de noviembre</b><br>Becas de hasta el 100%</p>
@@ -243,6 +246,21 @@ document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)
         <div class="ally">
           <img class="ally-logo" src="/assets/iso-electi-claro.svg" alt="" width="44" height="44" loading="lazy">
           <div class="ally-txt"><strong>ELECTI</strong><span>5 generaciones graduadas</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ TESTIMONIO DESTACADO ══ alumni con beca, en el primer tercio -->
+  <section class="tt-dest">
+    <div class="wrap">
+      <div class="tt-dest-in rv">
+        <div class="tt-dest-badge"><b>100 %</b><span>Beca universitaria<br>USFQ</span></div>
+        <div>
+          <p class="eyebrow" style="margin-bottom:10px">Lo que dicen los alumni</p>
+          <p class="tt-dest-q">"Entrar a ELECTI cambió mi trayectoria. Aprendí a estructurar ideas, liderar equipos y ejecutar con criterio. La red que construyes vale más que cualquier título."</p>
+          <p class="tt-dest-who"><strong>Ricardo A.</strong> · Generación 2025 · hoy en la USFQ con beca del 100 %</p>
+          <p class="tt-dest-nota">Testimonio personal: cada caso es distinto. Las becas universitarias dependen de cada estudiante y de cada institución.</p>
         </div>
       </div>
     </div>
@@ -598,15 +616,6 @@ document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)
       <div class="tt-grid">
         <div class="tt rv">
           <div class="tt-mark">"</div>
-          <span class="tt-win"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 9 12 4 2 9l10 5 10-5z"/><path d="M6 11.4V16c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.6"/></svg> Beca del 100% · USFQ</span>
-          <p class="tt-q">Entrar a ELECTI cambió mi trayectoria. Aprendí a estructurar ideas, liderar equipos y ejecutar con criterio. La red que construyes vale más que cualquier título.</p>
-          <div class="tt-who">
-            <div class="tt-ava">RA</div>
-            <div><strong>Ricardo A.</strong><span>Generación 2025 · USFQ</span></div>
-          </div>
-        </div>
-        <div class="tt rv rv-d1">
-          <div class="tt-mark">"</div>
           <span class="tt-win"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 9 12 4 2 9l10 5 10-5z"/><path d="M6 11.4V16c0 1.4 2.7 2.5 6 2.5s6-1.1 6-2.5v-4.6"/></svg> Beca del 70% · USFQ</span>
           <p class="tt-q">Me dio las herramientas para ejecutar proyectos de verdad, con equipos reales y resultados concretos. Aprendí a liderarme a mí mismo bajo presión. Eso no te lo enseña ningún colegio.</p>
           <div class="tt-who">
@@ -614,7 +623,7 @@ document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)
             <div><strong>Ignacio S.</strong><span>Generación 2024 · USFQ</span></div>
           </div>
         </div>
-        <div class="tt rv rv-d2">
+        <div class="tt rv rv-d1">
           <div class="tt-mark">"</div>
           <span class="tt-win"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="2" y1="12.5" x2="22" y2="12.5"/></svg> Prácticas en 2.º semestre</span>
           <p class="tt-q">Estando en segundo semestre de Derecho, ELECTI me abrió las puertas a prácticas en un bufete. Las habilidades que desarrollé me pusieron años adelante de mis compañeros.</p>
@@ -694,13 +703,15 @@ document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)
     <div class="wrap">
       <div class="pr-box rv" style="max-width:900px;margin:0 auto">
         <div>
-          <p class="eyebrow" style="margin-bottom:10px">Becas disponibles</p>
-          <h2 style="font-size:clamp(24px,2.4vw,32px);font-weight:800;letter-spacing:-.035em;color:var(--ink);margin-bottom:16px">Cuánto cuesta</h2>
+          <p class="eyebrow" style="margin-bottom:10px">Primero, las becas</p>
+          <h2 style="font-size:clamp(24px,2.4vw,32px);font-weight:800;letter-spacing:-.035em;color:var(--ink);margin-bottom:12px">Becas de hasta el 100 %</h2>
+          <div class="pr-becas"><span>100 %</span><span>50 %</span><span>40 %</span><span>25 %</span></div>
+          <p class="pr-sub" style="margin-bottom:18px">Se definen en la entrevista según el perfil y la situación del estudiante, y se mantienen cada mes con asistencia y compromiso. El dinero no debería ser la barrera.</p>
+          <p class="pr-base">Precio base, antes de beca</p>
           <div class="pr-money"><span class="pr-amt">$40</span><span class="pr-per">/mes · 6 meses</span>
             <span class="pr-mas">+</span>
             <span class="pr-mat"><b>$15</b> matrícula<small>pago único</small></span>
           </div>
-          <p class="pr-sub">Cuatro tipos de beca, hasta del 100%. El dinero no debería ser la barrera.</p>
         </div>
         <a class="btn btn-dark btn-lg" href="/becas/">
           Ver las becas
@@ -753,9 +764,9 @@ document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)
   <section class="pad cta">
     <div class="wrap cta-in">
       <h2 class="rv">Dentro de seis meses<br><span class="grad">vas a haber ejecutado algo.</span></h2>
-      <p class="rv rv-d1">O vas a estar exactamente donde estás hoy. La diferencia empieza con un formulario de cinco minutos.</p>
+      <p class="rv rv-d1">O vas a estar exactamente donde estás hoy. La diferencia empieza con un formulario de un minuto.</p>
       <div class="rv rv-d2">
-        <a href="https://forms.gle/SdaHtjDcyFuYEa3T7" target="_blank" rel="noopener" class="btn btn-primary btn-lg">
+        <a href="/postular/" class="btn btn-primary btn-lg">
           Postular a ELECTI
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
         </a>
@@ -813,7 +824,7 @@ document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)
         <div class="ft-col">
           <h5>Acceso</h5>
           <a href="/portal">Portal de alumnos</a>
-          <a href="https://forms.gle/SdaHtjDcyFuYEa3T7" target="_blank" rel="noopener">Postular</a>
+          <a href="/postular/">Postular</a>
           <a href="/institucional/">Unión Estudiantil</a>
           <a href="/privacidad.html">Política de privacidad</a>
         </div>

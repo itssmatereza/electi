@@ -25,7 +25,9 @@
 <meta name="theme-color" content="#0D2A6E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<!-- La fuente no bloquea el primer pintado: se carga en paralelo y se aplica al llegar. -->
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"></noscript>
 <!-- Marca que el JavaScript corre. Si por lo que sea no corre (error,
      bloqueador, red caída), la clase nunca se pone y todo el contenido
      que se revela con animación se muestra visible por defecto. Sin esto,
@@ -50,15 +52,16 @@
 })();
 </script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "EducationalOrganization", "name": "ELECTI", "alternateName": "ELECTI — Escuela de liderazgo y gestión de proyectos", "url": "{{DOMINIO}}/", "logo": "{{DOMINIO}}/icon-512.png", "image": "{{DOMINIO}}/og.jpg", "description": "Escuela de liderazgo y gestión de proyectos para jóvenes en Quito: 24 semanas, seis fases y un proyecto real ejecutado. Programa de Fundación Unión Estudiantil.", "email": "electi@unionestudiantil.org", "telephone": "+593962893857", "sameAs": ["https://instagram.com/electi.ec", "https://instagram.com/estudiantil_union"], "parentOrganization": {"@type": "Organization", "name": "Fundación Unión Estudiantil"}, "areaServed": [{"@type": "City", "name": "Quito"}], "address": {"@type": "PostalAddress", "addressCountry": "EC", "addressLocality": "Quito", "addressRegion": "Pichincha"}}</script>
-<!-- Píxel de Meta (dataset 810388034766209): mide visitas, clics en Postular (forms.gle) y en WhatsApp (wa.me). No envía datos personales. Va una sola vez, aquí. -->
+<!-- Píxel de Meta (dataset 810388034766209): mide visitas (PageView en todas las páginas), clics en Postular (/postular/), postulaciones enviadas (Lead, en /gracias/) y WhatsApp (wa.me). No envía datos personales. Va una sola vez, aquí. -->
 <script>
 !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
 fbq('init','810388034766209');
 fbq('track','PageView');
-document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;var h=a.getAttribute('href')||'';if(h.indexOf('forms.gle')>-1)fbq('trackCustom','ClickPostular');if(h.indexOf('wa.me')>-1)fbq('track','Contact');});
+document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;var h=a.getAttribute('href')||'';if(h.indexOf('/postular')>-1)fbq('trackCustom','ClickPostular');if(h.indexOf('wa.me')>-1)fbq('track','Contact');});
 </script>
 </head>
-<body>
+<body class="con-topbar">
+<a class="topbar" href="/postular/"><span>Postulaciones hasta el <b>10 de noviembre</b></span><span class="tb-sep">·</span><span>Becas de hasta <b>100 %</b></span><span class="tb-cta">Postular →</span></a>
 
 <!-- ══════ NAV ══════ -->
 {{NAV}}
