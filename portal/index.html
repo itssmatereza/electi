@@ -4997,7 +4997,7 @@ function renderAlumnoHome() {
   let pagosHTML = '';
   const M = getMeses(me.sede);
   if (r.total === 0) {
-    pagosHTML = '<div class="al-pend-ok" style="padding:6px 0;"><span>🎖</span>Beca completa: no tienes valores por pagar.</div>';
+    pagosHTML = '<div class="al-pend-ok" style="padding:6px 0;"><span>🎖</span>' + ((me.beca||0)===100 ? 'Beca completa' : 'Beneficio aplicado') + ': no tienes valores por pagar.</div>';
   } else if (me.plan === 'unico') {
     pagosHTML = '<div class="al-prox"><div><div class="al-prox-k">Pago único semestral</div><div class="al-prox-v">$' + dinero(r.total) + '</div></div>' +
       (r.unicoPagado ? '<span class="badge badge-green">Pagado</span>' : (r.mora ? '<span class="badge badge-red">Vencido</span>' : '<span class="badge badge-yellow">Pendiente</span>')) + '</div>';
@@ -5013,8 +5013,8 @@ function renderAlumnoHome() {
       pagosHTML += '<div class="al-pend-ok" style="padding:6px 0;"><span>✓</span>Todas tus cuotas están pagadas.</div>';
     }
     let det = '';
-    if (r.mat > 0) det += '<div class="al-cuota-row"><span>Matrícula <span style="color:var(--gray);font-size:11.5px;">$' + dinero(r.mat) + '</span></span>' +
-      (p.mat ? '<span class="badge badge-green">Pagada</span>' : '<span class="badge badge-yellow">Pendiente</span>') + '</div>';
+    if (r.mat > 0 || refPct(me,'mat')) det += '<div class="al-cuota-row"><span>Matrícula <span style="color:var(--gray);font-size:11.5px;">$' + dinero(r.mat) + '</span></span>' +
+      (r.mat===0 ? '<span class="badge badge-green">Descuento 100%</span>' : p.mat ? '<span class="badge badge-green">Pagada</span>' : '<span class="badge badge-yellow">Pendiente</span>') + '</div>';
     M.forEach(function(m) {
       const st = estadoMes(me, m);
       if (st === 'exento' && !refPct(me,m.k)) return;
@@ -7089,7 +7089,7 @@ function abrirFicha(uid) {
           const stm = estadoMes(a, m);
           if (stm === 'exento' && !refPct(a,m.k)) return;
           h += '<div class="al-cuota-row"><span>Cuota ' + m.label + ' <span style="color:var(--gray);font-size:11.5px;">$' + dinero(cuotaMesDe(a,m.k)) + (refPct(a,m.k)?' · referido '+refPct(a,m.k)+'%':'') + '</span></span>' +
-            (stm === 'paid' ? '<span class="badge badge-green">Pagada</span>' : stm === 'overdue' ? '<span class="badge badge-red">En mora</span>' : stm === 'previo' ? '<span class="badge badge-gray">Antes de inicio</span>' : '<span class="badge badge-gray">Pendiente</span>') + '</div>';
+            (stm === 'paid' ? '<span class="badge badge-green">Pagada</span>' : stm === 'overdue' ? '<span class="badge badge-red">En mora</span>' : stm === 'exento' ? '<span class="badge badge-green">Descuento 100%</span>' : stm === 'previo' ? '<span class="badge badge-gray">Antes de inicio</span>' : '<span class="badge badge-gray">Pendiente</span>') + '</div>';
         });
       }
       if (mu.pend > 0) h += '<div class="al-cuota-row" style="font-weight:700;"><span>Multas pendientes</span><span class="badge badge-red">$' + dinero(mu.pend) + '</span></div>';
