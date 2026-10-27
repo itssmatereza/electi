@@ -6388,6 +6388,7 @@ function generarAcuerdo(u) {
   // contradice el calendario de pagos por un redondeo.
   const valorBeca    = (cfg.cuotaBase - r.cuota) * cfg.numCuotas;
   const descMensual  = cfg.cuotaBase - r.cuota;
+  const promoRef = refPct(a,'mat') || M.some(m=>refPct(a,m.k)>0);
   const dctoUnico    = esUnico ? Math.round((r.mat + r.cuota * cfg.numCuotas) - r.total) : 0;
 
   const esc = s => String(s == null ? '' : s)
@@ -6456,15 +6457,21 @@ function generarAcuerdo(u) {
                      : 'Matrícula exenta y ' + cfg.numCuotas + ' cuotas cubiertas por la beca')
         : esUnico
         ? 'Matrícula y ' + cfg.numCuotas + ' cuotas, en un solo pago' + (dctoUnico > 0 ? ' — descuento de $' + dctoUnico : '')
-        : (r.mat === 0 ? '' : 'Matrícula de $' + dinero(r.mat) + ' más ') + cfg.numCuotas + ' cuotas de $' + dinero(r.cuota)) +
+        : (r.mat === 0 ? '' : 'Matrícula de $' + dinero(r.mat) + ' más ') + cfg.numCuotas +
+          (promoRef ? ' cuotas con beneficios por referidos según el calendario' : ' cuotas de $' + dinero(r.cuota))) +
     '</div></div><div class="num">USD $' + dinero(r.total) + '</div></div></div>';
 
+  if(promoRef) {
+    textoCond += '<p><b>Beneficio especial por referidos:</b> descuento aplicado después de la beca ordinaria, ' +
+      'solo a los conceptos indicados en el calendario de cobros. La matrícula tiene ' + refPct(a,'mat') +
+      '% de descuento por referidos. El total del ciclo refleja todos los descuentos otorgados.</p>';
+  }
   // Calendario de vencimientos (solo plan mensual con cuotas > 0)
   if (!esUnico && r.cuota > 0) {
     let filas = '';
     if (r.mat > 0) filas += '<tr><td>Matrícula</td><td>Al momento de la inscripción</td><td>$' + dinero(r.mat) + '</td></tr>';
     M.forEach(function(m, i) {
-      filas += '<tr><td>Cuota ' + (i + 1) + '</td><td>5 de ' + mesesL[m.n - 1] + ' de ' + m.y + '</td><td>$' + dinero(r.cuota) + '</td></tr>';
+      filas += '<tr><td>Cuota ' + (i + 1) + '</td><td>5 de ' + mesesL[m.n - 1] + ' de ' + m.y + '</td><td>$' + dinero(cuotaMesDe(a,m.k)) + (refPct(a,m.k)?' (referido -'+refPct(a,m.k)+'%)':'') + '</td></tr>';
     });
     calendario = '<table class="calendario"><thead><tr><th>Concepto</th><th>Vencimiento</th><th>Valor</th></tr></thead><tbody>' +
       filas + '</tbody></table>';
