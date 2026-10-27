@@ -4294,7 +4294,7 @@ function renderDashboard() {
       const M = getMeses('UIO');
       M.forEach(function(mo){
         let e = 0, c = 0;
-        mens.forEach(function(a){ const q = cuotaDe(a); e += q; if (getPagos(a).m[mo.k]) c += q; });
+        mens.forEach(function(a){ const q=cuotaMesDe(a,mo.k); e+=q; if(getPagos(a).m[mo.k]) c+=q; });
         labels.push(mo.label); esperado.push(e); cobrado2.push(c);
       });
       // Sin esta barra, quien eligió pago único quedaba fuera del gráfico y la
@@ -5006,7 +5006,7 @@ function renderAlumnoHome() {
       pagosHTML += '<div class="al-prox"><div><div class="al-prox-k">Próximo pago</div><div class="al-prox-v">Matrícula · $' + dinero(r.mat) + '</div></div><span class="badge badge-yellow">Pendiente</span></div>';
     } else if (proxM) {
       const st = estadoMes(me, proxM);
-      pagosHTML += '<div class="al-prox"><div><div class="al-prox-k">Próximo pago</div><div class="al-prox-v">Cuota ' + proxM.label + ' · $' + dinero(r.cuota) + '</div></div>' +
+      pagosHTML += '<div class="al-prox"><div><div class="al-prox-k">Próximo pago</div><div class="al-prox-v">Cuota ' + proxM.label + ' · $' + dinero(cuotaMesDe(me,proxM.k)) + '</div></div>' +
         (st === 'overdue' ? '<span class="badge badge-red">Vencida</span>' : '<span class="badge badge-gray">' + (st === 'previo' ? 'Antes de inicio' : 'Pendiente') + '</span>') + '</div>';
     } else {
       pagosHTML += '<div class="al-pend-ok" style="padding:6px 0;"><span>✓</span>Todas tus cuotas están pagadas.</div>';
@@ -5021,7 +5021,7 @@ function renderAlumnoHome() {
               : st === 'overdue' ? '<span class="badge badge-red">Vencida</span>'
               : st === 'previo' ? '<span class="badge badge-gray">Antes de inicio</span>'
               : '<span class="badge badge-gray">Pendiente</span>';
-      det += '<div class="al-cuota-row"><span>Cuota ' + m.label + ' <span style="color:var(--gray);font-size:11.5px;">$' + dinero(r.cuota) + '</span></span>' + b + '</div>';
+      det += '<div class="al-cuota-row"><span>Cuota ' + m.label + ' <span style="color:var(--gray);font-size:11.5px;">$' + dinero(cuotaMesDe(me,m.k)) + (refPct(me,m.k)?' · referido '+refPct(me,m.k)+'%':'') + '</span></span>' + b + '</div>';
     });
     pagosHTML += '<details class="al-det"><summary>Ver todas mis cuotas</summary>' + det + '</details>';
   }
@@ -5034,6 +5034,10 @@ function renderAlumnoHome() {
     });
     pagosHTML += '<details class="al-det"><summary>Multas por atraso (' + misMultas.length + ')</summary>' +
       '<div style="font-size:11.5px;color:var(--gray);line-height:1.55;margin-bottom:4px;">Van al fondo de convivencia de tu generación.</div>' + mh + '</details>';
+  }
+  const benef=refBeneficio(me);
+  if(refPct(me,'mat')||Object.values(benef.meses||{}).some(v=>Number(v)>0)){
+    pagosHTML='<div style="padding:10px;margin-bottom:10px;border:1px solid var(--border);border-radius:9px;font-size:12.5px"><b>🎁 Beneficio por referidos</b><br>Los descuentos ya están aplicados a tu saldo.</div>'+pagosHTML;
   }
   document.getElementById('al-pagos').innerHTML = pagosHTML;
 
@@ -6189,7 +6193,7 @@ function diasMora(al) {
   if (!cicloArrancado(al.sede)) return 0;
   const p = getPagos(al);
   const hoy = new Date();
-  const cuota = cuotaDe(al), mat = matriculaDe(al);
+  const mat = matriculaDe(al);
   const M = getMeses(al.sede);
   let venc = null;
   const due = m => new Date(m.y, m.n - 1, 5, 23, 59, 59);
@@ -6198,14 +6202,11 @@ function diasMora(al) {
     if (!r.unicoPagado && r.total > 0) venc = due(M[0]);
   } else {
     if (mat > 0 && !p.mat) venc = due(M[0]);
-    if (cuota > 0) {
-      M.forEach(m => {
-        if (!p.m[m.k]) {
-          const d = due(m);
-          if (d < hoy && (venc === null || d < venc)) venc = d;
-        }
-      });
-    }
+    M.forEach(m=>{
+      if(cuotaMesCent(al,m.k)>0&&!p.m[m.k]){
+        const d=due(m);if(d<hoy&&(venc===null||d<venc))venc=d;
+      }
+    });
   }
   if (!venc || venc >= hoy) return 0;
   return Math.floor((hoy - venc) / 86400000);
@@ -7069,7 +7070,7 @@ function abrirFicha(uid) {
         getMeses(a.sede).forEach(function(m){
           const stm = estadoMes(a, m);
           if (stm === 'exento') return;
-          h += '<div class="al-cuota-row"><span>Cuota ' + m.label + ' <span style="color:var(--gray);font-size:11.5px;">$' + dinero(r.cuota) + '</span></span>' +
+          h += '<div class="al-cuota-row"><span>Cuota ' + m.label + ' <span style="color:var(--gray);font-size:11.5px;">$' + dinero(cuotaMesDe(a,m.k)) + (refPct(a,m.k)?' · referido '+refPct(a,m.k)+'%':'') + '</span></span>' +
             (stm === 'paid' ? '<span class="badge badge-green">Pagada</span>' : stm === 'overdue' ? '<span class="badge badge-red">En mora</span>' : stm === 'previo' ? '<span class="badge badge-gray">Antes de inicio</span>' : '<span class="badge badge-gray">Pendiente</span>') + '</div>';
         });
       }
