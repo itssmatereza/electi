@@ -3241,7 +3241,11 @@ function cuotaCent(al) {
   return Math.round(aCent(getConfig().cuotaBase) * (1 - (al.beca || 0) / 100));
 }
 function cuotaDe(al) { return deCent(cuotaCent(al)); }
-function matriculaCent(al) { return al.matricula === 'exenta' ? 0 : aCent(getConfig().matricula); }
+function refBeneficio(al) { return getPagos(al).referidos || {}; }
+function refPct(al,k) { const b=refBeneficio(al),v=Number(k==='mat'?b.matricula:(b.meses||{})[k]); return Number.isFinite(v)&&v>=0&&v<=100?v:0; }
+function cuotaMesCent(al,k) { return Math.round(cuotaCent(al)*(1-refPct(al,k)/100)); }
+function cuotaMesDe(al,k) { return deCent(cuotaMesCent(al,k)); }
+function matriculaCent(al) { const base=al.matricula==='exenta'?0:aCent(getConfig().matricula); return Math.round(base*(1-refPct(al,'mat')/100)); }
 // La beca aplica solo sobre las cuotas. La matrícula se cobra siempre,
 // salvo que se marque explícitamente como exenta para ese alumno.
 function matriculaDe(al) { return deCent(matriculaCent(al)); }
@@ -3250,11 +3254,9 @@ function matriculaDe(al) { return deCent(matriculaCent(al)); }
 // adelantar las cuotas, así que se aplica solo sobre ellas: la matrícula
 // se cobra completa en las dos modalidades.
 function totalCent(al, plan) {
-  const c = cuotaCent(al), m = matriculaCent(al), n = getMeses(al.sede).length;
-  const esUnico = (plan || al.plan) === 'unico';
-  const cuotas = esUnico && c > 0
-    ? Math.round(c * n * (1 - getConfig().dtoAdelanto / 100))
-    : c * n;
+  const c=cuotaCent(al),m=matriculaCent(al),meses=getMeses(al.sede),n=meses.length;
+  const esUnico=(plan||al.plan)==='unico';
+  const cuotas=esUnico && c>0 ? Math.round(c*n*(1-getConfig().dtoAdelanto/100)) : meses.reduce((v,x)=>v+cuotaMesCent(al,x.k),0);
   return m + cuotas;
 }
 function getPagos(al) {
@@ -3262,8 +3264,8 @@ function getPagos(al) {
   return state.pagos[al.username];
 }
 function estadoMes(al, mesObj) {
-  const cuota = cuotaDe(al);
-  if (cuota === 0) return 'exento';
+  const cuota=cuotaMesDe(al,mesObj.k);
+  if (cuota===0) return 'exento';
   const p = getPagos(al);
   if (p.m[mesObj.k]) return 'paid';
   if (!cicloArrancado(al.sede)) return 'previo';
@@ -3294,9 +3296,10 @@ function resumenPago(al) {
   let pendCent = p.mat ? 0 : mCent;
   M.forEach(m => {
     const st = estadoMes(al, m);
-    if (st === 'paid') pagCent += cCent;
-    else if (st === 'overdue') { mora = true; pendCent += cCent; }
-    else pendCent += cCent;   // 'pending' y 'previo' cuentan igual: aun no vencen
+    const importe=cuotaMesCent(al,m.k);
+    if(st==='paid') pagCent+=importe;
+    else if(st==='overdue') { mora=true; pendCent+=importe; }
+    else pendCent+=importe;   // 'pending' y 'previo' cuentan igual: aun no vencen
   });
   if (mCent > 0 && !p.mat && cicloIniciado) mora = true;
   return { cuota: deCent(cCent), mat: deCent(mCent), pagado: deCent(pagCent),
@@ -4484,14 +4487,14 @@ function renderPagos() {
       if (delBloque.length === 0) return;
       getMeses(BLOQUES[b].sedes[0]).forEach(mo => {
         let esp = 0, cob = 0;
-        delBloque.forEach(a => { const c = cuotaDe(a); esp += c; if (getPagos(a).m[mo.k]) cob += c; });
+        delBloque.forEach(a => { const c=cuotaMesDe(a,mo.k); esp+=c; if(getPagos(a).m[mo.k]) cob+=c; });
         filas += filaMes(nombreBloque(b) + ' · cuota ' + mo.label, esp, cob);
       });
     });
   } else {
     M.forEach(mo => {
       let esp = 0, cob = 0;
-      mensuales.forEach(a => { const c = cuotaDe(a); esp += c; if (getPagos(a).m[mo.k]) cob += c; });
+      mensuales.forEach(a => { const c=cuotaMesDe(a,mo.k); esp+=c; if(getPagos(a).m[mo.k]) cob+=c; });
       filas += filaMes('Cuota ' + mo.label, esp, cob);
     });
   }
@@ -4531,7 +4534,7 @@ function renderPagos() {
           const st = estadoMes(a, m);
           if (st === 'exento') return '<td class="pay-cell"><span class="pay-chip zero">—</span></td>';
           const cls = st === 'paid' ? 'paid' : st === 'overdue' ? 'overdue' : '';
-          const txt = st === 'paid' ? '✓' : '·';
+          const txt=st==='paid'?'✓':'$'+dinero(cuotaMesDe(a,m.k));
           return `<td class="pay-cell"><span class="pay-chip ${cls}" onclick="togglePago('${a.username}','${m.k}')">${txt}</span></td>`;
         }).join('');
       }
@@ -4812,7 +4815,7 @@ function vencidoDe(al) {
   if (al.plan === 'unico') return r.pendiente;
   const p = getPagos(al);
   let v = 0;
-  getMeses(al.sede).forEach(function(m){ if (estadoMes(al, m) === 'overdue') v += r.cuota; });
+  getMeses(al.sede).forEach(function(m){ if (estadoMes(al,m)==='overdue') v+=cuotaMesDe(al,m.k); });
   if (!p.mat && r.mat > 0 && cicloArrancado(al.sede)) v += r.mat;
   return v;
 }
@@ -6843,7 +6846,7 @@ function exportFinancieroExcel() {
       } else {
         if (p.mat && r.mat > 0) movs.push([a.name, nombreModalidad(a.sede), 'Matrícula', r.mat, 'Pagada', (reg.mat && reg.mat.n) || '', aFecha(reg.mat && reg.mat.t)]);
         M.forEach(function(m){
-          if (p.m && p.m[m.k]) movs.push([a.name, nombreModalidad(a.sede), 'Cuota ' + m.label, r.cuota, 'Pagada', (reg[m.k] && reg[m.k].n) || '', aFecha(reg[m.k] && reg[m.k].t)]);
+          if (p.m && p.m[m.k]) movs.push([a.name, nombreModalidad(a.sede), 'Cuota ' + m.label, cuotaMesDe(a,m.k), 'Pagada', (reg[m.k] && reg[m.k].n) || '', aFecha(reg[m.k] && reg[m.k].t)]);
         });
       }
     });
@@ -6856,7 +6859,7 @@ function exportFinancieroExcel() {
     cob.push(['Matrícula', matEsp, matCob, matEsp - matCob, matEsp ? matCob / matEsp : '']);
     M.forEach(function(mo){
       let esp = 0, c2 = 0;
-      mens.forEach(function(a){ const c = cuotaDe(a); esp += c; if (getPagos(a).m[mo.k]) c2 += c; });
+      mens.forEach(function(a){ const c=cuotaMesDe(a,mo.k); esp+=c; if(getPagos(a).m[mo.k]) c2+=c; });
       cob.push(['Cuota ' + mo.label, esp, c2, esp - c2, esp ? c2 / esp : '']);
     });
     if (unis.length > 0) {
