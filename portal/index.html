@@ -1756,6 +1756,32 @@ tbody tr:hover td { background: var(--off); }
       </div>
     </div>
 
+
+    <!-- Beneficios por referidos: administración -->
+    <div class="card" id="referidos-editor-card" style="margin-top:18px">
+      <div class="card-head"><div class="card-title">🎁 Beneficios por referidos</div></div>
+      <p style="font-size:13px;color:var(--gray);line-height:1.6;margin-bottom:14px">Registra los nombres de quienes recomendó cada alumno y aplica un descuento a la matrícula o a meses concretos. Los descuentos se aplican después de su beca y no alteran pagos anteriores.</p>
+      <label style="display:block;margin-bottom:10px;font-size:13px;font-weight:600">Estudiante que recibe el beneficio
+        <select id="ref-alumno" onchange="verBeneficioReferidos()" style="display:block;width:100%;margin-top:7px;padding:10px;border:1px solid var(--border);border-radius:8px"><option value="">Selecciona un estudiante</option></select>
+      </label>
+      <div id="ref-editor" style="display:none">
+        <label style="display:block;font-size:13px;font-weight:600;margin-top:14px">Estudiantes recomendados (uno por línea)
+          <textarea id="ref-personas" rows="3" maxlength="1200" placeholder="Nombre y apellido de las personas que ingresaron por su recomendación" style="display:block;width:100%;margin-top:6px;padding:10px;border:1px solid var(--border);border-radius:8px;font:inherit"></textarea>
+        </label>
+        <p style="font-size:12px;color:var(--gray);margin:6px 0 14px">Puedes registrar referidos que todavía no tengan cuenta. Comprueba la recomendación antes de aprobar el beneficio.</p>
+        <label style="display:block;font-size:13px;font-weight:600">Descuento en matrícula
+          <input id="ref-mat" type="number" min="0" max="100" step="1" value="0" style="display:block;width:110px;padding:9px;margin-top:6px;border:1px solid var(--border);border-radius:8px"> %
+        </label>
+        <div style="font-size:13px;font-weight:600;margin:18px 0 8px">Descuentos en mensualidades</div>
+        <div id="ref-meses" style="display:flex;flex-wrap:wrap;gap:10px"></div>
+        <label style="display:block;font-size:13px;font-weight:600;margin-top:16px">Motivo o acuerdo (opcional)
+          <input id="ref-motivo" maxlength="220" placeholder="Ej.: 50 % en los dos primeros meses por dos referidos" style="display:block;width:100%;padding:9px;margin-top:6px;border:1px solid var(--border);border-radius:8px">
+        </label>
+        <div id="ref-total" style="margin:12px 0;font-size:13px;color:var(--gray)"></div>
+        <button type="button" class="btn btn-navy" id="ref-guardar" onclick="guardarBeneficioReferidos()">Guardar beneficio por referidos</button>
+      </div>
+    </div>
+
     <!-- ALUMNOS -->
     <div class="page" id="page-alumnos">
       <div class="page-title">Alumnos</div>
@@ -3659,7 +3685,7 @@ function navigate(page) {
 
   if (page === 'dashboard') renderDashboard();
   if (page === 'historial') renderHistorial();
-  if (page === 'pagos') renderPagos();
+  if (page === 'pagos') { renderPagos(); prepararBeneficioReferidos(); }
   if (page === 'multas') renderMultas();
   if (page === 'config') renderConfig();
   if (page === 'equipo') renderEquipo();
