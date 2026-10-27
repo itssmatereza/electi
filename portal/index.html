@@ -1697,6 +1697,31 @@ tbody tr:hover td { background: var(--off); }
           </table>
         </div>
       </div>
+    <!-- Beneficios por referidos: administración -->
+    <div class="card" id="referidos-editor-card" style="margin-top:18px">
+      <div class="card-head"><div class="card-title">🎁 Beneficios por referidos</div></div>
+      <p style="font-size:13px;color:var(--gray);line-height:1.6;margin-bottom:14px">Registra los nombres de quienes recomendó cada alumno y aplica un descuento a la matrícula o a meses concretos. Los descuentos se aplican después de su beca y no alteran pagos anteriores.</p>
+      <label style="display:block;margin-bottom:10px;font-size:13px;font-weight:600">Estudiante que recibe el beneficio
+        <select id="ref-alumno" onchange="verBeneficioReferidos()" style="display:block;width:100%;margin-top:7px;padding:10px;border:1px solid var(--border);border-radius:8px"><option value="">Selecciona un estudiante</option></select>
+      </label>
+      <div id="ref-editor" style="display:none">
+        <label style="display:block;font-size:13px;font-weight:600;margin-top:14px">Estudiantes recomendados (uno por línea)
+          <textarea id="ref-personas" rows="3" maxlength="1200" placeholder="Nombre y apellido de las personas que ingresaron por su recomendación" style="display:block;width:100%;margin-top:6px;padding:10px;border:1px solid var(--border);border-radius:8px;font:inherit"></textarea>
+        </label>
+        <p style="font-size:12px;color:var(--gray);margin:6px 0 14px">Puedes registrar referidos que todavía no tengan cuenta. Comprueba la recomendación antes de aprobar el beneficio.</p>
+        <label style="display:block;font-size:13px;font-weight:600">Descuento en matrícula
+          <input id="ref-mat" type="number" min="0" max="100" step="1" value="0" style="display:block;width:110px;padding:9px;margin-top:6px;border:1px solid var(--border);border-radius:8px"> %
+        </label>
+        <div style="font-size:13px;font-weight:600;margin:18px 0 8px">Descuentos en mensualidades</div>
+        <div id="ref-meses" style="display:flex;flex-wrap:wrap;gap:10px"></div>
+        <label style="display:block;font-size:13px;font-weight:600;margin-top:16px">Motivo o acuerdo (opcional)
+          <input id="ref-motivo" maxlength="220" placeholder="Ej.: 50 % en los dos primeros meses por dos referidos" style="display:block;width:100%;padding:9px;margin-top:6px;border:1px solid var(--border);border-radius:8px">
+        </label>
+        <div id="ref-total" style="margin:12px 0;font-size:13px;color:var(--gray)"></div>
+        <button type="button" class="btn btn-navy" id="ref-guardar" onclick="guardarBeneficioReferidos()">Guardar beneficio por referidos</button>
+      </div>
+    </div>
+
     </div>
 
     <!-- MULTAS -->
@@ -1817,8 +1842,8 @@ tbody tr:hover td { background: var(--off); }
       <div class="card">
         <div class="card-head">
           <div class="card-title">Miembros</div>
-          <button class="btn btn-navy" onclick="abrirNuevoMiembro()">+ Agregar miembro</button>
-          <button class="btn btn-ghost" onclick="abrirReparar()">🩹 Reparar cuenta</button>
+          <button class="btn btn-navy" id="equipo-agregar" onclick="abrirNuevoMiembro()">+ Agregar miembro</button>
+          <button class="btn btn-ghost" id="equipo-reparar" onclick="abrirReparar()">🩹 Reparar cuenta</button>
         </div>
         <div class="tabla-wrap">
           <table>
@@ -2189,10 +2214,15 @@ tbody tr:hover td { background: var(--off); }
     <div class="field"><label>Correo (con este inicia sesión)</label><input type="email" id="eq-correo" placeholder="correo@ejemplo.com"></div>
     <div class="field" id="eq-pass-field"><label>Contraseña inicial (mínimo 6 caracteres)</label><input type="text" id="eq-pass" placeholder="Ej: electi2026"></div>
     <div class="field"><label>Rol</label>
-      <select id="eq-rol">
+      <select id="eq-rol" onchange="pintarPermisosEspecificos()">
         <option value="profesor">Profesor — solo académico</option>
         <option value="admin">Administrador — acceso total</option>
       </select>
+    </div>
+    <div class="field" id="eq-permisos-box" style="display:none">
+      <label>Permisos individuales · solo dueño</label>
+      <p style="font-size:12px;color:var(--gray);margin:6px 0">Elige «Predeterminado» para mantener el acceso normal del rol.</p>
+      <div id="eq-permisos-list" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px"></div>
     </div>
     <div class="field"><label>Cargo visible (opcional)</label><input type="text" id="eq-label" placeholder="Ej: Fundador y Presidente"></div>
     <input type="hidden" id="eq-edit" value="">
@@ -2906,6 +2936,7 @@ function registroFiltrado() {
   });
 }
 async function renderRegistro(forzar) {
+  if(!tienePermiso('registro'))return;
   const cont = document.getElementById('reg-lista');
   if (!cont) return;
   const periodo = document.getElementById('reg-dias').value;
@@ -2951,14 +2982,14 @@ async function renderRegistro(forzar) {
 // Firestore hubiera rechazado el cambio, y el dato solo desaparecía al recargar.
 function save() {
   const tareas = [];
-  if (esAdmin()) {
-    state.alumnos.forEach(a => tareas.push(guardarDoc('usuarios', a.username, limpiarAlumno(a))));
-    Object.keys(state.pagos).forEach(uid => tareas.push(guardarDoc('pagos', uid, state.pagos[uid])));
-    tareas.push(guardarDoc('colecciones', 'multas', { items: state.multas }));
+  if (esAdmin() || tienePermiso('pagos')) {
+    if(tienePermiso('equipo')) state.alumnos.forEach(a => tareas.push(guardarDoc('usuarios', a.username, limpiarAlumno(a))));
+    if(tienePermiso('pagos')) Object.keys(state.pagos).forEach(uid => tareas.push(guardarDoc('pagos', uid, state.pagos[uid])));
+    if(esAdmin()) tareas.push(guardarDoc('colecciones', 'multas', { items: state.multas }));
   }
-  Object.keys(state.asistencia).forEach(k => tareas.push(guardarDoc('asistencia', k, docAsistencia(k))));
-  tareas.push(guardarDoc('colecciones', 'anuncios', { items: state.anuncios }));
-  tareas.push(guardarDoc('colecciones', 'materiales', { items: state.materiales }));
+  if(tienePermiso('asistencia')) Object.keys(state.asistencia).forEach(k => tareas.push(guardarDoc('asistencia', k, docAsistencia(k))));
+  if(tienePermiso('anuncios')) tareas.push(guardarDoc('colecciones', 'anuncios', { items: state.anuncios }));
+  if(tienePermiso('materiales')) tareas.push(guardarDoc('colecciones', 'materiales', { items: state.materiales }));
   return Promise.all(tareas).then(function(r){ return r.indexOf(false) === -1; });
 }
 
@@ -3116,6 +3147,7 @@ async function cargarDatosAlumno(uid, previa) {
 async function cargarDatos(rol, previa) {
   const p = previa || precargaComun();
   const esAdministrador = esAdmin(rol);
+  const leerPagos=tienePermiso('pagos');
   _cargaCompleta = false;
   _erroresCarga = [];
   // Cada lectura registra su fallo. Las colecciones que se guardan como documento
@@ -3135,7 +3167,7 @@ async function cargarDatos(rol, previa) {
   const [usuarios, pagos, asistencia, multasD, anunciosD, materialesD, cfg] = await Promise.all([
     critico(window.fb.getDocs('usuarios'), 'alumnos y equipo'),
     // Los profesores no tienen permiso de lectura sobre pagos (por reglas de seguridad)
-    esAdministrador ? critico(window.fb.getDocs('pagos'), 'pagos') : Promise.resolve([]),
+    leerPagos ? critico(window.fb.getDocs('pagos'), 'pagos') : Promise.resolve([]),
     critico(window.fb.getDocs('asistencia'), 'asistencia'),
     esAdministrador ? critico(window.fb.getDoc('colecciones', 'multas'), 'multas') : Promise.resolve(null),
     criticoPre(p.anuncios, 'anuncios'),
@@ -3195,6 +3227,30 @@ function miNivel() { return nivelDe(state.user && state.user.role); }
 // El dueño tiene exactamente las mismas funciones que un administrador
 function esAdmin(rol) { const r = rol || (state.user && state.user.role); return r === 'admin' || r === 'dueno'; }
 function esDueno() { return !!(state.user && state.user.role === 'dueno'); }
+// Permisos predeterminados por rol + excepciones explícitas creadas por dueño.
+// El acceso real a Firestore se valida en firestore.rules.
+const PERMISOS_DEFINIDOS = [
+  ['pagos','Pagos y cuotas'], ['postulaciones','Postulaciones web'],
+  ['registro','Registro de cambios'], ['config','Configuración'],
+  ['equipo','Gestión de equipo'], ['asistencia','Asistencia'],
+  ['materiales','Materiales'], ['anuncios','Anuncios']
+];
+function permisoPerfil(user,k){
+  if(!user)return false;
+  const role=user.rol||user.role;
+  if(role==='dueno')return true;
+  const ex=user.permisos&&user.permisos[k];
+  if(ex===true||ex===false)return ex;
+  return role==='admin'||(role==='profesor'&&['asistencia','materiales','anuncios'].includes(k));
+}
+function tienePermiso(k){return permisoPerfil(state.user,k);}
+function paginaAutorizada(p){
+  const areas={pagos:'pagos',postulaciones:'postulaciones',registro:'registro',
+    config:'config',equipo:'equipo',asistencia:'asistencia',historial:'asistencia',
+    materiales:'materiales',anuncios:'anuncios'};
+  return !areas[p]||tienePermiso(areas[p]);
+}
+
 // Guarda de interfaz: las funciones de gestión son exclusivas de administración.
 // No sustituye a las reglas de Firestore, que son la barrera real.
 // Un profesor gestiona lo suyo; administración gestiona todo. Los elementos
@@ -3241,7 +3297,11 @@ function cuotaCent(al) {
   return Math.round(aCent(getConfig().cuotaBase) * (1 - (al.beca || 0) / 100));
 }
 function cuotaDe(al) { return deCent(cuotaCent(al)); }
-function matriculaCent(al) { return al.matricula === 'exenta' ? 0 : aCent(getConfig().matricula); }
+function refBeneficio(al) { return getPagos(al).referidos || {}; }
+function refPct(al,k) { const b=refBeneficio(al),v=Number(k==='mat'?b.matricula:(b.meses||{})[k]); return Number.isFinite(v)&&v>=0&&v<=100?v:0; }
+function cuotaMesCent(al,k) { return Math.round(cuotaCent(al)*(1-refPct(al,k)/100)); }
+function cuotaMesDe(al,k) { return deCent(cuotaMesCent(al,k)); }
+function matriculaCent(al) { const base=al.matricula==='exenta'?0:aCent(getConfig().matricula); return Math.round(base*(1-refPct(al,'mat')/100)); }
 // La beca aplica solo sobre las cuotas. La matrícula se cobra siempre,
 // salvo que se marque explícitamente como exenta para ese alumno.
 function matriculaDe(al) { return deCent(matriculaCent(al)); }
@@ -3250,11 +3310,9 @@ function matriculaDe(al) { return deCent(matriculaCent(al)); }
 // adelantar las cuotas, así que se aplica solo sobre ellas: la matrícula
 // se cobra completa en las dos modalidades.
 function totalCent(al, plan) {
-  const c = cuotaCent(al), m = matriculaCent(al), n = getMeses(al.sede).length;
-  const esUnico = (plan || al.plan) === 'unico';
-  const cuotas = esUnico && c > 0
-    ? Math.round(c * n * (1 - getConfig().dtoAdelanto / 100))
-    : c * n;
+  const c=cuotaCent(al),m=matriculaCent(al),meses=getMeses(al.sede),n=meses.length;
+  const esUnico=(plan||al.plan)==='unico';
+  const cuotas=esUnico && c>0 ? Math.round(c*n*(1-getConfig().dtoAdelanto/100)) : meses.reduce((v,x)=>v+cuotaMesCent(al,x.k),0);
   return m + cuotas;
 }
 function getPagos(al) {
@@ -3262,8 +3320,8 @@ function getPagos(al) {
   return state.pagos[al.username];
 }
 function estadoMes(al, mesObj) {
-  const cuota = cuotaDe(al);
-  if (cuota === 0) return 'exento';
+  const cuota=cuotaMesDe(al,mesObj.k);
+  if (cuota===0) return 'exento';
   const p = getPagos(al);
   if (p.m[mesObj.k]) return 'paid';
   if (!cicloArrancado(al.sede)) return 'previo';
@@ -3294,9 +3352,10 @@ function resumenPago(al) {
   let pendCent = p.mat ? 0 : mCent;
   M.forEach(m => {
     const st = estadoMes(al, m);
-    if (st === 'paid') pagCent += cCent;
-    else if (st === 'overdue') { mora = true; pendCent += cCent; }
-    else pendCent += cCent;   // 'pending' y 'previo' cuentan igual: aun no vencen
+    const importe=cuotaMesCent(al,m.k);
+    if(st==='paid') pagCent+=importe;
+    else if(st==='overdue') { mora=true; pendCent+=importe; }
+    else pendCent+=importe;   // 'pending' y 'previo' cuentan igual: aun no vencen
   });
   if (mCent > 0 && !p.mat && cicloIniciado) mora = true;
   return { cuota: deCent(cCent), mat: deCent(mCent), pagado: deCent(pagCent),
@@ -3611,14 +3670,18 @@ function bnIcon(id) {
 }
 
 function buildBottomNav() {
-  const set = BN_SETS[state.user.role] || [];
+  const set = (BN_SETS[state.user.role] || []).filter(paginaAutorizada);
   const cont = document.getElementById('bottomNav');
   const items = set.map(id => `<button class="bn-item" id="bn-${id}" onclick="navigate('${id}')">${bnIcon(id)}<span>${BN_TITULOS[id]}</span></button>`).join('');
   cont.innerHTML = items + `<button class="bn-item" id="bn-mas" onclick="toggleSidebar()">${bnIcon('mas')}<span>Más</span></button>`;
 }
 
 function buildNav() {
-  const items = esAdmin() ? ADMIN_NAV : state.user.role === 'profesor' ? PROFE_NAV : ALUMNO_NAV;
+  const items = (state.user.role==='alumno'?ALUMNO_NAV:ADMIN_NAV)
+    .filter(item=>item.section || paginaAutorizada(item.id))
+    .filter(item=>state.user.role!=='profesor' || item.section ||
+      ['dashboard','asistencia','historial','alumnos','materiales','anuncios'].includes(item.id) ||
+      tienePermiso(item.id));
   const nav = document.getElementById('sidebar-nav');
   nav.innerHTML = '';
   items.forEach(item => {
@@ -3636,7 +3699,8 @@ function navigate(page) {
     }
     state.attSession = {};
   }
-  if ((page === 'pagos' || page === 'multas' || page === 'config' || page === 'equipo' || page === 'registro' || page === 'postulaciones') && !esAdmin()) { toast('Sección exclusiva de administración'); return; }
+  if (!paginaAutorizada(page)) { toast('No tienes acceso a esta sección'); return; }
+  if(page==='multas' && !esAdmin()){toast('Sección exclusiva de administración');return;}
   // Alumnos: los profesores entran en modo consulta (sin datos financieros ni de representantes)
   if (page === 'alumnos' && miNivel() < NIVEL_ROL.profesor) { toast('Sección exclusiva del equipo'); return; }
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -3656,7 +3720,7 @@ function navigate(page) {
 
   if (page === 'dashboard') renderDashboard();
   if (page === 'historial') renderHistorial();
-  if (page === 'pagos') renderPagos();
+  if (page === 'pagos') { renderPagos(); prepararBeneficioReferidos(); }
   if (page === 'multas') renderMultas();
   if (page === 'config') renderConfig();
   if (page === 'equipo') renderEquipo();
@@ -3687,7 +3751,7 @@ function celdaPostulacion(tr, valor) {
   return td;
 }
 function filtrarPostulaciones() {
-  if (!esAdmin()) return;
+  if (!tienePermiso('postulaciones')) return;
   const tbody = document.getElementById('postulaciones-table');
   if (!tbody) return;
   const input = document.getElementById('postulaciones-buscar');
@@ -3735,14 +3799,14 @@ function filtrarPostulaciones() {
   tbody.appendChild(fragment);
 }
 async function cargarPostulaciones() {
-  if (!esAdmin()) { toast('Solo administración puede consultar postulaciones'); return; }
+  if (!tienePermiso('postulaciones')) { toast('Solo administración puede consultar postulaciones'); return; }
   const estado = document.getElementById('postulaciones-estado');
   if (!estado) return;
   const version = ++postulacionesSolicitud;
   estado.textContent = 'Cargando postulaciones…';
   try {
     const resultados = await window.fb.getDocs('postulaciones');
-    if (version !== postulacionesSolicitud || !esAdmin()) return;
+    if (version !== postulacionesSolicitud || !tienePermiso('postulaciones')) return;
     postulacionesWeb = resultados.slice().sort((a,b) =>
       textoPostulacion(b.fecha).localeCompare(textoPostulacion(a.fecha)));
     filtrarPostulaciones();
@@ -4136,7 +4200,7 @@ function estadoAtt(v) {
 
 // ─── RENDERS ADMIN ───
 function renderDashboard() {
-  const soyAdmin = esAdmin();
+  const soyAdmin = esAdmin() && tienePermiso('pagos');
   const cfg = getConfig();
   const hoy = new Date();
   const dias = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
@@ -4266,7 +4330,7 @@ function renderDashboard() {
       const M = getMeses('UIO');
       M.forEach(function(mo){
         let e = 0, c = 0;
-        mens.forEach(function(a){ const q = cuotaDe(a); e += q; if (getPagos(a).m[mo.k]) c += q; });
+        mens.forEach(function(a){ const q=cuotaMesDe(a,mo.k); e+=q; if(getPagos(a).m[mo.k]) c+=q; });
         labels.push(mo.label); esperado.push(e); cobrado2.push(c);
       });
       // Sin esta barra, quien eligió pago único quedaba fuera del gráfico y la
@@ -4431,6 +4495,7 @@ function filaMes(nombre, esp, cob) {
 }
 
 function renderPagos() {
+  if(!tienePermiso('pagos'))return;
   const tbody = document.getElementById('pagos-table');
   pintarSelectorPagos();
 
@@ -4484,14 +4549,14 @@ function renderPagos() {
       if (delBloque.length === 0) return;
       getMeses(BLOQUES[b].sedes[0]).forEach(mo => {
         let esp = 0, cob = 0;
-        delBloque.forEach(a => { const c = cuotaDe(a); esp += c; if (getPagos(a).m[mo.k]) cob += c; });
+        delBloque.forEach(a => { const c=cuotaMesDe(a,mo.k); esp+=c; if(getPagos(a).m[mo.k]) cob+=c; });
         filas += filaMes(nombreBloque(b) + ' · cuota ' + mo.label, esp, cob);
       });
     });
   } else {
     M.forEach(mo => {
       let esp = 0, cob = 0;
-      mensuales.forEach(a => { const c = cuotaDe(a); esp += c; if (getPagos(a).m[mo.k]) cob += c; });
+      mensuales.forEach(a => { const c=cuotaMesDe(a,mo.k); esp+=c; if(getPagos(a).m[mo.k]) cob+=c; });
       filas += filaMes('Cuota ' + mo.label, esp, cob);
     });
   }
@@ -4531,7 +4596,7 @@ function renderPagos() {
           const st = estadoMes(a, m);
           if (st === 'exento') return '<td class="pay-cell"><span class="pay-chip zero">—</span></td>';
           const cls = st === 'paid' ? 'paid' : st === 'overdue' ? 'overdue' : '';
-          const txt = st === 'paid' ? '✓' : '·';
+          const txt=st==='paid'?'✓':'$'+dinero(cuotaMesDe(a,m.k));
           return `<td class="pay-cell"><span class="pay-chip ${cls}" onclick="togglePago('${a.username}','${m.k}')">${txt}</span></td>`;
         }).join('');
       }
@@ -4541,8 +4606,9 @@ function renderPagos() {
       : r.mora ? '<span class="badge badge-red">En mora</span>'
       : (a.beca || 0) === 100 ? '<span class="badge badge-navy">Beca 100%</span>'
       : '<span class="badge badge-green">Al día</span>';
+    const cantReferidos=(refBeneficio(a).personas||[]).length;
     return `<tr>
-      <td><strong>${a.name}</strong><br><span style="font-size:11px;color:var(--gray);">${nombreSede(a.sede)} · ${a.plan === 'unico' ? 'Pago único' : 'Mensual'}</span></td>
+      <td><strong>${a.name}</strong><br><span style="font-size:11px;color:var(--gray);">${nombreSede(a.sede)} · ${a.plan === 'unico' ? 'Pago único' : 'Mensual'}</span>${cantReferidos ? '<br><span style="font-size:11px;color:var(--navy)">🎁 ' + cantReferidos + ' referido(s)</span>' : ''}</td>
       <td>${a.beca > 0 ? `<span class="badge badge-navy">${a.beca}%</span>` : '—'}</td>
       <td style="font-family:'DM Mono',monospace;">$${dinero(r.cuota)}</td>
       <td class="pay-cell">${matChip}</td>
@@ -4551,6 +4617,67 @@ function renderPagos() {
       <td>${estado}</td>
     </tr>`;
   }).join('');
+}
+
+
+function prepararBeneficioReferidos(){
+  if(!tienePermiso('pagos'))return;
+  const sel=document.getElementById('ref-alumno'),old=sel.value;
+  sel.replaceChildren(new Option('Selecciona un estudiante',''));
+  state.alumnos.slice().sort((a,b)=>a.name.localeCompare(b.name,'es')).forEach(a=>sel.add(new Option(a.name,a.username)));
+  if(state.alumnos.some(a=>a.username===old))sel.value=old;
+  verBeneficioReferidos();
+}
+function verBeneficioReferidos(){
+  if(!esAdmin())return;
+  const uid=document.getElementById('ref-alumno').value,al=state.alumnos.find(a=>a.username===uid);
+  document.getElementById('ref-editor').style.display=al?'block':'none';
+  if(!al)return;
+  const b=refBeneficio(al);
+  document.getElementById('ref-personas').value=(b.personas||[]).join('\n');
+  document.getElementById('ref-mat').value=refPct(al,'mat');
+  document.getElementById('ref-motivo').value=b.motivo||'';
+  const box=document.getElementById('ref-meses');box.replaceChildren();
+  getMeses(al.sede).forEach(m=>{
+    const lab=document.createElement('label'),x=document.createElement('input');
+    lab.textContent=m.label+' ';lab.style.cssText='padding:9px;border:1px solid var(--border);border-radius:8px;font-size:12px';
+    x.type='number';x.min=0;x.max=100;x.step=1;x.value=refPct(al,m.k);x.dataset.mes=m.k;
+    x.style.cssText='width:60px;padding:5px;margin:0 6px;border:1px solid var(--border);border-radius:6px';
+    x.disabled=al.plan==='unico';lab.append(x,document.createTextNode('%'));box.append(lab);
+  });
+  const r=resumenPago(al);
+  document.getElementById('ref-total').textContent='Matrícula $'+dinero(r.mat)+' · Total ciclo $'+dinero(r.total)
+   +(al.plan==='unico'?' · Pago único: solo matrícula.':'');
+}
+async function guardarBeneficioReferidos(){
+  if(!tienePermiso('pagos')||!_cargaCompleta){toast('No se puede guardar');return;}
+  const al=state.alumnos.find(a=>a.username===document.getElementById('ref-alumno').value);
+  if(!al)return;
+  const personas=document.getElementById('ref-personas').value.split(/\r?\n/).map(n=>n.trim()).filter(Boolean);
+  if(personas.length>15||personas.some(n=>n.length>80)){toast('Máximo 15 referidos de 80 caracteres');return;}
+  const mat=Number(document.getElementById('ref-mat').value||0);
+  const ins=[...document.querySelectorAll('#ref-meses input[data-mes]')],meses={};
+  if(![mat,...ins.map(x=>Number(x.value||0))].every(n=>Number.isInteger(n)&&n>=0&&n<=100)){
+    toast('Porcentajes entre 0 y 100');return;
+  }
+  ins.forEach(x=>{if(Number(x.value)>0)meses[x.dataset.mes]=Number(x.value);});
+  if((mat||Object.keys(meses).length)&&!personas.length){toast('Registra las personas referidas');return;}
+  const p=getPagos(al),anterior=JSON.parse(JSON.stringify(p.referidos||{}));
+  if((p.mat||p.unico)&&mat!==Number(anterior.matricula||0)){
+    toast('No cambies descuentos después de registrar el pago de matrícula');return;
+  }
+  if(al.plan==='unico'&&Object.keys(meses).length){toast('No aplica por meses al pago único');return;}
+  const ks=new Set([...Object.keys(meses),...Object.keys(anterior.meses||{})]);
+  if([...ks].some(k=>p.m&&p.m[k]&&Number(meses[k]||0)!==Number((anterior.meses||{})[k]||0))){
+    toast('Desmarca antes el pago de las cuotas modificadas');return;
+  }
+  const btn=document.getElementById('ref-guardar');btn.disabled=true;
+  p.referidos={personas,matricula:mat,meses,motivo:document.getElementById('ref-motivo').value.trim().slice(0,220),
+     por:quienSoy(),fecha:new Date().toISOString()};
+  const ok=await guardarDoc('pagos',al.username,p);
+  if(!ok)p.referidos=anterior;
+  btn.disabled=false;
+  if(ok){renderPagos();verBeneficioReferidos();toast('Beneficio guardado');}
 }
 
 // El selector cambia de forma segun la configuracion: si los dos bloques
@@ -4575,6 +4702,7 @@ function pintarSelectorPagos() {
 }
 
 function togglePagoUnico(u) {
+  if(!tienePermiso('pagos'))return;
   const al = state.alumnos.find(a => a.username === u);
   if (!al) return;
   const p = getPagos(al);
@@ -4587,6 +4715,7 @@ function togglePagoUnico(u) {
 }
 
 function togglePago(username, key) {
+  if(!tienePermiso('pagos'))return;
   const al = state.alumnos.find(a => a.username === username);
   if (!al) return;
   const p = getPagos(al);
@@ -4812,7 +4941,7 @@ function vencidoDe(al) {
   if (al.plan === 'unico') return r.pendiente;
   const p = getPagos(al);
   let v = 0;
-  getMeses(al.sede).forEach(function(m){ if (estadoMes(al, m) === 'overdue') v += r.cuota; });
+  getMeses(al.sede).forEach(function(m){ if (estadoMes(al,m)==='overdue') v+=cuotaMesDe(al,m.k); });
   if (!p.mat && r.mat > 0 && cicloArrancado(al.sede)) v += r.mat;
   return v;
 }
@@ -4907,7 +5036,7 @@ function renderAlumnoHome() {
   let pagosHTML = '';
   const M = getMeses(me.sede);
   if (r.total === 0) {
-    pagosHTML = '<div class="al-pend-ok" style="padding:6px 0;"><span>🎖</span>Beca completa: no tienes valores por pagar.</div>';
+    pagosHTML = '<div class="al-pend-ok" style="padding:6px 0;"><span>🎖</span>' + ((me.beca||0)===100 ? 'Beca completa' : 'Beneficio aplicado') + ': no tienes valores por pagar.</div>';
   } else if (me.plan === 'unico') {
     pagosHTML = '<div class="al-prox"><div><div class="al-prox-k">Pago único semestral</div><div class="al-prox-v">$' + dinero(r.total) + '</div></div>' +
       (r.unicoPagado ? '<span class="badge badge-green">Pagado</span>' : (r.mora ? '<span class="badge badge-red">Vencido</span>' : '<span class="badge badge-yellow">Pendiente</span>')) + '</div>';
@@ -4917,22 +5046,22 @@ function renderAlumnoHome() {
       pagosHTML += '<div class="al-prox"><div><div class="al-prox-k">Próximo pago</div><div class="al-prox-v">Matrícula · $' + dinero(r.mat) + '</div></div><span class="badge badge-yellow">Pendiente</span></div>';
     } else if (proxM) {
       const st = estadoMes(me, proxM);
-      pagosHTML += '<div class="al-prox"><div><div class="al-prox-k">Próximo pago</div><div class="al-prox-v">Cuota ' + proxM.label + ' · $' + dinero(r.cuota) + '</div></div>' +
+      pagosHTML += '<div class="al-prox"><div><div class="al-prox-k">Próximo pago</div><div class="al-prox-v">Cuota ' + proxM.label + ' · $' + dinero(cuotaMesDe(me,proxM.k)) + '</div></div>' +
         (st === 'overdue' ? '<span class="badge badge-red">Vencida</span>' : '<span class="badge badge-gray">' + (st === 'previo' ? 'Antes de inicio' : 'Pendiente') + '</span>') + '</div>';
     } else {
       pagosHTML += '<div class="al-pend-ok" style="padding:6px 0;"><span>✓</span>Todas tus cuotas están pagadas.</div>';
     }
     let det = '';
-    if (r.mat > 0) det += '<div class="al-cuota-row"><span>Matrícula <span style="color:var(--gray);font-size:11.5px;">$' + dinero(r.mat) + '</span></span>' +
-      (p.mat ? '<span class="badge badge-green">Pagada</span>' : '<span class="badge badge-yellow">Pendiente</span>') + '</div>';
+    if (r.mat > 0 || refPct(me,'mat')) det += '<div class="al-cuota-row"><span>Matrícula <span style="color:var(--gray);font-size:11.5px;">$' + dinero(r.mat) + '</span></span>' +
+      (r.mat===0 ? '<span class="badge badge-green">Descuento 100%</span>' : p.mat ? '<span class="badge badge-green">Pagada</span>' : '<span class="badge badge-yellow">Pendiente</span>') + '</div>';
     M.forEach(function(m) {
       const st = estadoMes(me, m);
-      if (st === 'exento') return;
-      const b = st === 'paid' ? '<span class="badge badge-green">Pagada</span>'
+      if (st === 'exento' && !refPct(me,m.k)) return;
+      const b = st === 'exento' ? '<span class="badge badge-green">Descuento 100%</span>' : st === 'paid' ? '<span class="badge badge-green">Pagada</span>'
               : st === 'overdue' ? '<span class="badge badge-red">Vencida</span>'
               : st === 'previo' ? '<span class="badge badge-gray">Antes de inicio</span>'
               : '<span class="badge badge-gray">Pendiente</span>';
-      det += '<div class="al-cuota-row"><span>Cuota ' + m.label + ' <span style="color:var(--gray);font-size:11.5px;">$' + dinero(r.cuota) + '</span></span>' + b + '</div>';
+      det += '<div class="al-cuota-row"><span>Cuota ' + m.label + ' <span style="color:var(--gray);font-size:11.5px;">$' + dinero(cuotaMesDe(me,m.k)) + (refPct(me,m.k)?' · referido '+refPct(me,m.k)+'%':'') + '</span></span>' + b + '</div>';
     });
     pagosHTML += '<details class="al-det"><summary>Ver todas mis cuotas</summary>' + det + '</details>';
   }
@@ -4945,6 +5074,10 @@ function renderAlumnoHome() {
     });
     pagosHTML += '<details class="al-det"><summary>Multas por atraso (' + misMultas.length + ')</summary>' +
       '<div style="font-size:11.5px;color:var(--gray);line-height:1.55;margin-bottom:4px;">Van al fondo de convivencia de tu generación.</div>' + mh + '</details>';
+  }
+  const benef=refBeneficio(me);
+  if(refPct(me,'mat')||Object.values(benef.meses||{}).some(v=>Number(v)>0)){
+    pagosHTML='<div style="padding:10px;margin-bottom:10px;border:1px solid var(--border);border-radius:9px;font-size:12.5px"><b>🎁 Beneficio por referidos</b><br>Los descuentos ya están aplicados a tu saldo.</div>'+pagosHTML;
   }
   document.getElementById('al-pagos').innerHTML = pagosHTML;
 
@@ -5387,6 +5520,10 @@ function exportData() {
 
 // ─── EQUIPO ───
 function renderEquipo() {
+  if(!tienePermiso('equipo'))return;
+  const a=document.getElementById('equipo-agregar'),r=document.getElementById('equipo-reparar');
+  if(a)a.style.display=esAdmin()?'':'none';
+  if(r)r.style.display=esAdmin()?'':'none';
   sincronizarDirectorio();
   const tbody = document.getElementById('equipo-table');
   if (!state.equipo.length) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--gray);padding:32px;">Agrega al primer miembro del equipo.</td></tr>'; return; }
@@ -5394,7 +5531,7 @@ function renderEquipo() {
     <td><div class="tbl-nombre">${avatarHTML(m)}<div><strong>${m.name || '—'}</strong>${m.username === state.user.username ? ' <span class="badge badge-gray">tú</span>' : ''}<br><span style="font-size:11px;color:var(--gray);">${m.label || ''}</span></div></div></td>
     <td style="font-family:'DM Mono',monospace;font-size:12px;">${m.email || '—'}</td>
     <td>${badgeRol(m.rol)}</td>
-    <td style="font-size:12px;color:var(--gray);">${m.rol === 'dueno' ? 'Todo el portal · cuenta protegida' : m.rol === 'admin' ? 'Todo el portal' : 'Solo académico'}</td>
+    <td style="font-size:12px;color:var(--gray);">${m.rol === 'dueno' ? 'Todo el portal · cuenta protegida' : (m.permisos && Object.keys(m.permisos).length ? 'Permisos personalizados' : m.rol === 'admin' ? 'Todo el portal' : 'Solo académico')}</td>
     <td style="white-space:nowrap;">
       ${(() => {
         const yo = m.username === state.user.username;
@@ -5410,6 +5547,7 @@ function renderEquipo() {
 }
 
 function abrirNuevoMiembro() {
+  if(!esAdmin() || !tienePermiso('equipo'))return;
   document.getElementById('eq-edit').value = '';
   document.getElementById('modal-miembro-title').textContent = 'Agregar miembro del equipo';
   document.getElementById('eq-pass-field').style.display = '';
@@ -5418,6 +5556,7 @@ function abrirNuevoMiembro() {
   pintarPreview('eq', '', '');
   pintarOpcionesRol('profesor', false);
   document.getElementById('eq-rol').value = 'profesor';
+  pintarPermisosEspecificos();
   openModal('modal-miembro');
 }
 
@@ -5437,6 +5576,36 @@ function pintarOpcionesRol(actual, esMiPropioPerfil) {
   sel.disabled = !!esMiPropioPerfil;
 }
 
+// Las excepciones afectan al usuario, nunca al rol completo.
+function pintarPermisosEspecificos(m){
+  const box=document.getElementById('eq-permisos-box');
+  if(!box)return;
+  const role=document.getElementById('eq-rol').value;
+  box.style.display=esDueno()&&role!=='dueno'?'block':'none';
+  const panel=document.getElementById('eq-permisos-list');
+  panel.replaceChildren();
+  PERMISOS_DEFINIDOS.forEach(p=>{
+    const lab=document.createElement('label');
+    lab.style.cssText='display:flex;flex-direction:column;gap:5px;padding:9px;border:1px solid var(--border);border-radius:8px;font-size:12px';
+    const text=document.createElement('span');text.textContent=p[1];
+    const sel=document.createElement('select');sel.dataset.permiso=p[0];
+    sel.style.cssText='width:100%;padding:7px;border:1px solid var(--border);border-radius:7px';
+    [['','Predeterminado'],['si','Permitir'],['no','Revocar']].forEach(x=>sel.add(new Option(x[1],x[0])));
+    const v=m&&m.permisos&&m.permisos[p[0]];
+    sel.value=v===true?'si':v===false?'no':'';
+    lab.append(text,sel);panel.append(lab);
+  });
+}
+function recogerPermisosEspecificos(){
+  if(!esDueno())return {};
+  const v={};
+  document.querySelectorAll('#eq-permisos-list select[data-permiso]').forEach(x=>{
+    if(x.value==='si')v[x.dataset.permiso]=true;
+    else if(x.value==='no')v[x.dataset.permiso]=false;
+  });
+  return v;
+}
+
 function editMiembro(uid) {
   const m = state.equipo.find(x => x.username === uid);
   if (!m) return;
@@ -5445,6 +5614,7 @@ function editMiembro(uid) {
   document.getElementById('eq-edit').value = uid;
   document.getElementById('modal-miembro-title').textContent = yo ? 'Editar mi perfil' : 'Editar miembro del equipo';
   pintarOpcionesRol(m.rol, yo);
+  pintarPermisosEspecificos(m);
   document.getElementById('eq-pass-field').style.display = 'none';
   document.getElementById('eq-correo').disabled = true;
   document.getElementById('eq-nombre').value = m.name || '';
@@ -5463,6 +5633,7 @@ function editMiembro(uid) {
 }
 
 async function addMiembro() {
+  if(!esAdmin() || !tienePermiso('equipo')){toast('No puedes gestionar cuentas');return;}
   const editUid = document.getElementById('eq-edit').value;
   const name = document.getElementById('eq-nombre').value.trim();
   const email = document.getElementById('eq-correo').value.trim().toLowerCase();
@@ -5483,9 +5654,13 @@ async function addMiembro() {
     if (!yo && rolFinal !== rol) { toast('No puedes asignar un rol igual o superior al tuyo'); return; }
     const perfilEdit = { name, email: m.email, rol: rolFinal, label: label || NOMBRE_ROL[rolFinal],
                          initials: name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() };
+    if(esDueno()) perfilEdit.permisos=recogerPermisosEspecificos();
+    else if(m.permisos) perfilEdit.permisos=m.permisos;
     const rolAntes = m.rol;
     try {
-      await window.fb.setDoc('usuarios', editUid, perfilEdit);
+      const completo=Object.assign({},m,perfilEdit);
+      delete completo.username;delete completo._id;
+      await window.fb.setDoc('usuarios', editUid, completo);
       if (fotoUrl !== fotoCache(editUid)) await guardarFoto(editUid, fotoUrl).catch(function(){});
       Object.assign(m, perfilEdit);
       closeModal('modal-miembro');
@@ -5505,6 +5680,7 @@ async function addMiembro() {
     if (nivelDe(rol) >= miNivel()) { toast('No puedes crear una cuenta de rol igual o superior al tuyo'); return; }
     const perfil = { name, email, rol, label: label || NOMBRE_ROL[rol],
                      initials: name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() };
+    if(esDueno())perfil.permisos=recogerPermisosEspecificos();
     await window.fb.setDoc('usuarios', uidCreado, perfil);
     if (fotoUrl) await guardarFoto(uidCreado, fotoUrl).catch(function(){});
     await window.fb.confirmarUsuarioAuth();
@@ -5869,7 +6045,7 @@ function correosCoordinacion() {
 
 // Mantiene ese directorio al dia cada vez que un admin toca el equipo.
 function sincronizarDirectorio() {
-  if (!esAdmin()) return;
+  if (!esAdmin() || !tienePermiso('config')) return;
   const profesores = state.equipo
     .filter(function(m){ return m.rol === 'profesor' && m.email; })
     .map(function(m){ return { nombre: m.name || m.email, correo: m.email }; })
@@ -6100,7 +6276,7 @@ function diasMora(al) {
   if (!cicloArrancado(al.sede)) return 0;
   const p = getPagos(al);
   const hoy = new Date();
-  const cuota = cuotaDe(al), mat = matriculaDe(al);
+  const mat = matriculaDe(al);
   const M = getMeses(al.sede);
   let venc = null;
   const due = m => new Date(m.y, m.n - 1, 5, 23, 59, 59);
@@ -6109,14 +6285,11 @@ function diasMora(al) {
     if (!r.unicoPagado && r.total > 0) venc = due(M[0]);
   } else {
     if (mat > 0 && !p.mat) venc = due(M[0]);
-    if (cuota > 0) {
-      M.forEach(m => {
-        if (!p.m[m.k]) {
-          const d = due(m);
-          if (d < hoy && (venc === null || d < venc)) venc = d;
-        }
-      });
-    }
+    M.forEach(m=>{
+      if(cuotaMesCent(al,m.k)>0&&!p.m[m.k]){
+        const d=due(m);if(d<hoy&&(venc===null||d<venc))venc=d;
+      }
+    });
   }
   if (!venc || venc >= hoy) return 0;
   return Math.floor((hoy - venc) / 86400000);
@@ -6298,6 +6471,7 @@ function generarAcuerdo(u) {
   // contradice el calendario de pagos por un redondeo.
   const valorBeca    = (cfg.cuotaBase - r.cuota) * cfg.numCuotas;
   const descMensual  = cfg.cuotaBase - r.cuota;
+  const promoRef = refPct(a,'mat') || M.some(m=>refPct(a,m.k)>0);
   const dctoUnico    = esUnico ? Math.round((r.mat + r.cuota * cfg.numCuotas) - r.total) : 0;
 
   const esc = s => String(s == null ? '' : s)
@@ -6366,15 +6540,21 @@ function generarAcuerdo(u) {
                      : 'Matrícula exenta y ' + cfg.numCuotas + ' cuotas cubiertas por la beca')
         : esUnico
         ? 'Matrícula y ' + cfg.numCuotas + ' cuotas, en un solo pago' + (dctoUnico > 0 ? ' — descuento de $' + dctoUnico : '')
-        : (r.mat === 0 ? '' : 'Matrícula de $' + dinero(r.mat) + ' más ') + cfg.numCuotas + ' cuotas de $' + dinero(r.cuota)) +
+        : (r.mat === 0 ? '' : 'Matrícula de $' + dinero(r.mat) + ' más ') + cfg.numCuotas +
+          (promoRef ? ' cuotas con beneficios por referidos según el calendario' : ' cuotas de $' + dinero(r.cuota))) +
     '</div></div><div class="num">USD $' + dinero(r.total) + '</div></div></div>';
 
+  if(promoRef) {
+    textoCond += '<p><b>Beneficio especial por referidos:</b> descuento aplicado después de la beca ordinaria, ' +
+      'solo a los conceptos indicados en el calendario de cobros. La matrícula tiene ' + refPct(a,'mat') +
+      '% de descuento por referidos. El total del ciclo refleja todos los descuentos otorgados.</p>';
+  }
   // Calendario de vencimientos (solo plan mensual con cuotas > 0)
   if (!esUnico && r.cuota > 0) {
     let filas = '';
     if (r.mat > 0) filas += '<tr><td>Matrícula</td><td>Al momento de la inscripción</td><td>$' + dinero(r.mat) + '</td></tr>';
     M.forEach(function(m, i) {
-      filas += '<tr><td>Cuota ' + (i + 1) + '</td><td>5 de ' + mesesL[m.n - 1] + ' de ' + m.y + '</td><td>$' + dinero(r.cuota) + '</td></tr>';
+      filas += '<tr><td>Cuota ' + (i + 1) + '</td><td>5 de ' + mesesL[m.n - 1] + ' de ' + m.y + '</td><td>$' + dinero(cuotaMesDe(a,m.k)) + (refPct(a,m.k)?' (referido -'+refPct(a,m.k)+'%)':'') + '</td></tr>';
     });
     calendario = '<table class="calendario"><thead><tr><th>Concepto</th><th>Vencimiento</th><th>Valor</th></tr></thead><tbody>' +
       filas + '</tbody></table>';
@@ -6843,7 +7023,7 @@ function exportFinancieroExcel() {
       } else {
         if (p.mat && r.mat > 0) movs.push([a.name, nombreModalidad(a.sede), 'Matrícula', r.mat, 'Pagada', (reg.mat && reg.mat.n) || '', aFecha(reg.mat && reg.mat.t)]);
         M.forEach(function(m){
-          if (p.m && p.m[m.k]) movs.push([a.name, nombreModalidad(a.sede), 'Cuota ' + m.label, r.cuota, 'Pagada', (reg[m.k] && reg[m.k].n) || '', aFecha(reg[m.k] && reg[m.k].t)]);
+          if (p.m && p.m[m.k]) movs.push([a.name, nombreModalidad(a.sede), 'Cuota ' + m.label, cuotaMesDe(a,m.k), 'Pagada', (reg[m.k] && reg[m.k].n) || '', aFecha(reg[m.k] && reg[m.k].t)]);
         });
       }
     });
@@ -6856,7 +7036,7 @@ function exportFinancieroExcel() {
     cob.push(['Matrícula', matEsp, matCob, matEsp - matCob, matEsp ? matCob / matEsp : '']);
     M.forEach(function(mo){
       let esp = 0, c2 = 0;
-      mens.forEach(function(a){ const c = cuotaDe(a); esp += c; if (getPagos(a).m[mo.k]) c2 += c; });
+      mens.forEach(function(a){ const c=cuotaMesDe(a,mo.k); esp+=c; if(getPagos(a).m[mo.k]) c2+=c; });
       cob.push(['Cuota ' + mo.label, esp, c2, esp - c2, esp ? c2 / esp : '']);
     });
     if (unis.length > 0) {
@@ -6875,6 +7055,16 @@ function exportFinancieroExcel() {
       m.auto ? 'Automática (atraso)' : 'Manual', m.porNombre || '', m.cobradaPor || '', aFecha(m.cobradaT)]);
   });
   hojas.push({ name: 'Multas', data: mul });
+  const refs=[['Alumno beneficiario','Personas referidas','Cantidad','Descuento matrícula %','Mes','Descuento mes %','Cuota normal $','Cuota con beneficio $','Justificación','Aprobado por','Fecha']];
+  state.alumnos.forEach(a=>{
+    const b=refBeneficio(a),personas=Array.isArray(b.personas)?b.personas:[];
+    if(!personas.length&&!refPct(a,'mat')&&!Object.keys(b.meses||{}).length)return;
+    const raiz=[a.name,personas.join('; '),personas.length,refPct(a,'mat')];
+    const meses=Object.keys(b.meses||{});
+    if(!meses.length) refs.push([...raiz,'',0,cuotaDe(a),'',b.motivo||'',b.por||'',b.fecha||'']);
+    meses.forEach(k=>refs.push([...raiz,k,refPct(a,k),cuotaDe(a),cuotaMesDe(a,k),b.motivo||'',b.por||'',b.fecha||'']));
+  });
+  hojas.push({ name:'Descuentos por referidos',data:refs });
   descargarLibro(hojas, 'ELECTI-financiero-' + hoyArchivo() + '.xlsx');
 }
 
@@ -6979,9 +7169,9 @@ function abrirFicha(uid) {
         if (r.mat > 0) h += '<div class="al-cuota-row"><span>Matrícula $' + dinero(r.mat) + '</span>' + (p.mat ? '<span class="badge badge-green">Pagada</span>' : '<span class="badge badge-yellow">Pendiente</span>') + '</div>';
         getMeses(a.sede).forEach(function(m){
           const stm = estadoMes(a, m);
-          if (stm === 'exento') return;
-          h += '<div class="al-cuota-row"><span>Cuota ' + m.label + ' <span style="color:var(--gray);font-size:11.5px;">$' + dinero(r.cuota) + '</span></span>' +
-            (stm === 'paid' ? '<span class="badge badge-green">Pagada</span>' : stm === 'overdue' ? '<span class="badge badge-red">En mora</span>' : stm === 'previo' ? '<span class="badge badge-gray">Antes de inicio</span>' : '<span class="badge badge-gray">Pendiente</span>') + '</div>';
+          if (stm === 'exento' && !refPct(a,m.k)) return;
+          h += '<div class="al-cuota-row"><span>Cuota ' + m.label + ' <span style="color:var(--gray);font-size:11.5px;">$' + dinero(cuotaMesDe(a,m.k)) + (refPct(a,m.k)?' · referido '+refPct(a,m.k)+'%':'') + '</span></span>' +
+            (stm === 'paid' ? '<span class="badge badge-green">Pagada</span>' : stm === 'overdue' ? '<span class="badge badge-red">En mora</span>' : stm === 'exento' ? '<span class="badge badge-green">Descuento 100%</span>' : stm === 'previo' ? '<span class="badge badge-gray">Antes de inicio</span>' : '<span class="badge badge-gray">Pendiente</span>') + '</div>';
         });
       }
       if (mu.pend > 0) h += '<div class="al-cuota-row" style="font-weight:700;"><span>Multas pendientes</span><span class="badge badge-red">$' + dinero(mu.pend) + '</span></div>';
@@ -7434,9 +7624,10 @@ function bvPintarPlanes() {
   const cfg = getConfig(a.sede);
   const cuota = cuotaDe(a), mat = matriculaDe(a);
   const n = cfg.numCuotas;
-  const totalMensual = mat + cuota * n;
-  const dtoPct = cfg.dtoAdelanto;
-  const totalUnico = mat + Math.round(cuota * n * (1 - dtoPct / 100));
+  const totalMensual=deCent(totalCent(a,'mensual'));
+  const dtoPct=cfg.dtoAdelanto;
+  const totalUnico=deCent(totalCent(a,'unico'));
+  const referidoMensual=getMeses(a.sede).some(m=>refPct(a,m.k)>0);
 
   // Beca total sobre cuotas: no hay nada que adelantar ni repartir.
   if (cuota === 0) {
@@ -7458,7 +7649,7 @@ function bvPintarPlanes() {
       '<div class="bv-opcion-top"><div class="bv-opcion-tit">Pago mensual</div>' +
       '<div class="bv-opcion-pre">$' + dinero(cuota) + '/mes</div></div>' +
       '<div class="bv-opcion-des">Matrícula de $' + dinero(mat) + ' al inscribirte y ' + n + ' cuotas de $' + dinero(cuota) +
-      ', con vencimiento el día 5 de cada mes. Total del ciclo: $' + dinero(totalMensual) + '.</div>' +
+      (referidoMensual ? ', con los descuentos por referidos indicados en el calendario de cuotas.' : ', con vencimiento el día 5 de cada mes.') + ' Total del ciclo: $' + dinero(totalMensual) + '.</div>' +
     '</div>' +
     '<div class="bv-opcion" id="bv-op-unico" onclick="bvSetPlan(\'unico\')">' +
       '<div class="bv-opcion-top"><div class="bv-opcion-tit">Pago por adelantado' +
@@ -7469,6 +7660,11 @@ function bvPintarPlanes() {
       ' Sin vencimientos durante el ciclo.</div>' +
     '</div>';
 
+  if(referidoMensual){
+    const unico=bvEl('bv-op-unico');
+    if(unico) unico.style.display='none';
+    _bvPlan='mensual';
+  }
   bvSetPlan(_bvPlan || 'mensual');
 }
 
@@ -7552,6 +7748,10 @@ function bvNombreFacturacion() {
 }
 
 function bvSetPlan(p) {
+  const al=state.alumnos[0];
+  if(p==='unico'&&al&&getMeses(al.sede).some(m=>refPct(al,m.k)>0)){
+    toast('Tu beneficio por referidos se aplica al plan mensual');return;
+  }
   _bvPlan = p;
   const m = bvEl('bv-op-mensual'), u = bvEl('bv-op-unico');
   if (m) m.classList.toggle('sel', p === 'mensual');
@@ -7688,7 +7888,7 @@ function bvPintarConfirmacion() {
   const cuota = cuotaDe(a), mat = matriculaDe(a), n = cfg.numCuotas;
   const dtoPct = cfg.dtoAdelanto;
   const esUnico = _bvPlan === 'unico' && cuota > 0;
-  const total = esUnico ? mat + Math.round(cuota * n * (1 - dtoPct / 100)) : mat + cuota * n;
+  const total=deCent(totalCent(a,esUnico?'unico':'mensual'));
   const M = getMeses(a.sede);
   const rango = M.length ? (M[0].label + ' – ' + M[M.length - 1].label) : cfg.cicloNombre;
 
@@ -7711,7 +7911,7 @@ function bvPintarConfirmacion() {
     : esUnico
       ? '<p>El pago por adelantado se realiza al momento de la inscripción y cubre la totalidad del ciclo. ' +
         'No genera cuotas ni vencimientos posteriores.</p>'
-      : '<p>La matrícula se cancela al momento de la inscripción. Las ' + n + ' cuotas mensuales de $' + dinero(cuota) +
+      : '<p>La matrícula se cancela al momento de la inscripción. Las ' + n + (getMeses(a.sede).some(m=>refPct(a,m.k)>0) ? ' cuotas, con descuentos por referidos según el mes,' : ' cuotas mensuales de $' + dinero(cuota)) +
         ' vencen el día 5 de cada mes. El retraso en el pago genera los recargos previstos en el reglamento del programa.</p>';
 
   bvEl('bv-legal').innerHTML =
