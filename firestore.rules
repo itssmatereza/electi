@@ -272,7 +272,7 @@ service cloud.firestore {
 
       allow create, update: if esEquipo() && permiso('asistencia');
 
-      allow delete: if permiso('asistencia');
+      allow delete: if esAdmin() && permiso('asistencia');
     }
 
 
