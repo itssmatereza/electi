@@ -39,40 +39,186 @@ archivo: postular/index.html
           <label><input type="radio" name="modalidad" value="En línea"><span>En línea<small>Martes y jueves por Zoom, desde todo el país</small></span></label></div></fieldset>
         <label class="pf"><span>¿Alguien te recomendó ELECTI? <small>(opcional)</small></span>
           <input name="recomendado" maxlength="80" autocomplete="off" placeholder="Nombre de quien te recomendó"></label>
-        <input class="pf-hp" name="empresa" tabindex="-1" autocomplete="off" aria-hidden="true">
         <p class="pf-err" id="pf-err" role="alert"></p>
+        <p class="pf-fine" id="pf-status" role="status" aria-live="polite" hidden></p>
         <button class="btn btn-primary btn-lg pf-btn" type="submit" id="pf-btn">Enviar postulación <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
-        <p class="pf-fine">No te compromete a nada. Usamos tus datos solo para contactarte sobre ELECTI (<a href="/privacidad.html">política de privacidad</a>).</p>
+        <p class="pf-fine">No te compromete a nada. Puedes retomar tus datos en este navegador durante 24 horas. Usamos tus datos solo para contactarte sobre ELECTI (<a href="/privacidad.html">política de privacidad</a>).</p>
       </form>
     </div>
   </section>
 </div>
 <script>
 (function(){
-  var f=document.getElementById('form-postular'), err=document.getElementById('pf-err'), btn=document.getElementById('pf-btn');
+  'use strict';
+  var f=document.getElementById('form-postular');
+  var err=document.getElementById('pf-err'), status=document.getElementById('pf-status'), btn=document.getElementById('pf-btn');
   var URL='https://firestore.googleapis.com/v1/projects/portal-electi/databases/(default)/documents/postulaciones?key=AIzaSyCeov2IPL6N_iT8qI3Eo_y2h1DKjWlATSg';
-  function tel(v){ v=(v||'').replace(/[^\d+]/g,''); if(/^09\d{8}$/.test(v)) return '+593'+v.slice(1); if(/^5939\d{8}$/.test(v)) return '+'+v; if(/^\+\d{9,15}$/.test(v)) return v; return ''; }
-  function wa(d){ return 'https://wa.me/593962893857?text='+encodeURIComponent('Hola, quiero postular a ELECTI.\nNombre: '+d.nombre+'\nLlena: '+d.quien+'\nCurso: '+d.curso+'\nModalidad: '+d.modalidad); }
-  f.addEventListener('submit',function(e){
-    e.preventDefault(); err.textContent='';
-    var d={nombre:f.nombre.value.trim(), whatsapp:tel(f.whatsapp.value), quien:(f.quien.value||''), curso:f.curso.value, modalidad:(f.modalidad.value||'')};
-    if(d.nombre.length<3){err.textContent='Escribe el nombre completo del estudiante.';f.nombre.focus();return;}
-    if(!d.whatsapp){err.textContent='Revisa el número de WhatsApp (ej.: 0991234567).';f.whatsapp.focus();return;}
-    if(!d.quien||!d.curso||!d.modalidad){err.textContent='Completa los cinco datos para continuar.';return;}
-    if(f.empresa.value){ location.href='/gracias/'; return; }
-    var recomendado=(f.elements['recomendado'].value||'').trim().slice(0,80);
-    var origenBase=(location.search||'').slice(0,90)||document.referrer.slice(0,90);
-    var origen=(origenBase+(recomendado ? (origenBase ? ' | ' : '')+'Recomendado por: '+recomendado : '')).slice(0,200);
-    var body={fields:{nombre:{stringValue:d.nombre},whatsapp:{stringValue:d.whatsapp},quien:{stringValue:d.quien},curso:{stringValue:d.curso},modalidad:{stringValue:d.modalidad},fecha:{stringValue:new Date().toISOString()},origen:{stringValue:origen}}};
-    btn.disabled=true; btn.textContent='Enviando…';
-    fetch(URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}).then(function(r){
-      if(!r.ok) throw new Error(r.status);
-      try{sessionStorage.setItem('electi_postulo','1');}catch(x){}
-      location.href='/gracias/';
-    }).catch(function(){
-      btn.disabled=false; btn.textContent='Enviar postulación';
-      err.innerHTML='No pudimos enviar tu postulación. <a href="'+wa(d)+'" target="_blank" rel="noopener">Envíala por WhatsApp</a> y la registramos nosotros.';
-    });
+  var STORAGE='electi_postulacion_v1', TTL=24*60*60*1000;
+  var pending=null, busy=false, retryOnConnection=false, storageAvailable=true, expiry=0;
+  var controls=Array.from(f.querySelectorAll('input,select,button'));
+
+  function tel(v){
+    v=(v||'').replace(/[^\d+]/g,'');
+    if(/^09\d{8}$/.test(v)) return '+593'+v.slice(1);
+    if(/^5939\d{8}$/.test(v)) return '+'+v;
+    return /^\+\d{9,15}$/.test(v) ? v : '';
+  }
+  function values(){
+    return {
+      nombre:f.elements.nombre.value.trim(), whatsapp:f.elements.whatsapp.value.trim(),
+      quien:f.elements.quien.value||'', curso:f.elements.curso.value,
+      modalidad:f.elements.modalidad.value||'', recomendado:f.elements.recomendado.value.trim().slice(0,80)
+    };
+  }
+  function note(text){ status.hidden=!text; status.textContent=text; }
+  function save(){
+    if(!expiry || expiry<=Date.now()) expiry=Date.now()+TTL;
+    try{
+      localStorage.setItem(STORAGE,JSON.stringify({version:1,expires:expiry,data:values(),pending:pending}));
+      storageAvailable=true;
+    }catch(e){ storageAvailable=false; }
+  }
+  function restore(){
+    try{
+      var draft=JSON.parse(localStorage.getItem(STORAGE));
+      if(!draft) return;
+      if(draft.version!==1 || !Number.isFinite(draft.expires) || draft.expires<=Date.now() || draft.expires>Date.now()+TTL || !draft.data){
+        localStorage.removeItem(STORAGE); return;
+      }
+      var d=draft.data;
+      ['nombre','whatsapp','curso','recomendado'].forEach(function(k){
+        if(typeof d[k]==='string') f.elements[k].value=d[k];
+      });
+      ['quien','modalidad'].forEach(function(k){
+        Array.from(f.querySelectorAll('input[name="'+k+'"]')).forEach(function(input){ input.checked=input.value===d[k]; });
+      });
+      expiry=draft.expires;
+      var p=draft.pending;
+      // Only resume a stored request whose ID and complete payload match this draft.
+      if(p && /^web_[a-f0-9]{32}$/.test(p.id) && p.data && p.body && p.body.fields && p.body.fields.fecha && p.body.fields.origen &&
+        typeof p.body.fields.fecha.stringValue==='string' && typeof p.body.fields.origen.stringValue==='string'){
+        var normalized=values(); normalized.whatsapp=tel(normalized.whatsapp);
+        if(JSON.stringify(normalized)===JSON.stringify(p.data) &&
+          JSON.stringify(makeBody(p.data,p.body.fields.fecha.stringValue,p.body.fields.origen.stringValue))===JSON.stringify(p.body)) pending=p;
+      }
+      btn.textContent=pending ? 'Reintentar envío' : 'Enviar postulación';
+      note(pending ? 'Tu envío quedó pendiente. Revisa tus datos y pulsa «Reintentar envío» para completarlo.' : 'Recuperamos tus datos para que puedas continuar.');
+    }catch(e){
+      // Storage can be blocked or an old draft can be malformed. The form still works.
+      pending=null;
+    }
+  }
+  function makeBody(d,date,origin){
+    var fields={};
+    ['nombre','whatsapp','quien','curso','modalidad'].forEach(function(k){ fields[k]={stringValue:d[k]}; });
+    fields.fecha={stringValue:date}; fields.origen={stringValue:origin};
+    return {fields:fields};
+  }
+  function newRequest(d){
+    var bytes=new Uint8Array(16); crypto.getRandomValues(bytes);
+    var id='web_'+Array.from(bytes,function(b){return b.toString(16).padStart(2,'0');}).join('');
+    var origin=(location.search||'').slice(0,90)||document.referrer.slice(0,90);
+    origin=(origin+(d.recomendado ? (origin ? ' | ' : '')+'Recomendado por: '+d.recomendado : '')).slice(0,200);
+    return {id:id,data:d,body:makeBody(d,new Date().toISOString(),origin)};
+  }
+  function whatsapp(d){
+    var text='Hola, quiero postular a ELECTI.\nNombre: '+d.nombre+'\nWhatsApp: '+d.whatsapp+'\nLlena: '+d.quien+'\nCurso: '+d.curso+'\nModalidad: '+d.modalidad;
+    if(d.recomendado) text+='\nRecomendado por: '+d.recomendado;
+    return 'https://wa.me/593962893857?text='+encodeURIComponent(text);
+  }
+  function fallback(message){
+    err.replaceChildren(document.createTextNode(message+' '));
+    var link=document.createElement('a');
+    link.href=whatsapp(pending.data); link.target='_blank'; link.rel='noopener noreferrer';
+    link.textContent='Enviar mis datos por WhatsApp'; err.appendChild(link);
+  }
+  function lock(value){
+    busy=value;
+    controls.forEach(function(input){ input.disabled=value; });
+    // Preserve the disabled placeholder when unlocking the select.
+    f.elements.curso.options[0].disabled=true;
+    f.setAttribute('aria-busy',String(value));
+    btn.textContent=value ? 'Enviando…' : 'Reintentar envío';
+  }
+  async function sendOnce(p){
+    var controller=new AbortController();
+    var timer=setTimeout(function(){controller.abort();},10000);
+    try{
+      var response=await fetch(URL+'&documentId='+encodeURIComponent(p.id),{
+        method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(p.body),signal:controller.signal,keepalive:true
+      });
+      var result=await response.json().catch(function(){return null;});
+      var expected='projects/portal-electi/databases/(default)/documents/postulaciones/'+p.id;
+      if(response.ok && result && result.name===expected) return;
+      // Retrying a confirmed creation with the same random ID must not create a second lead.
+      if(response.status===409 && result && result.error && result.error.status==='ALREADY_EXISTS') return;
+      var error=new Error('No se pudo confirmar el envío');
+      error.retryable=response.status===408 || response.status===429 || response.status>=500 || response.ok;
+      throw error;
+    }finally{clearTimeout(timer);}
+  }
+  async function send(){
+    if(busy || !pending) return;
+    retryOnConnection=false;
+    err.textContent=''; lock(true); save();
+    var confirmed=false, retryable=true;
+    try{
+      for(var attempt=0;attempt<3;attempt++){
+        if(navigator.onLine===false) break;
+        note(attempt ? 'Estamos reintentando el envío. No necesitas volver a llenar el formulario.' : 'Estamos confirmando tu postulación…');
+        try{ await sendOnce(pending); confirmed=true; break; }
+        catch(error){
+          retryable=error.retryable!==false;
+          if(!retryable || attempt===2 || navigator.onLine===false) break;
+          fallback('La conexión está tardando. Reintentaremos automáticamente; también puedes enviarnos tus datos por WhatsApp.');
+          await new Promise(function(resolve){setTimeout(resolve,attempt===0 ? 1500 : 4000);});
+        }
+      }
+      if(confirmed){
+        // Keep a receipt in this tab if clearing localStorage fails.
+        try{sessionStorage.setItem('electi_postulo','1');sessionStorage.setItem('electi_postulacion_recibida',pending.id);}catch(e){}
+        try{
+          var saved=JSON.parse(localStorage.getItem(STORAGE));
+          if(saved && saved.pending && saved.pending.id===pending.id) localStorage.removeItem(STORAGE);
+        }catch(e){}
+        pending=null; retryOnConnection=false;
+        location.href='/gracias/'; return;
+      }
+      retryOnConnection=retryable;
+      fallback(navigator.onLine===false ? 'Parece que no tienes conexión. Reintentaremos cuando vuelva mientras esta página esté abierta.' : 'Todavía no pudimos confirmar tu postulación. Pulsa «Reintentar envío» o envíanos tus datos por WhatsApp.');
+      note(storageAvailable ? 'Conservamos tus datos en este navegador para que puedas retomar el envío durante 24 horas.' : 'Mantén esta pestaña abierta: no pudimos guardar un borrador en este navegador. Puedes reintentar o enviarlo por WhatsApp.');
+    }finally{
+      if(!confirmed) lock(false);
+    }
+  }
+  f.addEventListener('input',function(){
+    if(busy) return;
+    pending=null; retryOnConnection=false; expiry=Date.now()+TTL;
+    btn.textContent='Enviar postulación'; err.textContent=''; note(''); save();
   });
+  f.addEventListener('change',function(){
+    if(!busy) save();
+  });
+  f.addEventListener('submit',function(e){
+    e.preventDefault(); if(busy) return; err.textContent='';
+    var d=values(); d.whatsapp=tel(d.whatsapp);
+    if(d.nombre.length<3 || d.nombre.length>80){err.textContent='Escribe el nombre completo del estudiante (entre 3 y 80 caracteres).';f.elements.nombre.focus();return;}
+    if(!d.whatsapp){err.textContent='Revisa el número de WhatsApp (ej.: 0991234567).';f.elements.whatsapp.focus();return;}
+    if(!d.quien || !d.curso || !d.modalidad){err.textContent='Completa los cinco datos para continuar.';return;}
+    if(!pending || JSON.stringify(pending.data)!==JSON.stringify(d)){
+      try{pending=newRequest(d);}catch(error){err.textContent='No pudimos preparar el envío. Recarga esta página para intentarlo nuevamente.';return;}
+    }
+    send();
+  });
+  window.addEventListener('online',function(){if(retryOnConnection && pending && !busy) send();});
+  window.addEventListener('pageshow',function(e){
+    if(e.persisted && !pending && busy){lock(false);f.reset();btn.textContent='Enviar postulación';note('Tu postulación anterior ya fue recibida.');}
+  });
+  restore();
+  try{
+    if(pending && sessionStorage.getItem('electi_postulacion_recibida')===pending.id){
+      localStorage.removeItem(STORAGE); pending=null; f.reset(); note('Tu postulación anterior ya fue recibida.');btn.textContent='Enviar postulación';
+    }
+  }catch(e){}
 })();
 </script>
