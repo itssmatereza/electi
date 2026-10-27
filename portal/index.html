@@ -4200,7 +4200,7 @@ function estadoAtt(v) {
 
 // ─── RENDERS ADMIN ───
 function renderDashboard() {
-  const soyAdmin = esAdmin();
+  const soyAdmin = esAdmin() && tienePermiso('pagos');
   const cfg = getConfig();
   const hoy = new Date();
   const dias = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
@@ -5526,7 +5526,7 @@ function renderEquipo() {
     <td><div class="tbl-nombre">${avatarHTML(m)}<div><strong>${m.name || '—'}</strong>${m.username === state.user.username ? ' <span class="badge badge-gray">tú</span>' : ''}<br><span style="font-size:11px;color:var(--gray);">${m.label || ''}</span></div></div></td>
     <td style="font-family:'DM Mono',monospace;font-size:12px;">${m.email || '—'}</td>
     <td>${badgeRol(m.rol)}</td>
-    <td style="font-size:12px;color:var(--gray);">${m.rol === 'dueno' ? 'Todo el portal · cuenta protegida' : m.rol === 'admin' ? 'Todo el portal' : 'Solo académico'}</td>
+    <td style="font-size:12px;color:var(--gray);">${m.rol === 'dueno' ? 'Todo el portal · cuenta protegida' : (m.permisos && Object.keys(m.permisos).length ? 'Permisos personalizados' : m.rol === 'admin' ? 'Todo el portal' : 'Solo académico')}</td>
     <td style="white-space:nowrap;">
       ${(() => {
         const yo = m.username === state.user.username;
@@ -6038,7 +6038,7 @@ function correosCoordinacion() {
 
 // Mantiene ese directorio al dia cada vez que un admin toca el equipo.
 function sincronizarDirectorio() {
-  if (!esAdmin()) return;
+  if (!esAdmin() || !tienePermiso('config')) return;
   const profesores = state.equipo
     .filter(function(m){ return m.rol === 'profesor' && m.email; })
     .map(function(m){ return { nombre: m.name || m.email, correo: m.email }; })
