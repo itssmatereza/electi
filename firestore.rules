@@ -53,6 +53,23 @@ service cloud.firestore {
       return miNivel() >= 2;
     }
 
+    // Solo el dueño puede establecer excepciones por usuario.
+    // Cuentas existentes: sin campo 'permisos' mantienen el comportamiento histórico.
+    function permiso(clave) {
+      return esDueno() || (
+        (miRol() == 'admin' || miRol() == 'profesor') &&
+        perfil(request.auth.uid).get('permisos', {}).get(
+          clave,
+          miRol() == 'admin' ||
+          (miRol() == 'profesor' && clave in ['asistencia', 'materiales', 'anuncios'])
+        ) == true
+      );
+    }
+
+    function conservaPermisos() {
+      return request.resource.data.get('permisos', {}) == resource.data.get('permisos', {});
+    }
+
     function esEquipo() {
       return miNivel() >= 1;
     }
@@ -156,17 +173,19 @@ service cloud.firestore {
       allow list: if esEquipo();
 
       // Dueño crea admin/profesor/alumno. Admin crea profesor/alumno.
-      allow create: if esAdmin()
+      allow create: if permiso('equipo')
         && request.resource.data.keys().hasAll(['rol'])
         && rolValido(request.resource.data.rol)
-        && nivel(request.resource.data.rol) < miNivel();
+        && nivel(request.resource.data.rol) < miNivel()
+        && (esDueno() || !request.resource.data.keys().hasAny(['permisos']));
 
       allow update: if autenticado()
         && (
 
           // ─── Administración ───
           (
-            esAdmin()
+            permiso('equipo')
+            && (esDueno() || conservaPermisos())
             && miNivel() > nivelActualUsuario(uid)
             && rolValido(request.resource.data.rol)
             && nivel(request.resource.data.rol) < miNivel()
@@ -188,6 +207,7 @@ service cloud.firestore {
             miRol() == 'admin'
             && request.auth.uid == uid
             && request.resource.data.rol == resource.data.rol
+            && conservaPermisos()
           )
 
           ||
@@ -201,7 +221,7 @@ service cloud.firestore {
           marcaSuClave(uid)
         );
 
-      allow delete: if esAdmin()
+      allow delete: if permiso('equipo')
         && request.auth.uid != uid
         && miNivel() > nivelActualUsuario(uid);
     }
@@ -223,7 +243,7 @@ service cloud.firestore {
       allow create, update, delete: if autenticado()
         && (
           request.auth.uid == uid ||
-          (esAdmin() && miNivel() > nivelActualUsuario(uid))
+          (permiso('equipo') && miNivel() > nivelActualUsuario(uid))
         );
     }
 
@@ -235,12 +255,12 @@ service cloud.firestore {
       allow get: if autenticado()
         && (
           request.auth.uid == uid ||
-          esAdmin()
+          permiso('pagos')
         );
 
-      allow list: if esAdmin();
+      allow list: if permiso('pagos');
 
-      allow create, update, delete: if esAdmin();
+      allow create, update, delete: if permiso('pagos');
     }
 
 
@@ -250,9 +270,9 @@ service cloud.firestore {
 
       allow read: if autenticado();
 
-      allow create, update: if esEquipo();
+      allow create, update: if esEquipo() && permiso('asistencia');
 
-      allow delete: if esAdmin();
+      allow delete: if permiso('asistencia');
     }
 
 
@@ -282,9 +302,9 @@ service cloud.firestore {
       // Publicar y eliminar ocurren reescribiendo el documento, o sea
       // con un update. Sin la condición, un profesor podría vaciar
       // el tablero entero de un golpe.
-      allow create: if esEquipo();
-      allow update: if esAdmin() || (esEquipo() && cambioAcotado());
-      allow delete: if esAdmin();
+      allow create: if esEquipo() && permiso('anuncios');
+      allow update: if permiso('anuncios') && (esAdmin() || (esEquipo() && cambioAcotado()));
+      allow delete: if esAdmin() && permiso('anuncios');
     }
 
 
@@ -294,9 +314,9 @@ service cloud.firestore {
 
       allow read: if autenticado();
 
-      allow create: if esEquipo();
-      allow update: if esAdmin() || (esEquipo() && cambioAcotado());
-      allow delete: if esAdmin();
+      allow create: if esEquipo() && permiso('materiales');
+      allow update: if permiso('materiales') && (esAdmin() || (esEquipo() && cambioAcotado()));
+      allow delete: if esAdmin() && permiso('materiales');
     }
 
 
@@ -315,7 +335,7 @@ service cloud.firestore {
 
       allow read: if autenticado();
 
-      allow create, update, delete: if esAdmin();
+      allow create, update, delete: if permiso('config');
     }
 
 
@@ -328,7 +348,7 @@ service cloud.firestore {
     match /bitacora/{entrada} {
 
       // Solo dueño y administración leen el registro.
-      allow get, list: if esAdmin();
+      allow get, list: if permiso('registro');
 
       // Todo el equipo anota sus propios cambios, con un formato fijo.
       allow create: if esEquipo()
@@ -360,7 +380,8 @@ service cloud.firestore {
         && request.resource.data.get('fecha', '') is string && request.resource.data.get('fecha', '').size() <= 40
         && request.resource.data.get('origen', '') is string && request.resource.data.get('origen', '').size() <= 200;
 
-      allow get, list, update, delete: if esAdmin();
+      allow get, list: if permiso('postulaciones');
+      allow update, delete: if esAdmin() && permiso('postulaciones');
     }
 
 
