@@ -7531,9 +7531,10 @@ function bvPintarPlanes() {
   const cfg = getConfig(a.sede);
   const cuota = cuotaDe(a), mat = matriculaDe(a);
   const n = cfg.numCuotas;
-  const totalMensual = mat + cuota * n;
-  const dtoPct = cfg.dtoAdelanto;
-  const totalUnico = mat + Math.round(cuota * n * (1 - dtoPct / 100));
+  const totalMensual=deCent(totalCent(a,'mensual'));
+  const dtoPct=cfg.dtoAdelanto;
+  const totalUnico=deCent(totalCent(a,'unico'));
+  const referidoMensual=getMeses(a.sede).some(m=>refPct(a,m.k)>0);
 
   // Beca total sobre cuotas: no hay nada que adelantar ni repartir.
   if (cuota === 0) {
@@ -7555,7 +7556,7 @@ function bvPintarPlanes() {
       '<div class="bv-opcion-top"><div class="bv-opcion-tit">Pago mensual</div>' +
       '<div class="bv-opcion-pre">$' + dinero(cuota) + '/mes</div></div>' +
       '<div class="bv-opcion-des">Matrícula de $' + dinero(mat) + ' al inscribirte y ' + n + ' cuotas de $' + dinero(cuota) +
-      ', con vencimiento el día 5 de cada mes. Total del ciclo: $' + dinero(totalMensual) + '.</div>' +
+      (referidoMensual ? ', con los descuentos por referidos indicados en el calendario de cuotas.' : ', con vencimiento el día 5 de cada mes.') + ' Total del ciclo: $' + dinero(totalMensual) + '.</div>' +
     '</div>' +
     '<div class="bv-opcion" id="bv-op-unico" onclick="bvSetPlan(\'unico\')">' +
       '<div class="bv-opcion-top"><div class="bv-opcion-tit">Pago por adelantado' +
@@ -7566,6 +7567,11 @@ function bvPintarPlanes() {
       ' Sin vencimientos durante el ciclo.</div>' +
     '</div>';
 
+  if(referidoMensual){
+    const unico=bvEl('bv-op-unico');
+    if(unico) unico.style.display='none';
+    _bvPlan='mensual';
+  }
   bvSetPlan(_bvPlan || 'mensual');
 }
 
@@ -7649,6 +7655,10 @@ function bvNombreFacturacion() {
 }
 
 function bvSetPlan(p) {
+  const al=state.alumnos[0];
+  if(p==='unico'&&al&&getMeses(al.sede).some(m=>refPct(al,m.k)>0)){
+    toast('Tu beneficio por referidos se aplica al plan mensual');return;
+  }
   _bvPlan = p;
   const m = bvEl('bv-op-mensual'), u = bvEl('bv-op-unico');
   if (m) m.classList.toggle('sel', p === 'mensual');
@@ -7785,7 +7795,7 @@ function bvPintarConfirmacion() {
   const cuota = cuotaDe(a), mat = matriculaDe(a), n = cfg.numCuotas;
   const dtoPct = cfg.dtoAdelanto;
   const esUnico = _bvPlan === 'unico' && cuota > 0;
-  const total = esUnico ? mat + Math.round(cuota * n * (1 - dtoPct / 100)) : mat + cuota * n;
+  const total=deCent(totalCent(a,esUnico?'unico':'mensual'));
   const M = getMeses(a.sede);
   const rango = M.length ? (M[0].label + ' – ' + M[M.length - 1].label) : cfg.cicloNombre;
 
@@ -7808,7 +7818,7 @@ function bvPintarConfirmacion() {
     : esUnico
       ? '<p>El pago por adelantado se realiza al momento de la inscripción y cubre la totalidad del ciclo. ' +
         'No genera cuotas ni vencimientos posteriores.</p>'
-      : '<p>La matrícula se cancela al momento de la inscripción. Las ' + n + ' cuotas mensuales de $' + dinero(cuota) +
+      : '<p>La matrícula se cancela al momento de la inscripción. Las ' + n + (getMeses(a.sede).some(m=>refPct(a,m.k)>0) ? ' cuotas, con descuentos por referidos según el mes,' : ' cuotas mensuales de $' + dinero(cuota)) +
         ' vencen el día 5 de cada mes. El retraso en el pago genera los recargos previstos en el reglamento del programa.</p>';
 
   bvEl('bv-legal').innerHTML =
