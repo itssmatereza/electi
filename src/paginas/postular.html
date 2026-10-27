@@ -39,6 +39,7 @@ archivo: postular/index.html
           <label><input type="radio" name="modalidad" value="En línea"><span>En línea<small>Martes y jueves por Zoom, desde todo el país</small></span></label></div></fieldset>
         <label class="pf"><span>¿Alguien te recomendó ELECTI? <small>(opcional)</small></span>
           <input name="recomendado" maxlength="80" autocomplete="off" placeholder="Nombre de quien te recomendó"></label>
+        <input class="pf-hp" name="hp_web" tabindex="-1" autocomplete="off" aria-hidden="true">
         <p class="pf-err" id="pf-err" role="alert"></p>
         <p class="pf-fine" id="pf-status" role="status" aria-live="polite" hidden></p>
         <button class="btn btn-primary btn-lg pf-btn" type="submit" id="pf-btn">Enviar postulación <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
@@ -205,6 +206,13 @@ archivo: postular/index.html
     if(d.nombre.length<3 || d.nombre.length>80){err.textContent='Escribe el nombre completo del estudiante (entre 3 y 80 caracteres).';f.elements.nombre.focus();return;}
     if(!d.whatsapp){err.textContent='Revisa el número de WhatsApp (ej.: 0991234567).';f.elements.whatsapp.focus();return;}
     if(!d.quien || !d.curso || !d.modalidad){err.textContent='Completa los cinco datos para continuar.';return;}
+    // Campo trampa invisible: solo un bot lo llena. No se guarda nada ni se abre
+    // la página de gracias; si fuera una persona, le queda la vía de WhatsApp.
+    if(f.elements.hp_web.value){
+      err.replaceChildren(document.createTextNode('No pudimos registrar el envío desde este navegador. '));
+      var hp=document.createElement('a'); hp.href=whatsapp(d); hp.target='_blank'; hp.rel='noopener noreferrer';
+      hp.textContent='Enviar mis datos por WhatsApp'; err.appendChild(hp); return;
+    }
     if(!pending || JSON.stringify(pending.data)!==JSON.stringify(d)){
       try{pending=newRequest(d);}catch(error){err.textContent='No pudimos preparar el envío. Recarga esta página para intentarlo nuevamente.';return;}
     }

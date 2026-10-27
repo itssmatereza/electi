@@ -65,6 +65,13 @@ async function test(name,run){
       assert.match(await page.locator('#pf-err').textContent(),/nombre completo/);
       assert.equal(await page.locator('[name=empresa]').count(),0);await page.close();
     });
+    await test('the hidden trap field blocks bots without saving or thanking',async()=>{
+      const {page,requests}=await setup(r=>r.fulfill(jsonResponse(r.request())));
+      await fill(page);await page.evaluate(()=>{document.querySelector('[name=hp_web]').value='spam';});
+      await page.locator('#pf-btn').click();await page.waitForTimeout(300);
+      assert.equal(requests.length,0);assert.match(page.url(),/postular/);
+      assert.match(await page.locator('#pf-err a').getAttribute('href'),/^https:\/\/wa\.me\//);await page.close();
+    });
     await test('success persists the full payload, removes the draft, and redirects',async()=>{
       const {page,requests,errors}=await setup(r=>r.fulfill(jsonResponse(r.request())));
       await fill(page);await page.locator('#pf-btn').click();await page.waitForURL('**/gracias/');

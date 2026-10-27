@@ -2982,11 +2982,12 @@ async function renderRegistro(forzar) {
 // Firestore hubiera rechazado el cambio, y el dato solo desaparecía al recargar.
 function save() {
   const tareas = [];
-  if (esAdmin() || tienePermiso('pagos')) {
-    if(tienePermiso('equipo')) state.alumnos.forEach(a => tareas.push(guardarDoc('usuarios', a.username, limpiarAlumno(a))));
-    if(tienePermiso('pagos')) Object.keys(state.pagos).forEach(uid => tareas.push(guardarDoc('pagos', uid, state.pagos[uid])));
-    if(esAdmin()) tareas.push(guardarDoc('colecciones', 'multas', { items: state.multas }));
-  }
+  // Los alumnos se intentan guardar siempre que sea administración: si se le
+  // revocó 'equipo', Firestore rechaza, guardarDoc avisa y save() devuelve false,
+  // en vez de omitir el cambio en silencio y perderlo al recargar.
+  if (esAdmin()) state.alumnos.forEach(a => tareas.push(guardarDoc('usuarios', a.username, limpiarAlumno(a))));
+  if (tienePermiso('pagos')) Object.keys(state.pagos).forEach(uid => tareas.push(guardarDoc('pagos', uid, state.pagos[uid])));
+  if (esAdmin()) tareas.push(guardarDoc('colecciones', 'multas', { items: state.multas }));
   if(tienePermiso('asistencia')) Object.keys(state.asistencia).forEach(k => tareas.push(guardarDoc('asistencia', k, docAsistencia(k))));
   if(tienePermiso('anuncios')) tareas.push(guardarDoc('colecciones', 'anuncios', { items: state.anuncios }));
   if(tienePermiso('materiales')) tareas.push(guardarDoc('colecciones', 'materiales', { items: state.materiales }));
@@ -3265,6 +3266,15 @@ function puedeBorrarItem(item) {
 function soloAdmin() {
   if (esAdmin()) return true;
   toast('Solo coordinación puede hacer esto');
+  return false;
+}
+// Crear, editar, suspender o eliminar alumnos escribe en 'usuarios', que las
+// reglas protegen con el permiso 'equipo'. Se avisa antes de editar para que
+// nadie llene un formulario que Firestore va a rechazar.
+function soloEditorAlumnos() {
+  if (!soloAdmin()) return false;
+  if (tienePermiso('equipo')) return true;
+  toast('Tu cuenta no tiene permiso para modificar alumnos');
   return false;
 }
 
@@ -4629,7 +4639,7 @@ function prepararBeneficioReferidos(){
   verBeneficioReferidos();
 }
 function verBeneficioReferidos(){
-  if(!esAdmin())return;
+  if(!tienePermiso('pagos'))return;
   const uid=document.getElementById('ref-alumno').value,al=state.alumnos.find(a=>a.username===uid);
   document.getElementById('ref-editor').style.display=al?'block':'none';
   if(!al)return;
@@ -5252,7 +5262,7 @@ function toggleAvanzado(forzar) {
 }
 
 function abrirNuevoAlumno() {
-  if (!soloAdmin()) return;
+  if (!soloEditorAlumnos()) return;
   document.getElementById('m-edit').value = '';
   document.getElementById('modal-alumno-title').textContent = 'Agregar alumno';
   ['m-nombre','m-user','m-pass','m-colegio','m-tel','m-correo','m-rep-nombre','m-rep-tel','m-rep-correo','m-cedula','m-rep-cedula','m-acuerdo-url','m-foto'].forEach(id => document.getElementById(id).value = '');
@@ -5270,7 +5280,7 @@ function abrirNuevoAlumno() {
 }
 
 function editAlumno(u) {
-  if (!soloAdmin()) return;
+  if (!soloEditorAlumnos()) return;
   const a = state.alumnos.find(x => x.username === u);
   if (!a) return;
   document.getElementById('m-edit').value = u;
@@ -5317,6 +5327,7 @@ function editAlumno(u) {
 }
 
 async function addAlumno() {
+  if (!soloEditorAlumnos()) return;
   const editU = document.getElementById('m-edit').value;
   const name = document.getElementById('m-nombre').value.trim();
   const email = document.getElementById('m-user').value.trim().toLowerCase();
@@ -5383,7 +5394,7 @@ async function addAlumno() {
 
 let delPend = null;
 async function deleteAlumno(u) {
-  if (!soloAdmin()) return;
+  if (!soloEditorAlumnos()) return;
   if (!puedeEscribir()) return;
   if (delPend !== u) {
     delPend = u;
@@ -6296,7 +6307,7 @@ function diasMora(al) {
 }
 
 function toggleSuspension(u) {
-  if (!soloAdmin()) return;
+  if (!soloEditorAlumnos()) return;
   const a = state.alumnos.find(x => x.username === u);
   if (!a) return;
   a.suspendido = !a.suspendido;
@@ -6322,7 +6333,7 @@ function getCol(row, must, excl) {
 }
 
 function importarAlumnos(input) {
-  if (!soloAdmin()) return;
+  if (!soloEditorAlumnos()) return;
   const file = input.files[0];
   if (!file) return;
   if (typeof XLSX === 'undefined' && /\.(xlsx|xls)$/i.test(file.name)) {
