@@ -4569,8 +4569,9 @@ function renderPagos() {
       : r.mora ? '<span class="badge badge-red">En mora</span>'
       : (a.beca || 0) === 100 ? '<span class="badge badge-navy">Beca 100%</span>'
       : '<span class="badge badge-green">Al día</span>';
+    const cantReferidos=(refBeneficio(a).personas||[]).length;
     return `<tr>
-      <td><strong>${a.name}</strong><br><span style="font-size:11px;color:var(--gray);">${nombreSede(a.sede)} · ${a.plan === 'unico' ? 'Pago único' : 'Mensual'}</span></td>
+      <td><strong>${a.name}</strong><br><span style="font-size:11px;color:var(--gray);">${nombreSede(a.sede)} · ${a.plan === 'unico' ? 'Pago único' : 'Mensual'}</span>${cantReferidos ? '<br><span style="font-size:11px;color:var(--navy)">🎁 ' + cantReferidos + ' referido(s)</span>' : ''}</td>
       <td>${a.beca > 0 ? `<span class="badge badge-navy">${a.beca}%</span>` : '—'}</td>
       <td style="font-family:'DM Mono',monospace;">$${dinero(r.cuota)}</td>
       <td class="pay-cell">${matChip}</td>
@@ -5016,8 +5017,8 @@ function renderAlumnoHome() {
       (p.mat ? '<span class="badge badge-green">Pagada</span>' : '<span class="badge badge-yellow">Pendiente</span>') + '</div>';
     M.forEach(function(m) {
       const st = estadoMes(me, m);
-      if (st === 'exento') return;
-      const b = st === 'paid' ? '<span class="badge badge-green">Pagada</span>'
+      if (st === 'exento' && !refPct(me,m.k)) return;
+      const b = st === 'exento' ? '<span class="badge badge-green">Descuento 100%</span>' : st === 'paid' ? '<span class="badge badge-green">Pagada</span>'
               : st === 'overdue' ? '<span class="badge badge-red">Vencida</span>'
               : st === 'previo' ? '<span class="badge badge-gray">Antes de inicio</span>'
               : '<span class="badge badge-gray">Pendiente</span>';
@@ -6972,6 +6973,16 @@ function exportFinancieroExcel() {
       m.auto ? 'Automática (atraso)' : 'Manual', m.porNombre || '', m.cobradaPor || '', aFecha(m.cobradaT)]);
   });
   hojas.push({ name: 'Multas', data: mul });
+  const refs=[['Alumno beneficiario','Personas referidas','Cantidad','Descuento matrícula %','Mes','Descuento mes %','Cuota normal $','Cuota con beneficio $','Justificación','Aprobado por','Fecha']];
+  state.alumnos.forEach(a=>{
+    const b=refBeneficio(a),personas=Array.isArray(b.personas)?b.personas:[];
+    if(!personas.length&&!refPct(a,'mat')&&!Object.keys(b.meses||{}).length)return;
+    const raiz=[a.name,personas.join('; '),personas.length,refPct(a,'mat')];
+    const meses=Object.keys(b.meses||{});
+    if(!meses.length) refs.push([...raiz,'',0,cuotaDe(a),'',b.motivo||'',b.por||'',b.fecha||'']);
+    meses.forEach(k=>refs.push([...raiz,k,refPct(a,k),cuotaDe(a),cuotaMesDe(a,k),b.motivo||'',b.por||'',b.fecha||'']));
+  });
+  hojas.push({ name:'Descuentos por referidos',data:refs });
   descargarLibro(hojas, 'ELECTI-financiero-' + hoyArchivo() + '.xlsx');
 }
 
@@ -7076,7 +7087,7 @@ function abrirFicha(uid) {
         if (r.mat > 0) h += '<div class="al-cuota-row"><span>Matrícula $' + dinero(r.mat) + '</span>' + (p.mat ? '<span class="badge badge-green">Pagada</span>' : '<span class="badge badge-yellow">Pendiente</span>') + '</div>';
         getMeses(a.sede).forEach(function(m){
           const stm = estadoMes(a, m);
-          if (stm === 'exento') return;
+          if (stm === 'exento' && !refPct(a,m.k)) return;
           h += '<div class="al-cuota-row"><span>Cuota ' + m.label + ' <span style="color:var(--gray);font-size:11.5px;">$' + dinero(cuotaMesDe(a,m.k)) + (refPct(a,m.k)?' · referido '+refPct(a,m.k)+'%':'') + '</span></span>' +
             (stm === 'paid' ? '<span class="badge badge-green">Pagada</span>' : stm === 'overdue' ? '<span class="badge badge-red">En mora</span>' : stm === 'previo' ? '<span class="badge badge-gray">Antes de inicio</span>' : '<span class="badge badge-gray">Pendiente</span>') + '</div>';
         });
