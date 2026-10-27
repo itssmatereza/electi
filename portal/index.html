@@ -2214,10 +2214,15 @@ tbody tr:hover td { background: var(--off); }
     <div class="field"><label>Correo (con este inicia sesión)</label><input type="email" id="eq-correo" placeholder="correo@ejemplo.com"></div>
     <div class="field" id="eq-pass-field"><label>Contraseña inicial (mínimo 6 caracteres)</label><input type="text" id="eq-pass" placeholder="Ej: electi2026"></div>
     <div class="field"><label>Rol</label>
-      <select id="eq-rol">
+      <select id="eq-rol" onchange="pintarPermisosEspecificos()">
         <option value="profesor">Profesor — solo académico</option>
         <option value="admin">Administrador — acceso total</option>
       </select>
+    </div>
+    <div class="field" id="eq-permisos-box" style="display:none">
+      <label>Permisos individuales · solo dueño</label>
+      <p style="font-size:12px;color:var(--gray);margin:6px 0">Elige «Predeterminado» para mantener el acceso normal del rol.</p>
+      <div id="eq-permisos-list" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px"></div>
     </div>
     <div class="field"><label>Cargo visible (opcional)</label><input type="text" id="eq-label" placeholder="Ej: Fundador y Presidente"></div>
     <input type="hidden" id="eq-edit" value="">
@@ -2931,6 +2936,7 @@ function registroFiltrado() {
   });
 }
 async function renderRegistro(forzar) {
+  if(!tienePermiso('registro'))return;
   const cont = document.getElementById('reg-lista');
   if (!cont) return;
   const periodo = document.getElementById('reg-dias').value;
@@ -2976,14 +2982,14 @@ async function renderRegistro(forzar) {
 // Firestore hubiera rechazado el cambio, y el dato solo desaparecía al recargar.
 function save() {
   const tareas = [];
-  if (esAdmin()) {
-    state.alumnos.forEach(a => tareas.push(guardarDoc('usuarios', a.username, limpiarAlumno(a))));
-    Object.keys(state.pagos).forEach(uid => tareas.push(guardarDoc('pagos', uid, state.pagos[uid])));
-    tareas.push(guardarDoc('colecciones', 'multas', { items: state.multas }));
+  if (esAdmin() || tienePermiso('pagos')) {
+    if(tienePermiso('equipo')) state.alumnos.forEach(a => tareas.push(guardarDoc('usuarios', a.username, limpiarAlumno(a))));
+    if(tienePermiso('pagos')) Object.keys(state.pagos).forEach(uid => tareas.push(guardarDoc('pagos', uid, state.pagos[uid])));
+    if(esAdmin()) tareas.push(guardarDoc('colecciones', 'multas', { items: state.multas }));
   }
-  Object.keys(state.asistencia).forEach(k => tareas.push(guardarDoc('asistencia', k, docAsistencia(k))));
-  tareas.push(guardarDoc('colecciones', 'anuncios', { items: state.anuncios }));
-  tareas.push(guardarDoc('colecciones', 'materiales', { items: state.materiales }));
+  if(tienePermiso('asistencia')) Object.keys(state.asistencia).forEach(k => tareas.push(guardarDoc('asistencia', k, docAsistencia(k))));
+  if(tienePermiso('anuncios')) tareas.push(guardarDoc('colecciones', 'anuncios', { items: state.anuncios }));
+  if(tienePermiso('materiales')) tareas.push(guardarDoc('colecciones', 'materiales', { items: state.materiales }));
   return Promise.all(tareas).then(function(r){ return r.indexOf(false) === -1; });
 }
 
@@ -3141,6 +3147,7 @@ async function cargarDatosAlumno(uid, previa) {
 async function cargarDatos(rol, previa) {
   const p = previa || precargaComun();
   const esAdministrador = esAdmin(rol);
+  const leerPagos=tienePermiso('pagos');
   _cargaCompleta = false;
   _erroresCarga = [];
   // Cada lectura registra su fallo. Las colecciones que se guardan como documento
@@ -3160,7 +3167,7 @@ async function cargarDatos(rol, previa) {
   const [usuarios, pagos, asistencia, multasD, anunciosD, materialesD, cfg] = await Promise.all([
     critico(window.fb.getDocs('usuarios'), 'alumnos y equipo'),
     // Los profesores no tienen permiso de lectura sobre pagos (por reglas de seguridad)
-    esAdministrador ? critico(window.fb.getDocs('pagos'), 'pagos') : Promise.resolve([]),
+    leerPagos ? critico(window.fb.getDocs('pagos'), 'pagos') : Promise.resolve([]),
     critico(window.fb.getDocs('asistencia'), 'asistencia'),
     esAdministrador ? critico(window.fb.getDoc('colecciones', 'multas'), 'multas') : Promise.resolve(null),
     criticoPre(p.anuncios, 'anuncios'),
@@ -3220,6 +3227,30 @@ function miNivel() { return nivelDe(state.user && state.user.role); }
 // El dueño tiene exactamente las mismas funciones que un administrador
 function esAdmin(rol) { const r = rol || (state.user && state.user.role); return r === 'admin' || r === 'dueno'; }
 function esDueno() { return !!(state.user && state.user.role === 'dueno'); }
+// Permisos predeterminados por rol + excepciones explícitas creadas por dueño.
+// El acceso real a Firestore se valida en firestore.rules.
+const PERMISOS_DEFINIDOS = [
+  ['pagos','Pagos y cuotas'], ['postulaciones','Postulaciones web'],
+  ['registro','Registro de cambios'], ['config','Configuración'],
+  ['equipo','Gestión de equipo'], ['asistencia','Asistencia'],
+  ['materiales','Materiales'], ['anuncios','Anuncios']
+];
+function permisoPerfil(user,k){
+  if(!user)return false;
+  const role=user.rol||user.role;
+  if(role==='dueno')return true;
+  const ex=user.permisos&&user.permisos[k];
+  if(ex===true||ex===false)return ex;
+  return role==='admin'||(role==='profesor'&&['asistencia','materiales','anuncios'].includes(k));
+}
+function tienePermiso(k){return permisoPerfil(state.user,k);}
+function paginaAutorizada(p){
+  const areas={pagos:'pagos',postulaciones:'postulaciones',registro:'registro',
+    config:'config',equipo:'equipo',asistencia:'asistencia',historial:'asistencia',
+    materiales:'materiales',anuncios:'anuncios'};
+  return !areas[p]||tienePermiso(areas[p]);
+}
+
 // Guarda de interfaz: las funciones de gestión son exclusivas de administración.
 // No sustituye a las reglas de Firestore, que son la barrera real.
 // Un profesor gestiona lo suyo; administración gestiona todo. Los elementos
@@ -3639,14 +3670,18 @@ function bnIcon(id) {
 }
 
 function buildBottomNav() {
-  const set = BN_SETS[state.user.role] || [];
+  const set = (BN_SETS[state.user.role] || []).filter(paginaAutorizada);
   const cont = document.getElementById('bottomNav');
   const items = set.map(id => `<button class="bn-item" id="bn-${id}" onclick="navigate('${id}')">${bnIcon(id)}<span>${BN_TITULOS[id]}</span></button>`).join('');
   cont.innerHTML = items + `<button class="bn-item" id="bn-mas" onclick="toggleSidebar()">${bnIcon('mas')}<span>Más</span></button>`;
 }
 
 function buildNav() {
-  const items = esAdmin() ? ADMIN_NAV : state.user.role === 'profesor' ? PROFE_NAV : ALUMNO_NAV;
+  const items = (state.user.role==='alumno'?ALUMNO_NAV:ADMIN_NAV)
+    .filter(item=>item.section || paginaAutorizada(item.id))
+    .filter(item=>state.user.role!=='profesor' || item.section ||
+      ['dashboard','asistencia','historial','alumnos','materiales','anuncios'].includes(item.id) ||
+      tienePermiso(item.id));
   const nav = document.getElementById('sidebar-nav');
   nav.innerHTML = '';
   items.forEach(item => {
@@ -3664,7 +3699,8 @@ function navigate(page) {
     }
     state.attSession = {};
   }
-  if ((page === 'pagos' || page === 'multas' || page === 'config' || page === 'equipo' || page === 'registro' || page === 'postulaciones') && !esAdmin()) { toast('Sección exclusiva de administración'); return; }
+  if (!paginaAutorizada(page)) { toast('No tienes acceso a esta sección'); return; }
+  if(page==='multas' && !esAdmin()){toast('Sección exclusiva de administración');return;}
   // Alumnos: los profesores entran en modo consulta (sin datos financieros ni de representantes)
   if (page === 'alumnos' && miNivel() < NIVEL_ROL.profesor) { toast('Sección exclusiva del equipo'); return; }
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -3715,7 +3751,7 @@ function celdaPostulacion(tr, valor) {
   return td;
 }
 function filtrarPostulaciones() {
-  if (!esAdmin()) return;
+  if (!tienePermiso('postulaciones')) return;
   const tbody = document.getElementById('postulaciones-table');
   if (!tbody) return;
   const input = document.getElementById('postulaciones-buscar');
@@ -3763,14 +3799,14 @@ function filtrarPostulaciones() {
   tbody.appendChild(fragment);
 }
 async function cargarPostulaciones() {
-  if (!esAdmin()) { toast('Solo administración puede consultar postulaciones'); return; }
+  if (!tienePermiso('postulaciones')) { toast('Solo administración puede consultar postulaciones'); return; }
   const estado = document.getElementById('postulaciones-estado');
   if (!estado) return;
   const version = ++postulacionesSolicitud;
   estado.textContent = 'Cargando postulaciones…';
   try {
     const resultados = await window.fb.getDocs('postulaciones');
-    if (version !== postulacionesSolicitud || !esAdmin()) return;
+    if (version !== postulacionesSolicitud || !tienePermiso('postulaciones')) return;
     postulacionesWeb = resultados.slice().sort((a,b) =>
       textoPostulacion(b.fecha).localeCompare(textoPostulacion(a.fecha)));
     filtrarPostulaciones();
@@ -4459,6 +4495,7 @@ function filaMes(nombre, esp, cob) {
 }
 
 function renderPagos() {
+  if(!tienePermiso('pagos'))return;
   const tbody = document.getElementById('pagos-table');
   pintarSelectorPagos();
 
@@ -4584,7 +4621,7 @@ function renderPagos() {
 
 
 function prepararBeneficioReferidos(){
-  if(!esAdmin())return;
+  if(!tienePermiso('pagos'))return;
   const sel=document.getElementById('ref-alumno'),old=sel.value;
   sel.replaceChildren(new Option('Selecciona un estudiante',''));
   state.alumnos.slice().sort((a,b)=>a.name.localeCompare(b.name,'es')).forEach(a=>sel.add(new Option(a.name,a.username)));
@@ -4613,7 +4650,7 @@ function verBeneficioReferidos(){
    +(al.plan==='unico'?' · Pago único: solo matrícula.':'');
 }
 async function guardarBeneficioReferidos(){
-  if(!esAdmin()||!_cargaCompleta){toast('No se puede guardar');return;}
+  if(!tienePermiso('pagos')||!_cargaCompleta){toast('No se puede guardar');return;}
   const al=state.alumnos.find(a=>a.username===document.getElementById('ref-alumno').value);
   if(!al)return;
   const personas=document.getElementById('ref-personas').value.split(/\r?\n/).map(n=>n.trim()).filter(Boolean);
@@ -5481,6 +5518,7 @@ function exportData() {
 
 // ─── EQUIPO ───
 function renderEquipo() {
+  if(!tienePermiso('equipo'))return;
   sincronizarDirectorio();
   const tbody = document.getElementById('equipo-table');
   if (!state.equipo.length) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--gray);padding:32px;">Agrega al primer miembro del equipo.</td></tr>'; return; }
@@ -5512,6 +5550,7 @@ function abrirNuevoMiembro() {
   pintarPreview('eq', '', '');
   pintarOpcionesRol('profesor', false);
   document.getElementById('eq-rol').value = 'profesor';
+  pintarPermisosEspecificos();
   openModal('modal-miembro');
 }
 
@@ -5531,6 +5570,36 @@ function pintarOpcionesRol(actual, esMiPropioPerfil) {
   sel.disabled = !!esMiPropioPerfil;
 }
 
+// Las excepciones afectan al usuario, nunca al rol completo.
+function pintarPermisosEspecificos(m){
+  const box=document.getElementById('eq-permisos-box');
+  if(!box)return;
+  const role=document.getElementById('eq-rol').value;
+  box.style.display=esDueno()&&role!=='dueno'?'block':'none';
+  const panel=document.getElementById('eq-permisos-list');
+  panel.replaceChildren();
+  PERMISOS_DEFINIDOS.forEach(p=>{
+    const lab=document.createElement('label');
+    lab.style.cssText='display:flex;flex-direction:column;gap:5px;padding:9px;border:1px solid var(--border);border-radius:8px;font-size:12px';
+    const text=document.createElement('span');text.textContent=p[1];
+    const sel=document.createElement('select');sel.dataset.permiso=p[0];
+    sel.style.cssText='width:100%;padding:7px;border:1px solid var(--border);border-radius:7px';
+    [['','Predeterminado'],['si','Permitir'],['no','Revocar']].forEach(x=>sel.add(new Option(x[1],x[0])));
+    const v=m&&m.permisos&&m.permisos[p[0]];
+    sel.value=v===true?'si':v===false?'no':'';
+    lab.append(text,sel);panel.append(lab);
+  });
+}
+function recogerPermisosEspecificos(){
+  if(!esDueno())return {};
+  const v={};
+  document.querySelectorAll('#eq-permisos-list select[data-permiso]').forEach(x=>{
+    if(x.value==='si')v[x.dataset.permiso]=true;
+    else if(x.value==='no')v[x.dataset.permiso]=false;
+  });
+  return v;
+}
+
 function editMiembro(uid) {
   const m = state.equipo.find(x => x.username === uid);
   if (!m) return;
@@ -5539,6 +5608,7 @@ function editMiembro(uid) {
   document.getElementById('eq-edit').value = uid;
   document.getElementById('modal-miembro-title').textContent = yo ? 'Editar mi perfil' : 'Editar miembro del equipo';
   pintarOpcionesRol(m.rol, yo);
+  pintarPermisosEspecificos(m);
   document.getElementById('eq-pass-field').style.display = 'none';
   document.getElementById('eq-correo').disabled = true;
   document.getElementById('eq-nombre').value = m.name || '';
@@ -5577,9 +5647,13 @@ async function addMiembro() {
     if (!yo && rolFinal !== rol) { toast('No puedes asignar un rol igual o superior al tuyo'); return; }
     const perfilEdit = { name, email: m.email, rol: rolFinal, label: label || NOMBRE_ROL[rolFinal],
                          initials: name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() };
+    if(esDueno()) perfilEdit.permisos=recogerPermisosEspecificos();
+    else if(m.permisos) perfilEdit.permisos=m.permisos;
     const rolAntes = m.rol;
     try {
-      await window.fb.setDoc('usuarios', editUid, perfilEdit);
+      const completo=Object.assign({},m,perfilEdit);
+      delete completo.username;delete completo._id;
+      await window.fb.setDoc('usuarios', editUid, completo);
       if (fotoUrl !== fotoCache(editUid)) await guardarFoto(editUid, fotoUrl).catch(function(){});
       Object.assign(m, perfilEdit);
       closeModal('modal-miembro');
@@ -5599,6 +5673,7 @@ async function addMiembro() {
     if (nivelDe(rol) >= miNivel()) { toast('No puedes crear una cuenta de rol igual o superior al tuyo'); return; }
     const perfil = { name, email, rol, label: label || NOMBRE_ROL[rol],
                      initials: name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase() };
+    if(esDueno())perfil.permisos=recogerPermisosEspecificos();
     await window.fb.setDoc('usuarios', uidCreado, perfil);
     if (fotoUrl) await guardarFoto(uidCreado, fotoUrl).catch(function(){});
     await window.fb.confirmarUsuarioAuth();
