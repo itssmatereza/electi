@@ -1842,8 +1842,8 @@ tbody tr:hover td { background: var(--off); }
       <div class="card">
         <div class="card-head">
           <div class="card-title">Miembros</div>
-          <button class="btn btn-navy" onclick="abrirNuevoMiembro()">+ Agregar miembro</button>
-          <button class="btn btn-ghost" onclick="abrirReparar()">🩹 Reparar cuenta</button>
+          <button class="btn btn-navy" id="equipo-agregar" onclick="abrirNuevoMiembro()">+ Agregar miembro</button>
+          <button class="btn btn-ghost" id="equipo-reparar" onclick="abrirReparar()">🩹 Reparar cuenta</button>
         </div>
         <div class="tabla-wrap">
           <table>
@@ -4702,6 +4702,7 @@ function pintarSelectorPagos() {
 }
 
 function togglePagoUnico(u) {
+  if(!tienePermiso('pagos'))return;
   const al = state.alumnos.find(a => a.username === u);
   if (!al) return;
   const p = getPagos(al);
@@ -4714,6 +4715,7 @@ function togglePagoUnico(u) {
 }
 
 function togglePago(username, key) {
+  if(!tienePermiso('pagos'))return;
   const al = state.alumnos.find(a => a.username === username);
   if (!al) return;
   const p = getPagos(al);
@@ -5519,6 +5521,9 @@ function exportData() {
 // ─── EQUIPO ───
 function renderEquipo() {
   if(!tienePermiso('equipo'))return;
+  const a=document.getElementById('equipo-agregar'),r=document.getElementById('equipo-reparar');
+  if(a)a.style.display=esAdmin()?'':'none';
+  if(r)r.style.display=esAdmin()?'':'none';
   sincronizarDirectorio();
   const tbody = document.getElementById('equipo-table');
   if (!state.equipo.length) { tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--gray);padding:32px;">Agrega al primer miembro del equipo.</td></tr>'; return; }
@@ -5542,6 +5547,7 @@ function renderEquipo() {
 }
 
 function abrirNuevoMiembro() {
+  if(!esAdmin() || !tienePermiso('equipo'))return;
   document.getElementById('eq-edit').value = '';
   document.getElementById('modal-miembro-title').textContent = 'Agregar miembro del equipo';
   document.getElementById('eq-pass-field').style.display = '';
@@ -5627,6 +5633,7 @@ function editMiembro(uid) {
 }
 
 async function addMiembro() {
+  if(!esAdmin() || !tienePermiso('equipo')){toast('No puedes gestionar cuentas');return;}
   const editUid = document.getElementById('eq-edit').value;
   const name = document.getElementById('eq-nombre').value.trim();
   const email = document.getElementById('eq-correo').value.trim().toLowerCase();
