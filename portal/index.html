@@ -1052,6 +1052,47 @@ tbody tr:hover td { background: var(--off); }
 .reg-sel{padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;font-family:'DM Sans',sans-serif;color:var(--text);background:var(--white);outline:none}
 .nav-badge{display:inline-block;min-width:18px;padding:1px 6px;margin-left:6px;border-radius:10px;background:var(--sky);color:#fff;font-size:10.5px;font-weight:800;text-align:center;vertical-align:1px}
 .bn-item{position:relative}.bn-dot{position:absolute;top:6px;left:calc(50% + 6px);width:8px;height:8px;border-radius:50%;background:var(--sky);box-shadow:0 0 0 2px #fff}
+/* ─── Postulaciones: embudo y seguimiento ─── */
+.pos-embudo { display: flex; flex-wrap: wrap; gap: 8px; align-items: stretch; margin-bottom: 16px; }
+.pos-et { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; min-width: 104px; padding: 10px 14px; border: 1px solid var(--border); border-radius: 12px; background: var(--white); cursor: pointer; font: inherit; color: var(--text); text-align: left; position: relative; }
+.pos-et i { position: absolute; top: 12px; right: 12px; width: 9px; height: 9px; border-radius: 50%; }
+.pos-et b { font-size: 22px; font-weight: 800; line-height: 1.1; }
+.pos-et span { font-size: 11.5px; color: var(--gray); font-weight: 600; }
+.pos-et:hover { border-color: var(--sky-light); }
+.pos-et.on { border-color: var(--navy); box-shadow: 0 0 0 2px rgba(13,42,110,.12); }
+.pos-et.alerta { border-color: #FECACA; background: var(--red-bg); }
+.pos-et.alerta b, .pos-et.alerta span { color: var(--red); }
+.pos-conv { align-self: center; margin-left: auto; font-size: 12.5px; color: var(--gray); }
+.pos-conv b { color: var(--navy); }
+.pos-sel { padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; font: inherit; font-size: 13px; background: var(--white); color: var(--text); }
+.pos-sel-estado { border: 0; border-radius: 20px; padding: 6px 10px; font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; }
+.pos-chip { display: inline-block; border-radius: 20px; padding: 4px 10px; font-size: 11.5px; font-weight: 700; }
+.pos-nombre { border: 0; background: none; padding: 0; font: inherit; font-weight: 700; color: var(--navy); cursor: pointer; text-align: left; }
+.pos-nombre:hover { text-decoration: underline; }
+.pos-wa-btn { display: inline-block; margin-top: 4px; font-size: 11.5px; font-weight: 700; color: #15803D; text-decoration: none; }
+.pos-ficha { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; padding: 14px; border-radius: 12px; background: var(--off); margin-bottom: 14px; font-size: 13.5px; font-weight: 600; color: var(--text); }
+.pos-ficha span { display: block; font-size: 11px; font-weight: 600; color: var(--gray); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 2px; }
+.pos-wa { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; font-size: 12px; color: var(--gray); }
+.btn-wa-pos { background: #16A34A; color: #fff; text-decoration: none; }
+.pos-hist { margin: 4px 0 8px; }
+.pos-hist-t { font-size: 11px; font-weight: 700; color: var(--gray); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 6px; }
+.pos-hist > div:not(.pos-hist-t) { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--gray); margin-bottom: 5px; }
+.pos-tabla-nota { display: none; }
+@media (max-width: 640px) {
+  .pos-embudo { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
+  .pos-et { min-width: 108px; flex: 0 0 auto; }
+  .pos-conv { display: none; }
+  .pos-ficha { grid-template-columns: 1fr; }
+  #page-postulaciones table thead { display: none; }
+  #page-postulaciones table, #page-postulaciones tbody, #page-postulaciones tr, #page-postulaciones td { display: block; width: 100%; }
+  #page-postulaciones tbody tr { border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; margin-bottom: 10px; }
+  #page-postulaciones tbody td { border: 0; padding: 4px 0; white-space: normal !important; }
+  #page-postulaciones tbody td[data-l="Llegó"] { font-size: 12px; }
+  #page-postulaciones tbody td[data-l="Llegó"] br { display: none; }
+  #page-postulaciones tbody td[data-l="Llegó"] span { margin-left: 6px; }
+  #page-postulaciones tbody td[data-l="Postulante"] .pos-nombre { font-size: 16px; }
+  #page-postulaciones tbody td[data-l="Modalidad"]:before { content: "Modalidad: "; color: var(--gray); }
+}
 </style>
 </head>
 <body>
@@ -1759,22 +1800,27 @@ tbody tr:hover td { background: var(--off); }
     </div>
 
 
-    <!-- POSTULACIONES WEB: consulta de solo lectura para administración -->
+    <!-- POSTULACIONES WEB: seguimiento de cada postulación hasta la matrícula -->
     <div class="page" id="page-postulaciones">
       <div class="page-title">Postulaciones web</div>
-      <div class="page-sub">Solicitudes recibidas desde la página de ELECTI</div>
+      <div class="page-sub">Seguimiento de cada postulación, desde que llega hasta la matrícula</div>
+      <div class="pos-embudo" id="pos-embudo"></div>
       <div class="card">
         <div class="card-head">
           <div class="card-title">Postulaciones <span id="postulaciones-count" style="font-size:13px;font-weight:500;color:var(--gray)"></span></div>
           <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-            <div class="buscador"><input type="search" id="postulaciones-buscar" placeholder="Buscar postulación..." aria-label="Buscar postulaciones" oninput="filtrarPostulaciones()"></div>
+            <div class="buscador"><input type="search" id="postulaciones-buscar" placeholder="Buscar nombre, teléfono, curso…" aria-label="Buscar postulaciones" oninput="filtrarPostulaciones()"></div>
+            <select id="pos-f-modalidad" class="pos-sel" onchange="filtrarPostulaciones()" aria-label="Filtrar por modalidad">
+              <option value="">Todas las modalidades</option><option>Quito presencial</option><option>En línea</option>
+            </select>
             <button type="button" class="btn btn-ghost" onclick="cargarPostulaciones()">↻ Actualizar</button>
+            <button type="button" class="btn btn-ghost" onclick="exportarPostulaciones()">⬇ Excel</button>
           </div>
         </div>
         <p id="postulaciones-estado" role="status" aria-live="polite" style="padding:10px 16px;font-size:13px;color:var(--gray)"></p>
         <div class="tabla-wrap">
           <table>
-            <thead><tr><th>Fecha</th><th>Nombre</th><th>WhatsApp</th><th>Quién llena</th><th>Curso</th><th>Modalidad</th><th>Origen</th></tr></thead>
+            <thead><tr><th>Llegó</th><th>Postulante</th><th>WhatsApp</th><th>Modalidad</th><th>Estado</th><th>Próximo paso</th></tr></thead>
             <tbody id="postulaciones-table"></tbody>
           </table>
         </div>
@@ -2229,6 +2275,34 @@ tbody tr:hover td { background: var(--off); }
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeModal('modal-miembro')">Cancelar</button>
       <button class="btn btn-navy" onclick="addMiembro()">Crear cuenta</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="modal-postulacion">
+  <div class="modal" style="max-width:560px;">
+    <div class="modal-title" id="pos-m-titulo">Postulación</div>
+    <div class="pos-ficha" id="pos-m-datos"></div>
+    <div class="pos-wa" id="pos-m-wa"></div>
+    <div class="field"><label>Estado</label><select id="pos-m-estado"></select></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="field"><label>Entrevista</label><input type="datetime-local" id="pos-m-entrevista"></div>
+      <div class="field"><label>Próximo seguimiento</label><input type="date" id="pos-m-prox"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="field"><label>Beca conversada</label>
+        <select id="pos-m-beca"><option value="">Sin definir</option><option value="0">Sin beca</option><option value="25">25 %</option><option value="40">40 %</option><option value="50">50 %</option><option value="100">100 %</option></select></div>
+      <div class="field"><label>Responsable</label><input type="text" id="pos-m-resp" maxlength="60" placeholder="Quién le da seguimiento"></div>
+    </div>
+    <div class="field"><label>Notas</label><textarea id="pos-m-nota" rows="3" maxlength="1500" placeholder="Qué se habló, dudas, acuerdos…" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font:inherit;resize:vertical"></textarea></div>
+    <div class="pos-hist" id="pos-m-hist"></div>
+    <input type="hidden" id="pos-m-id" value="">
+    <div class="modal-actions" style="justify-content:space-between">
+      <button class="btn btn-ghost" id="pos-m-borrar" style="color:var(--red)" onclick="borrarPostulacion()">Eliminar</button>
+      <span style="display:flex;gap:8px">
+        <button class="btn btn-ghost" onclick="closeModal('modal-postulacion')">Cancelar</button>
+        <button class="btn btn-navy" id="pos-m-guardar" onclick="guardarSeguimiento()">Guardar</button>
+      </span>
     </div>
   </div>
 </div>
@@ -3657,6 +3731,7 @@ const BN_ICONS = {
   'alumno-home': '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>',
   'alumno-materiales': '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
   'alumno-anuncios': '<path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>',
+  postulaciones: '<path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M9 12h6M9 16h4"/>',
   mensaje: '<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>',
   mas: '<circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>',
 };
@@ -3665,12 +3740,15 @@ const BN_TITULOS = {
   dashboard: 'Dashboard', asistencia: 'Tomar asistencia', historial: 'Historial',
   pagos: 'Pagos y cuotas', multas: 'Multas y fondo', alumnos: 'Alumnos',
   materiales: 'Materiales', anuncios: 'Anuncios', config: 'Configuración', equipo: 'Equipo', registro: 'Registro de cambios',
+  postulaciones: 'Postulaciones',
   'alumno-home': 'Inicio', 'alumno-materiales': 'Materiales',
   'alumno-anuncios': 'Anuncios', mensaje: 'Centro de ayuda',
 };
 
 const BN_SETS = {
   admin:    ['dashboard', 'asistencia', 'pagos', 'alumnos'],
+  // El dueño no tenía barra inferior en el celular (solo «Más»)
+  dueno:    ['dashboard', 'postulaciones', 'pagos', 'alumnos'],
   profesor: ['dashboard', 'asistencia', 'historial', 'materiales'],
   alumno:   ['alumno-home', 'alumno-materiales', 'alumno-anuncios', 'mensaje'],
 };
@@ -3750,66 +3828,160 @@ function navigate(page) {
   }
 }
 
-// ─── POSTULACIONES WEB: datos independientes de alumnos / pagos / asistencia ───
+// ─── POSTULACIONES WEB: seguimiento hasta la matrícula ───
+// Cada postulación guarda su seguimiento en el campo 'seg' del mismo documento:
+// { estado, entrevista, prox, beca, resp, nota, act, hist:[{e,t,por}] }.
+// Las reglas permiten actualizar solo a administración con el permiso 'postulaciones'.
+const POS_ESTADOS = [
+  ['nueva',        'Nueva',               '#1565C0', '#E3F2FD'],
+  ['contactado',   'Contactado',          '#0D2A6E', '#EEF2FF'],
+  ['agendada',     'Entrevista agendada', '#92400E', '#FFFBEB'],
+  ['entrevistado', 'Entrevistado',        '#6D28D9', '#F5F3FF'],
+  ['admitido',     'Admitido',            '#15803D', '#F0FDF4'],
+  ['matriculado',  'Matriculado',         '#FFFFFF', '#16A34A'],
+  ['no',           'No continúa',         '#7A8BAD', '#F4F6FB'],
+];
+const POS_IDX = {}; POS_ESTADOS.forEach((e, i) => { POS_IDX[e[0]] = i; });
 let postulacionesWeb = [];
 let postulacionesSolicitud = 0;
-function textoPostulacion(v) { return typeof v === 'string' ? v : ''; }
-function celdaPostulacion(tr, valor) {
-  const td = document.createElement('td');
-  td.textContent = textoPostulacion(valor) || '—';
-  tr.appendChild(td);
-  return td;
+let posFiltroEstado = '';
+let posBorrarPend = '';
+
+function escP(v) {
+  return String(v == null ? '' : v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
+function textoPostulacion(v) { return typeof v === 'string' ? v : ''; }
+function posSeg(p) { return (p && typeof p.seg === 'object' && p.seg) ? p.seg : {}; }
+function posEstado(p) { const e = posSeg(p).estado; return POS_IDX[e] !== undefined ? e : 'nueva'; }
+function posPuedeEditar() { return esAdmin() && tienePermiso('postulaciones'); }
+function posRecomendado(p) {
+  const m = textoPostulacion(p.origen).match(/Recomendado por:\s*(.+)$/);
+  return m ? m[1].trim() : '';
+}
+function posOrigenLimpio(p) {
+  return textoPostulacion(p.origen).replace(/\s*\|?\s*Recomendado por:.*$/, '').trim();
+}
+function posDias(iso) {
+  const t = Date.parse(iso); if (Number.isNaN(t)) return null;
+  return Math.floor((Date.now() - t) / 86400000);
+}
+function posFechaCorta(iso) {
+  const t = Date.parse(iso); if (Number.isNaN(t)) return '—';
+  return new Date(t).toLocaleDateString('es-EC', { day: 'numeric', month: 'short' });
+}
+function posFechaHora(v) {
+  const t = Date.parse(v); if (Number.isNaN(t)) return '';
+  return new Date(t).toLocaleString('es-EC', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+}
+function posPrimerNombre(p) { return textoPostulacion(p.nombre).split(/\s+/)[0] || ''; }
+// Mensaje de WhatsApp según el momento del proceso
+function posMensajeWA(p) {
+  const n = posPrimerNombre(p), s = posSeg(p), e = posEstado(p);
+  const quien = p.quien === 'Representante' ? 'por la postulación de su representado a' : 'por tu postulación a';
+  if (e === 'agendada' && s.entrevista) {
+    return 'Hola ' + n + ', te escribimos de ELECTI para recordarte tu entrevista: ' + posFechaHora(s.entrevista) + '. Son 20 minutos y solo necesitamos al estudiante. ¡Te esperamos!';
+  }
+  if (e === 'admitido') {
+    return 'Hola ' + n + ', te escribimos de ELECTI con buenas noticias: tienes un cupo en la 6.ª generación. Te contamos los siguientes pasos para tu matrícula.';
+  }
+  return 'Hola ' + n + ', te escribimos de ELECTI ' + quien + ' la 6.ª generación. ¿Qué día y hora te queda bien para una entrevista de 20 minutos, en persona o por videollamada?';
+}
+function posLinkWA(p, conTexto) {
+  const tel = textoPostulacion(p.whatsapp);
+  if (!/^\+[0-9]{9,15}$/.test(tel)) return '';
+  return 'https://wa.me/' + tel.slice(1) + (conTexto ? '?text=' + encodeURIComponent(posMensajeWA(p)) : '');
+}
+function posChip(e) {
+  const d = POS_ESTADOS[POS_IDX[e]];
+  return '<span class="pos-chip" style="color:' + d[2] + ';background:' + d[3] + '">' + escP(d[1]) + '</span>';
+}
+// Lo que toca hacer con cada postulación, y si ya está atrasado
+function posProximo(p) {
+  const s = posSeg(p), e = posEstado(p), hoy = new Date(); hoy.setHours(0, 0, 0, 0);
+  if (e === 'nueva') {
+    const d = posDias(p.fecha);
+    return { txt: d === null ? 'Contactar' : (d >= 2 ? 'Sin contactar · ' + d + ' días' : 'Contactar hoy'), tarde: d !== null && d >= 2 };
+  }
+  if (e === 'agendada' && s.entrevista) {
+    const t = Date.parse(s.entrevista);
+    return { txt: 'Entrevista ' + posFechaHora(s.entrevista), tarde: !Number.isNaN(t) && t < Date.now() };
+  }
+  if (s.prox && e !== 'matriculado' && e !== 'no') {
+    const t = Date.parse(s.prox + 'T00:00:00');
+    return { txt: 'Seguimiento ' + posFechaCorta(s.prox + 'T12:00:00'), tarde: !Number.isNaN(t) && t < hoy.getTime() };
+  }
+  return { txt: '—', tarde: false };
+}
+
+function pintarEmbudo() {
+  const cont = document.getElementById('pos-embudo');
+  if (!cont) return;
+  const n = {}; POS_ESTADOS.forEach(e => { n[e[0]] = 0; });
+  let atrasadas = 0;
+  postulacionesWeb.forEach(p => { n[posEstado(p)]++; if (posProximo(p).tarde) atrasadas++; });
+  const total = postulacionesWeb.length;
+  let h = '<button type="button" class="pos-et' + (posFiltroEstado === '' ? ' on' : '') + '" onclick="filtrarEstadoPos(\'\')"><b>' + total + '</b><span>Todas</span></button>';
+  POS_ESTADOS.forEach(e => {
+    h += '<button type="button" class="pos-et' + (posFiltroEstado === e[0] ? ' on' : '') + '" onclick="filtrarEstadoPos(\'' + e[0] + '\')">' +
+      '<i style="background:' + (e[0] === 'matriculado' ? e[3] : e[2]) + '"></i><b>' + n[e[0]] + '</b><span>' + escP(e[1]) + '</span></button>';
+  });
+  if (atrasadas) {
+    h += '<button type="button" class="pos-et alerta' + (posFiltroEstado === '_tarde' ? ' on' : '') + '" onclick="filtrarEstadoPos(\'_tarde\')"><b>' + atrasadas + '</b><span>Requieren atención</span></button>';
+  }
+  const matr = n.matriculado, conv = total ? Math.round(matr * 100 / total) : 0;
+  h += '<div class="pos-conv">Conversión a matrícula: <b>' + conv + ' %</b> (' + matr + ' de ' + total + ')</div>';
+  cont.innerHTML = h;
+}
+function filtrarEstadoPos(e) {
+  posFiltroEstado = posFiltroEstado === e ? '' : e;
+  pintarEmbudo(); filtrarPostulaciones();
+}
+
 function filtrarPostulaciones() {
   if (!tienePermiso('postulaciones')) return;
   const tbody = document.getElementById('postulaciones-table');
   if (!tbody) return;
-  const input = document.getElementById('postulaciones-buscar');
-  const q = (input ? input.value : '').trim().toLocaleLowerCase('es');
-  const filas = postulacionesWeb.filter(p => [p.nombre,p.whatsapp,p.quien,p.curso,p.modalidad,p.origen]
-    .some(v => textoPostulacion(v).toLocaleLowerCase('es').includes(q)));
+  const q = (document.getElementById('postulaciones-buscar').value || '').trim().toLocaleLowerCase('es');
+  const mod = document.getElementById('pos-f-modalidad').value;
+  const filas = postulacionesWeb.filter(p => {
+    if (posFiltroEstado === '_tarde' ? !posProximo(p).tarde : (posFiltroEstado && posEstado(p) !== posFiltroEstado)) return false;
+    if (mod && p.modalidad !== mod) return false;
+    if (!q) return true;
+    const s = posSeg(p);
+    return [p.nombre, p.whatsapp, p.quien, p.curso, p.modalidad, p.origen, s.nota, s.resp]
+      .some(v => textoPostulacion(v).toLocaleLowerCase('es').includes(q));
+  });
   document.getElementById('postulaciones-count').textContent =
-    '(' + filas.length + (q ? ' de ' + postulacionesWeb.length : '') + ')';
-  tbody.replaceChildren();
+    '(' + filas.length + (filas.length !== postulacionesWeb.length ? ' de ' + postulacionesWeb.length : '') + ')';
   if (!filas.length) {
-    const tr = document.createElement('tr');
-    const td = document.createElement('td');
-    td.colSpan = 7;
-    td.textContent = q ? 'Ninguna postulación coincide con la búsqueda.' : 'Aún no hay postulaciones.';
-    tr.appendChild(td);
-    tbody.appendChild(tr);
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--gray);padding:28px">' +
+      (postulacionesWeb.length ? 'Ninguna postulación coincide con el filtro.' : 'Aún no hay postulaciones.') + '</td></tr>';
     return;
   }
-  const fragment = document.createDocumentFragment();
-  filas.forEach(p => {
-    const tr = document.createElement('tr');
-    let fecha = textoPostulacion(p.fecha);
-    if (fecha && !Number.isNaN(Date.parse(fecha))) {
-      fecha = new Date(fecha).toLocaleString('es-EC',{dateStyle:'short',timeStyle:'short'});
-    }
-    celdaPostulacion(tr,fecha);
-    celdaPostulacion(tr,p.nombre);
-    const td = celdaPostulacion(tr,'');
-    td.textContent = '';
-    const tel = textoPostulacion(p.whatsapp);
-    if (/^\+[0-9]{9,15}$/.test(tel)) {
-      const link = document.createElement('a');
-      link.href = 'https://wa.me/' + tel.slice(1);
-      link.target = '_blank';
-      link.rel = 'noopener noreferrer';
-      link.textContent = tel;
-      td.appendChild(link);
-    } else td.textContent = tel || '—';
-    celdaPostulacion(tr,p.quien);
-    celdaPostulacion(tr,p.curso);
-    celdaPostulacion(tr,p.modalidad);
-    celdaPostulacion(tr,p.origen);
-    fragment.appendChild(tr);
-  });
-  tbody.appendChild(fragment);
+  const editar = posPuedeEditar();
+  tbody.innerHTML = filas.map(p => {
+    const id = escP(p._id), e = posEstado(p), pr = posProximo(p), rec = posRecomendado(p);
+    const wa = posLinkWA(p, false), waTxt = posLinkWA(p, true);
+    const d = posDias(p.fecha);
+    const sel = editar
+      ? '<select class="pos-sel-estado" style="color:' + POS_ESTADOS[POS_IDX[e]][2] + ';background:' + POS_ESTADOS[POS_IDX[e]][3] + '" onchange="cambiarEstadoPos(\'' + id + '\', this.value)" aria-label="Estado">' +
+          POS_ESTADOS.map(x => '<option value="' + x[0] + '"' + (x[0] === e ? ' selected' : '') + '>' + escP(x[1]) + '</option>').join('') + '</select>'
+      : posChip(e);
+    return '<tr>' +
+      '<td data-l="Llegó" style="white-space:nowrap"><strong>' + posFechaCorta(p.fecha) + '</strong><br><span style="font-size:11px;color:var(--gray)">' + (d === null ? '' : d === 0 ? 'hoy' : 'hace ' + d + ' d') + '</span></td>' +
+      '<td data-l="Postulante"><button type="button" class="pos-nombre" onclick="abrirPostulacion(\'' + id + '\')">' + escP(p.nombre) + '</button><br><span style="font-size:11.5px;color:var(--gray)">' + escP(p.curso) + ' · llena: ' + escP(p.quien) + '</span>' +
+        (rec ? '<br><span style="font-size:11.5px;color:var(--navy)">🤝 Recomendado por ' + escP(rec) + '</span>' : '') + '</td>' +
+      '<td data-l="WhatsApp" style="white-space:nowrap">' + (wa ? '<a href="' + escP(wa) + '" target="_blank" rel="noopener noreferrer">' + escP(p.whatsapp) + '</a><br>' +
+          '<a class="pos-wa-btn" href="' + escP(waTxt) + '" target="_blank" rel="noopener noreferrer">💬 Escribir</a>' : escP(p.whatsapp || '—')) + '</td>' +
+      '<td data-l="Modalidad">' + escP(p.modalidad) + '</td>' +
+      '<td data-l="Estado">' + sel + '</td>' +
+      '<td data-l="Próximo paso" style="font-size:12.5px;' + (pr.tarde ? 'color:var(--red);font-weight:700' : '') + '">' + escP(pr.txt) + '</td>' +
+      '</tr>';
+  }).join('');
 }
+
 async function cargarPostulaciones() {
-  if (!tienePermiso('postulaciones')) { toast('Solo administración puede consultar postulaciones'); return; }
+  if (!tienePermiso('postulaciones')) { toast('No tienes acceso a las postulaciones'); return; }
   const estado = document.getElementById('postulaciones-estado');
   if (!estado) return;
   const version = ++postulacionesSolicitud;
@@ -3817,17 +3989,131 @@ async function cargarPostulaciones() {
   try {
     const resultados = await window.fb.getDocs('postulaciones');
     if (version !== postulacionesSolicitud || !tienePermiso('postulaciones')) return;
-    postulacionesWeb = resultados.slice().sort((a,b) =>
-      textoPostulacion(b.fecha).localeCompare(textoPostulacion(a.fecha)));
-    filtrarPostulaciones();
-    estado.textContent = postulacionesWeb.length + ' postulación(es) · consulta de solo lectura.';
+    postulacionesWeb = resultados.slice().sort((a, b) => textoPostulacion(b.fecha).localeCompare(textoPostulacion(a.fecha)));
+    pintarEmbudo(); filtrarPostulaciones();
+    estado.textContent = posPuedeEditar()
+      ? 'Cambia el estado desde la tabla o abre la ficha para agendar la entrevista y dejar notas.'
+      : 'Consulta de solo lectura.';
   } catch (e) {
     if (version !== postulacionesSolicitud) return;
     console.error('Error consultando postulaciones', e);
     estado.textContent = 'No se pudo cargar la lista. Comprueba la conexión y las reglas de Firestore.';
-    document.getElementById('postulaciones-table').replaceChildren();
+    document.getElementById('postulaciones-table').innerHTML = '';
     document.getElementById('postulaciones-count').textContent = '';
   }
+}
+
+// Guarda el seguimiento y deja rastro de cada cambio de estado
+async function guardarSegPos(id, cambios) {
+  if (!posPuedeEditar()) { toast('Solo administración puede actualizar postulaciones'); return false; }
+  const p = postulacionesWeb.find(x => x._id === id);
+  if (!p) return false;
+  const antes = posSeg(p);
+  const seg = Object.assign({}, antes, cambios);
+  const hist = Array.isArray(antes.hist) ? antes.hist.slice(-29) : [];
+  const ahora = new Date().toISOString();
+  if (cambios.estado && cambios.estado !== posEstado(p)) {
+    hist.push({ e: seg.estado, t: ahora, por: quienSoy() });
+  }
+  seg.hist = hist; seg.act = ahora;
+  if (!seg.resp && seg.estado !== 'nueva') seg.resp = quienSoy();
+  try {
+    await window.fb.updateDoc('postulaciones', id, { seg: seg });
+    p.seg = seg;
+    pintarEmbudo(); filtrarPostulaciones();
+    return true;
+  } catch (e) {
+    console.error('No se pudo guardar el seguimiento', e);
+    toast('⚠ No se pudo guardar. Revisa tu conexión o tus permisos.');
+    filtrarPostulaciones();
+    return false;
+  }
+}
+async function cambiarEstadoPos(id, estado) {
+  if (POS_IDX[estado] === undefined) return;
+  if (await guardarSegPos(id, { estado: estado })) toast('Estado actualizado: ' + POS_ESTADOS[POS_IDX[estado]][1]);
+}
+
+function abrirPostulacion(id) {
+  const p = postulacionesWeb.find(x => x._id === id);
+  if (!p) return;
+  const s = posSeg(p), editar = posPuedeEditar();
+  posBorrarPend = '';
+  document.getElementById('pos-m-id').value = id;
+  document.getElementById('pos-m-titulo').textContent = textoPostulacion(p.nombre) || 'Postulación';
+  const rec = posRecomendado(p), org = posOrigenLimpio(p);
+  document.getElementById('pos-m-datos').innerHTML =
+    '<div><span>Llegó</span>' + escP(posFechaHora(p.fecha) || '—') + '</div>' +
+    '<div><span>Llena</span>' + escP(p.quien) + '</div>' +
+    '<div><span>Curso</span>' + escP(p.curso) + '</div>' +
+    '<div><span>Modalidad</span>' + escP(p.modalidad) + '</div>' +
+    (rec ? '<div><span>Recomendado por</span>' + escP(rec) + '</div>' : '') +
+    (org ? '<div><span>Origen</span>' + escP(org) + '</div>' : '');
+  const wa = posLinkWA(p, true);
+  document.getElementById('pos-m-wa').innerHTML = wa
+    ? '<a class="btn btn-wa-pos" href="' + escP(wa) + '" target="_blank" rel="noopener noreferrer">💬 Escribir por WhatsApp</a><span>' + escP(p.whatsapp) + ' · el mensaje se adapta al estado</span>'
+    : '';
+  const sel = document.getElementById('pos-m-estado');
+  sel.innerHTML = POS_ESTADOS.map(x => '<option value="' + x[0] + '">' + escP(x[1]) + '</option>').join('');
+  sel.value = posEstado(p);
+  document.getElementById('pos-m-entrevista').value = s.entrevista || '';
+  document.getElementById('pos-m-prox').value = s.prox || '';
+  document.getElementById('pos-m-beca').value = s.beca == null ? '' : String(s.beca);
+  document.getElementById('pos-m-resp').value = s.resp || '';
+  document.getElementById('pos-m-nota').value = s.nota || '';
+  const hist = Array.isArray(s.hist) ? s.hist.slice().reverse() : [];
+  document.getElementById('pos-m-hist').innerHTML = hist.length
+    ? '<div class="pos-hist-t">Historial</div>' + hist.map(h => '<div>' + posChip(POS_IDX[h.e] !== undefined ? h.e : 'nueva') +
+        '<span>' + escP(posFechaHora(h.t)) + (h.por ? ' · ' + escP(h.por) : '') + '</span></div>').join('')
+    : '';
+  ['pos-m-estado', 'pos-m-entrevista', 'pos-m-prox', 'pos-m-beca', 'pos-m-resp', 'pos-m-nota'].forEach(k => { document.getElementById(k).disabled = !editar; });
+  document.getElementById('pos-m-guardar').style.display = editar ? '' : 'none';
+  const b = document.getElementById('pos-m-borrar');
+  b.style.display = editar ? '' : 'none'; b.textContent = 'Eliminar';
+  openModal('modal-postulacion');
+}
+async function guardarSeguimiento() {
+  const id = document.getElementById('pos-m-id').value;
+  let estado = document.getElementById('pos-m-estado').value;
+  const entrevista = document.getElementById('pos-m-entrevista').value;
+  // Agendar una entrevista desde la ficha mueve el estado si aún estaba al inicio
+  if (entrevista && (estado === 'nueva' || estado === 'contactado')) estado = 'agendada';
+  const becaV = document.getElementById('pos-m-beca').value;
+  const btn = document.getElementById('pos-m-guardar'); btn.disabled = true;
+  const ok = await guardarSegPos(id, {
+    estado: estado, entrevista: entrevista, prox: document.getElementById('pos-m-prox').value,
+    beca: becaV === '' ? null : Number(becaV),
+    resp: document.getElementById('pos-m-resp').value.trim().slice(0, 60),
+    nota: document.getElementById('pos-m-nota').value.trim().slice(0, 1500),
+  });
+  btn.disabled = false;
+  if (ok) { closeModal('modal-postulacion'); toast('Seguimiento guardado'); }
+}
+// Para duplicados o mensajes basura. Pide confirmar con un segundo clic.
+async function borrarPostulacion() {
+  if (!posPuedeEditar()) return;
+  const id = document.getElementById('pos-m-id').value, b = document.getElementById('pos-m-borrar');
+  if (posBorrarPend !== id) { posBorrarPend = id; b.textContent = '¿Seguro? Toca otra vez'; return; }
+  try {
+    await window.fb.delDoc('postulaciones', id);
+    postulacionesWeb = postulacionesWeb.filter(x => x._id !== id);
+    closeModal('modal-postulacion'); pintarEmbudo(); filtrarPostulaciones(); toast('Postulación eliminada');
+  } catch (e) {
+    console.error(e); toast('⚠ No se pudo eliminar.');
+  }
+  posBorrarPend = '';
+}
+function exportarPostulaciones() {
+  if (!tienePermiso('postulaciones')) return;
+  const filas = [['Fecha', 'Nombre', 'WhatsApp', 'Quién llena', 'Curso', 'Modalidad', 'Recomendado por', 'Origen',
+    'Estado', 'Entrevista', 'Próximo seguimiento', 'Beca conversada %', 'Responsable', 'Notas', 'Última actualización']];
+  postulacionesWeb.forEach(p => {
+    const s = posSeg(p);
+    filas.push([posFechaHora(p.fecha), p.nombre || '', p.whatsapp || '', p.quien || '', p.curso || '', p.modalidad || '',
+      posRecomendado(p), posOrigenLimpio(p), POS_ESTADOS[POS_IDX[posEstado(p)]][1], s.entrevista ? posFechaHora(s.entrevista) : '',
+      s.prox || '', s.beca == null ? '' : s.beca, s.resp || '', s.nota || '', s.act ? posFechaHora(s.act) : '']);
+  });
+  descargarLibro([{ name: 'Postulaciones', data: filas }], 'ELECTI-postulaciones-' + hoyArchivo() + '.xlsx');
 }
 
 // ─── ASISTENCIA ───
