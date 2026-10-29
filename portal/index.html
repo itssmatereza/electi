@@ -1089,6 +1089,11 @@ tbody tr:hover td { background: var(--off); }
 .imp-pos-lista > div span { display: block; color: var(--gray); font-size: 11.5px; }
 .imp-pos-lista > div em { color: #92400E; font-style: normal; }
 .imp-pos-lista > .repetida, .imp-pos-lista > .invalida { opacity: .5; }
+.pos-chk { width: 34px; }
+.pos-chk input { width: 17px; height: 17px; cursor: pointer; accent-color: var(--navy); }
+.pos-tr-sel td { background: #F4F7FC; }
+.pos-btn-borrar { color: var(--red); border-color: #FECACA; }
+.pos-btn-borrar.confirmar { background: var(--red) !important; color: #fff !important; border-color: var(--red) !important; }
 .pos-tabla-nota { display: none; }
 @media (max-width: 640px) {
   .pos-embudo { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
@@ -1099,6 +1104,7 @@ tbody tr:hover td { background: var(--off); }
   #page-postulaciones table, #page-postulaciones tbody, #page-postulaciones tr, #page-postulaciones td { display: block; width: 100%; }
   #page-postulaciones tbody tr { border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; margin-bottom: 10px; }
   #page-postulaciones tbody td { border: 0; padding: 4px 0; white-space: normal !important; }
+  #page-postulaciones tbody td.pos-chk { float: right; width: auto; }
   #page-postulaciones tbody td[data-l="Llegó"] { font-size: 12px; }
   #page-postulaciones tbody td[data-l="Llegó"] br { display: none; }
   #page-postulaciones tbody td[data-l="Llegó"] span { margin-left: 6px; }
@@ -1828,6 +1834,7 @@ tbody tr:hover td { background: var(--off); }
             <button type="button" class="btn btn-ghost" onclick="cargarPostulaciones()">↻ Actualizar</button>
             <button type="button" class="btn btn-ghost" onclick="exportarPostulaciones()">⬇ Excel</button>
             <button type="button" class="btn btn-ghost" id="pos-btn-importar" style="display:none" onclick="abrirImportarPos()">⬆ Importar Forms</button>
+            <button type="button" class="btn btn-ghost pos-btn-borrar" id="pos-btn-borrar" style="display:none" onclick="borrarSeleccionPos()"></button>
           </div>
         </div>
         <p id="postulaciones-estado" role="status" aria-live="polite" style="padding:10px 16px;font-size:13px;color:var(--gray)"></p>
@@ -3878,6 +3885,10 @@ let postulacionesWeb = [];
 let postulacionesSolicitud = 0;
 let posFiltroEstado = '';
 let posBorrarPend = '';
+// Selección para borrar varias a la vez (duplicados, pruebas, mensajes basura)
+const posSel = new Set();
+let posVisibles = [];
+let posBorrarVariasPend = 0;
 
 function escP(v) {
   return String(v == null ? '' : v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
@@ -3987,11 +3998,14 @@ function filtrarPostulaciones() {
   document.getElementById('postulaciones-count').textContent =
     '(' + filas.length + (filas.length !== postulacionesWeb.length ? ' de ' + postulacionesWeb.length : '') + ')';
   if (!filas.length) {
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--gray);padding:28px">' +
+    posVisibles = []; pintarCabeceraPos(posPuedeEditar());
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--gray);padding:28px">' +
       (postulacionesWeb.length ? 'Ninguna postulación coincide con el filtro.' : 'Aún no hay postulaciones.') + '</td></tr>';
     return;
   }
   const editar = posPuedeEditar();
+  posVisibles = filas.map(p => p._id);
+  pintarCabeceraPos(editar);
   tbody.innerHTML = filas.map(p => {
     const id = escP(p._id), e = posEstado(p), pr = posProximo(p), rec = posRecomendado(p);
     const wa = posLinkWA(p, false), waTxt = posLinkWA(p, true);
@@ -4000,7 +4014,8 @@ function filtrarPostulaciones() {
       ? '<select class="pos-sel-estado" style="color:' + POS_ESTADOS[POS_IDX[e]][2] + ';background:' + POS_ESTADOS[POS_IDX[e]][3] + '" onchange="cambiarEstadoPos(\'' + id + '\', this.value)" aria-label="Estado">' +
           POS_ESTADOS.map(x => '<option value="' + x[0] + '"' + (x[0] === e ? ' selected' : '') + '>' + escP(x[1]) + '</option>').join('') + '</select>'
       : posChip(e);
-    return '<tr>' +
+    return '<tr' + (posSel.has(p._id) ? ' class="pos-tr-sel"' : '') + '>' +
+      (editar ? '<td class="pos-chk"><input type="checkbox" aria-label="Seleccionar" ' + (posSel.has(p._id) ? 'checked ' : '') + 'onchange="selPos(\'' + id + '\', this.checked)"></td>' : '') +
       '<td data-l="Llegó" style="white-space:nowrap"><strong>' + posFechaCorta(p.fecha) + '</strong><br><span style="font-size:11px;color:var(--gray)">' + (d === null ? '' : d === 0 ? 'hoy' : 'hace ' + d + ' d') + '</span></td>' +
       '<td data-l="Postulante"><button type="button" class="pos-nombre" onclick="abrirPostulacion(\'' + id + '\')">' + escP(p.nombre) + '</button><br><span style="font-size:11.5px;color:var(--gray)">' + escP(p.curso) + ' · llena: ' + escP(p.quien) + '</span>' +
         (rec ? '<br><span style="font-size:11.5px;color:var(--navy)">🤝 Recomendado por ' + escP(rec) + '</span>' : '') +
@@ -4024,6 +4039,8 @@ async function cargarPostulaciones() {
     const resultados = await window.fb.getDocs('postulaciones');
     if (version !== postulacionesSolicitud || !tienePermiso('postulaciones')) return;
     postulacionesWeb = resultados.slice().sort((a, b) => textoPostulacion(b.fecha).localeCompare(textoPostulacion(a.fecha)));
+    const existentes = new Set(postulacionesWeb.map(p => p._id));
+    Array.from(posSel).forEach(id => { if (!existentes.has(id)) posSel.delete(id); });
     pintarEmbudo(); filtrarPostulaciones();
     document.getElementById('pos-btn-importar').style.display = posPuedeEditar() ? '' : 'none';
     estado.textContent = posPuedeEditar()
@@ -4125,6 +4142,49 @@ async function guardarSeguimiento() {
   btn.disabled = false;
   if (ok) { closeModal('modal-postulacion'); toast('Seguimiento guardado'); }
 }
+function pintarCabeceraPos(editar) {
+  const tr = document.querySelector('#page-postulaciones thead tr');
+  if (!tr) return;
+  const todas = posVisibles.length > 0 && posVisibles.every(id => posSel.has(id));
+  tr.innerHTML = (editar ? '<th class="pos-chk"><input type="checkbox" aria-label="Seleccionar todas las visibles" ' + (todas ? 'checked ' : '') + 'onchange="selTodasPos(this.checked)"></th>' : '') +
+    '<th>Llegó</th><th>Postulante</th><th>WhatsApp</th><th>Modalidad</th><th>Estado</th><th>Próximo paso</th>';
+  pintarBotonBorrarPos();
+}
+function pintarBotonBorrarPos() {
+  const b = document.getElementById('pos-btn-borrar');
+  if (!b) return;
+  b.style.display = posSel.size && posPuedeEditar() ? '' : 'none';
+  b.textContent = posBorrarVariasPend ? '¿Eliminar ' + posSel.size + '? Toca otra vez' : '🗑 Eliminar (' + posSel.size + ')';
+  b.classList.toggle('confirmar', !!posBorrarVariasPend);
+}
+function selPos(id, on) {
+  if (on) posSel.add(id); else posSel.delete(id);
+  posBorrarVariasPend = 0; filtrarPostulaciones();
+}
+function selTodasPos(on) {
+  posVisibles.forEach(id => { if (on) posSel.add(id); else posSel.delete(id); });
+  posBorrarVariasPend = 0; filtrarPostulaciones();
+}
+async function borrarSeleccionPos() {
+  if (!posPuedeEditar() || !posSel.size) return;
+  if (!posBorrarVariasPend) {
+    posBorrarVariasPend = Date.now(); pintarBotonBorrarPos();
+    setTimeout(function () { if (posBorrarVariasPend && Date.now() - posBorrarVariasPend >= 5000) { posBorrarVariasPend = 0; pintarBotonBorrarPos(); } }, 5100);
+    return;
+  }
+  posBorrarVariasPend = 0;
+  const ids = Array.from(posSel), b = document.getElementById('pos-btn-borrar');
+  b.disabled = true;
+  let ok = 0;
+  for (let i = 0; i < ids.length; i++) {
+    b.textContent = 'Eliminando ' + (i + 1) + ' de ' + ids.length + '…';
+    try { await window.fb.delDoc('postulaciones', ids[i]); posSel.delete(ids[i]); ok++; postulacionesWeb = postulacionesWeb.filter(x => x._id !== ids[i]); }
+    catch (e) { console.error('No se pudo eliminar ' + ids[i], e); }
+  }
+  b.disabled = false;
+  pintarEmbudo(); filtrarPostulaciones();
+  toast(ok + ' eliminada' + (ok === 1 ? '' : 's') + (ok < ids.length ? ' · ' + (ids.length - ok) + ' con error' : ''));
+}
 // Para duplicados o mensajes basura. Pide confirmar con un segundo clic.
 async function borrarPostulacion() {
   if (!posPuedeEditar()) return;
@@ -4132,7 +4192,7 @@ async function borrarPostulacion() {
   if (posBorrarPend !== id) { posBorrarPend = id; b.textContent = '¿Seguro? Toca otra vez'; return; }
   try {
     await window.fb.delDoc('postulaciones', id);
-    postulacionesWeb = postulacionesWeb.filter(x => x._id !== id);
+    postulacionesWeb = postulacionesWeb.filter(x => x._id !== id); posSel.delete(id);
     closeModal('modal-postulacion'); pintarEmbudo(); filtrarPostulaciones(); toast('Postulación eliminada');
   } catch (e) {
     console.error(e); toast('⚠ No se pudo eliminar.');
