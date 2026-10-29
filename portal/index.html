@@ -1077,6 +1077,18 @@ tbody tr:hover td { background: var(--off); }
 .pos-hist { margin: 4px 0 8px; }
 .pos-hist-t { font-size: 11px; font-weight: 700; color: var(--gray); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 6px; }
 .pos-hist > div:not(.pos-hist-t) { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--gray); margin-bottom: 5px; }
+.pos-tag { display: inline-block; margin-top: 4px; font-size: 10.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: #6D28D9; background: #F5F3FF; border-radius: 6px; padding: 2px 7px; }
+.pos-form { margin: -4px 0 14px; }
+.pos-form summary { font-size: 12px; font-weight: 700; color: var(--navy); cursor: pointer; }
+.pos-form-txt { font-size: 13px; line-height: 1.5; color: var(--text); margin-top: 10px; }
+.pos-form-txt span { display: block; font-size: 11px; font-weight: 600; color: var(--gray); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 2px; }
+.imp-pos-cifras { display: flex; flex-wrap: wrap; gap: 14px; font-size: 13px; color: var(--gray); margin: 4px 0 10px; }
+.imp-pos-cifras b { color: var(--navy); font-size: 18px; }
+.imp-pos-lista { max-height: 260px; overflow: auto; border: 1px solid var(--border); border-radius: 10px; }
+.imp-pos-lista > div { padding: 8px 12px; border-bottom: 1px solid var(--border); font-size: 12.5px; }
+.imp-pos-lista > div span { display: block; color: var(--gray); font-size: 11.5px; }
+.imp-pos-lista > div em { color: #92400E; font-style: normal; }
+.imp-pos-lista > .repetida, .imp-pos-lista > .invalida { opacity: .5; }
 .pos-tabla-nota { display: none; }
 @media (max-width: 640px) {
   .pos-embudo { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
@@ -1815,6 +1827,7 @@ tbody tr:hover td { background: var(--off); }
             </select>
             <button type="button" class="btn btn-ghost" onclick="cargarPostulaciones()">↻ Actualizar</button>
             <button type="button" class="btn btn-ghost" onclick="exportarPostulaciones()">⬇ Excel</button>
+            <button type="button" class="btn btn-ghost" id="pos-btn-importar" style="display:none" onclick="abrirImportarPos()">⬆ Importar Forms</button>
           </div>
         </div>
         <p id="postulaciones-estado" role="status" aria-live="polite" style="padding:10px 16px;font-size:13px;color:var(--gray)"></p>
@@ -2283,6 +2296,7 @@ tbody tr:hover td { background: var(--off); }
   <div class="modal" style="max-width:560px;">
     <div class="modal-title" id="pos-m-titulo">Postulación</div>
     <div class="pos-ficha" id="pos-m-datos"></div>
+    <div id="pos-m-form"></div>
     <div class="pos-wa" id="pos-m-wa"></div>
     <div class="field"><label>Estado</label><select id="pos-m-estado"></select></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
@@ -2303,6 +2317,24 @@ tbody tr:hover td { background: var(--off); }
         <button class="btn btn-ghost" onclick="closeModal('modal-postulacion')">Cancelar</button>
         <button class="btn btn-navy" id="pos-m-guardar" onclick="guardarSeguimiento()">Guardar</button>
       </span>
+    </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="modal-importar-pos">
+  <div class="modal" style="max-width:600px;">
+    <div class="modal-title">Importar postulaciones del Google Forms</div>
+    <p style="font-size:13px;color:var(--gray);line-height:1.55;margin-bottom:14px">Sube el archivo de respuestas (CSV o Excel descargado de Google Sheets) o pega las filas copiadas. Las que ya estén en el portal, por el mismo WhatsApp, se saltan.</p>
+    <div class="field"><label>Archivo de respuestas</label><input type="file" id="imp-pos-archivo" accept=".csv,.tsv,.txt,.xlsx,.xls" onchange="leerArchivoImportPos(this)"></div>
+    <details style="margin-bottom:12px"><summary style="font-size:13px;color:var(--navy);cursor:pointer;font-weight:600">O pegar las filas copiadas de la hoja</summary>
+      <textarea id="imp-pos-texto" rows="4" style="width:100%;margin-top:8px;padding:10px;border:1px solid var(--border);border-radius:8px;font:inherit;font-size:12px" placeholder="Pega aquí las filas"></textarea>
+      <button type="button" class="btn btn-ghost" style="margin-top:6px;font-size:12px" onclick="pegarImportPos()">Revisar filas pegadas</button></details>
+    <div class="field"><label>Estado con el que entran</label>
+      <select id="imp-pos-estado"><option value="nueva">Nueva (aún no las contactamos)</option><option value="contactado">Contactado (ya les escribimos)</option></select></div>
+    <div id="imp-pos-resumen"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modal-importar-pos')">Cancelar</button>
+      <button class="btn btn-navy" id="imp-pos-ok" onclick="ejecutarImportPos()" disabled>Importar</button>
     </div>
   </div>
 </div>
@@ -3948,7 +3980,8 @@ function filtrarPostulaciones() {
     if (mod && p.modalidad !== mod) return false;
     if (!q) return true;
     const s = posSeg(p);
-    return [p.nombre, p.whatsapp, p.quien, p.curso, p.modalidad, p.origen, s.nota, s.resp]
+    const f = s.form || {};
+    return [p.nombre, p.whatsapp, p.quien, p.curso, p.modalidad, p.origen, s.nota, s.resp, f.colegio, f.correo, f.ciudad, f.repNombre]
       .some(v => textoPostulacion(v).toLocaleLowerCase('es').includes(q));
   });
   document.getElementById('postulaciones-count').textContent =
@@ -3970,7 +4003,8 @@ function filtrarPostulaciones() {
     return '<tr>' +
       '<td data-l="Llegó" style="white-space:nowrap"><strong>' + posFechaCorta(p.fecha) + '</strong><br><span style="font-size:11px;color:var(--gray)">' + (d === null ? '' : d === 0 ? 'hoy' : 'hace ' + d + ' d') + '</span></td>' +
       '<td data-l="Postulante"><button type="button" class="pos-nombre" onclick="abrirPostulacion(\'' + id + '\')">' + escP(p.nombre) + '</button><br><span style="font-size:11.5px;color:var(--gray)">' + escP(p.curso) + ' · llena: ' + escP(p.quien) + '</span>' +
-        (rec ? '<br><span style="font-size:11.5px;color:var(--navy)">🤝 Recomendado por ' + escP(rec) + '</span>' : '') + '</td>' +
+        (rec ? '<br><span style="font-size:11.5px;color:var(--navy)">🤝 Recomendado por ' + escP(rec) + '</span>' : '') +
+        (posSeg(p).form ? '<br><span class="pos-tag">Forms</span>' + (posSeg(p).form.becaSolicitada ? '<span style="font-size:11.5px;color:var(--gray)"> ' + escP(posSeg(p).form.becaSolicitada) + '</span>' : '') : '') + '</td>' +
       '<td data-l="WhatsApp" style="white-space:nowrap">' + (wa ? '<a href="' + escP(wa) + '" target="_blank" rel="noopener noreferrer">' + escP(p.whatsapp) + '</a><br>' +
           '<a class="pos-wa-btn" href="' + escP(waTxt) + '" target="_blank" rel="noopener noreferrer">💬 Escribir</a>' : escP(p.whatsapp || '—')) + '</td>' +
       '<td data-l="Modalidad">' + escP(p.modalidad) + '</td>' +
@@ -3991,6 +4025,7 @@ async function cargarPostulaciones() {
     if (version !== postulacionesSolicitud || !tienePermiso('postulaciones')) return;
     postulacionesWeb = resultados.slice().sort((a, b) => textoPostulacion(b.fecha).localeCompare(textoPostulacion(a.fecha)));
     pintarEmbudo(); filtrarPostulaciones();
+    document.getElementById('pos-btn-importar').style.display = posPuedeEditar() ? '' : 'none';
     estado.textContent = posPuedeEditar()
       ? 'Cambia el estado desde la tabla o abre la ficha para agendar la entrevista y dejar notas.'
       : 'Consulta de solo lectura.';
@@ -4049,6 +4084,7 @@ function abrirPostulacion(id) {
     '<div><span>Modalidad</span>' + escP(p.modalidad) + '</div>' +
     (rec ? '<div><span>Recomendado por</span>' + escP(rec) + '</div>' : '') +
     (org ? '<div><span>Origen</span>' + escP(org) + '</div>' : '');
+  document.getElementById('pos-m-form').innerHTML = posFormHTML(p);
   const wa = posLinkWA(p, true);
   document.getElementById('pos-m-wa').innerHTML = wa
     ? '<a class="btn btn-wa-pos" href="' + escP(wa) + '" target="_blank" rel="noopener noreferrer">💬 Escribir por WhatsApp</a><span>' + escP(p.whatsapp) + ' · el mensaje se adapta al estado</span>'
@@ -4106,14 +4142,207 @@ async function borrarPostulacion() {
 function exportarPostulaciones() {
   if (!tienePermiso('postulaciones')) return;
   const filas = [['Fecha', 'Nombre', 'WhatsApp', 'Quién llena', 'Curso', 'Modalidad', 'Recomendado por', 'Origen',
-    'Estado', 'Entrevista', 'Próximo seguimiento', 'Beca conversada %', 'Responsable', 'Notas', 'Última actualización']];
+    'Estado', 'Entrevista', 'Próximo seguimiento', 'Beca conversada %', 'Responsable', 'Notas', 'Última actualización',
+    'Correo', 'Edad', 'Ciudad', 'Colegio / universidad', 'Curso según el formulario', 'Representante', 'Parentesco', 'Tel. representante', 'Correo representante', 'Beca solicitada', 'Cómo se enteró']];
   postulacionesWeb.forEach(p => {
     const s = posSeg(p);
     filas.push([posFechaHora(p.fecha), p.nombre || '', p.whatsapp || '', p.quien || '', p.curso || '', p.modalidad || '',
       posRecomendado(p), posOrigenLimpio(p), POS_ESTADOS[POS_IDX[posEstado(p)]][1], s.entrevista ? posFechaHora(s.entrevista) : '',
-      s.prox || '', s.beca == null ? '' : s.beca, s.resp || '', s.nota || '', s.act ? posFechaHora(s.act) : '']);
+      s.prox || '', s.beca == null ? '' : s.beca, s.resp || '', s.nota || '', s.act ? posFechaHora(s.act) : '',
+      ...(function (f) { f = f || {}; return [f.correo || '', f.edad || '', f.ciudad || '', f.colegio || '', f.cursoOriginal || '', f.repNombre || '', f.repParentesco || '', f.repTel || '', f.repCorreo || '', f.becaSolicitada || '', f.comoSeEntero || '']; })(s.form)]);
   });
   descargarLibro([{ name: 'Postulaciones', data: filas }], 'ELECTI-postulaciones-' + hoyArchivo() + '.xlsx');
+}
+
+// ─── IMPORTAR DESDE EL GOOGLE FORMS ANTERIOR ───
+// Lee el archivo de respuestas (CSV/TSV copiado de Google Sheets o .xlsx) con
+// las columnas en el orden del formulario. Cada fila se crea con los 7 campos
+// que permiten las reglas y luego se completa su ficha en 'seg.form'.
+let posImportFilas = [];
+function posTel(v) {
+  const d = String(v || '').replace(/\D/g, '');
+  if (/^09\d{8}$/.test(d)) return '+593' + d.slice(1);
+  if (/^9\d{8}$/.test(d)) return '+593' + d;
+  if (/^5939\d{8}$/.test(d)) return '+' + d;
+  return '';
+}
+function posCursoForm(t) {
+  const s = String(t || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  const n = (s.match(/\b(\d)/) || [])[1] || (/primer|primero/.test(s) ? '1' : /segund/.test(s) ? '2' : /tercer/.test(s) ? '3' : '');
+  if (/basica|egb/.test(s) && /10|decimo/.test(s)) return { curso: '10.º de básica', exacto: true };
+  if (/semestre/.test(s)) {
+    if (n === '1') return { curso: '1.er semestre de universidad', exacto: true };
+    if (n === '2') return { curso: '2.º semestre de universidad', exacto: true };
+    if (n === '3') return { curso: '3.er semestre de universidad', exacto: true };
+    return { curso: '3.er semestre de universidad', exacto: false, aviso: 'Semestre fuera del rango del programa' };
+  }
+  if (/bachiller|bgu|bgc|bach/.test(s)) {
+    if (n === '1') return { curso: '1.º de bachillerato', exacto: true };
+    if (n === '2') return { curso: '2.º de bachillerato', exacto: true };
+    if (n === '3') return { curso: '3.º de bachillerato', exacto: true };
+    return { curso: '3.º de bachillerato', exacto: false };
+  }
+  return { curso: '1.er semestre de universidad', exacto: false };
+}
+function posFechaForm(t) {
+  const m = String(t || '').match(/(\d{1,2})\/(\d{1,2})\/(\d{4})\s+(\d{1,2}):(\d{2})(?::(\d{2}))?/);
+  if (!m) return null;
+  // Sheets exporta día/mes; si el segundo número pasa de 12, viene como mes/día
+  if (+m[2] > 12) { const x = m[1]; m[1] = m[2]; m[2] = x; }
+  const d = new Date(+m[3], +m[2] - 1, +m[1], +m[4], +m[5], +(m[6] || 0));
+  return Number.isNaN(d.getTime()) ? null : d;
+}
+function posLeerDelimitado(texto) {
+  const delim = texto.indexOf('\t') !== -1 ? '\t' : ',';
+  const filas = []; let fila = [], campo = '', comillas = false;
+  for (let i = 0; i < texto.length; i++) {
+    const c = texto[i];
+    if (comillas) {
+      if (c === '"') { if (texto[i + 1] === '"') { campo += '"'; i++; } else comillas = false; }
+      else campo += c;
+    } else if (c === '"' && campo === '') comillas = true;
+    else if (c === delim) { fila.push(campo); campo = ''; }
+    else if (c === '\n' || c === '\r') {
+      if (c === '\r' && texto[i + 1] === '\n') i++;
+      fila.push(campo); filas.push(fila); fila = []; campo = '';
+    } else campo += c;
+  }
+  if (campo !== '' || fila.length) { fila.push(campo); filas.push(fila); }
+  return filas;
+}
+function posFilaForm(r) {
+  if (!r || r.length < 27) return null;
+  const fecha = posFechaForm(r[0]);
+  if (!fecha) return null;
+  const t = i => String(r[i] == null ? '' : r[i]).replace(/\s+/g, ' ').trim();
+  const avisos = [];
+  let whatsapp = posTel(r[6]);
+  if (!whatsapp && posTel(r[14])) { whatsapp = posTel(r[14]); avisos.push('El WhatsApp del estudiante no es válido; se usó el del representante'); }
+  const cur = posCursoForm(r[10]);
+  if (!cur.exacto) avisos.push('Curso ajustado: en el formulario dice «' + t(10) + '»');
+  if (cur.aviso) avisos.push(cur.aviso);
+  const modalidad = /online|l[ií]nea|nacional/i.test(t(1)) ? 'En línea' : 'Quito presencial';
+  const tel4 = (whatsapp || '0000').slice(-4);
+  const p = (n) => String(n).padStart(2, '0');
+  const id = 'gf_' + fecha.getFullYear() + p(fecha.getMonth() + 1) + p(fecha.getDate()) + p(fecha.getHours()) + p(fecha.getMinutes()) + p(fecha.getSeconds()) + '_' + tel4;
+  const como = t(28);
+  return {
+    id: id, valido: !!whatsapp && t(3).length >= 3,
+    base: { nombre: t(3).slice(0, 80), whatsapp: whatsapp, quien: 'Estudiante', curso: cur.curso, modalidad: modalidad,
+            fecha: fecha.toISOString(), origen: ('Google Forms' + (como ? ' · ' + como : '')).slice(0, 200) },
+    form: {
+      correo: t(7).slice(0, 120), nacimiento: t(4), edad: t(5), ciudad: t(8).slice(0, 80), colegio: t(9).slice(0, 120),
+      cursoOriginal: t(10).slice(0, 80), repNombre: t(12).slice(0, 100), repParentesco: t(13).slice(0, 40),
+      repTel: posTel(r[14]) || t(14).slice(0, 30), repCorreo: t(15).slice(0, 120), repInformado: t(16).slice(0, 80),
+      liderazgo: t(22).slice(0, 20), becaSolicitada: t(26).slice(0, 80), motivoBeca: t(27).slice(0, 900),
+      comoSeEntero: como.slice(0, 60), comentario: t(29).slice(0, 600), avisos: avisos,
+    },
+  };
+}
+function abrirImportarPos() {
+  if (!posPuedeEditar()) { toast('Solo administración puede importar'); return; }
+  posImportFilas = [];
+  document.getElementById('imp-pos-archivo').value = '';
+  document.getElementById('imp-pos-texto').value = '';
+  document.getElementById('imp-pos-resumen').innerHTML = '';
+  document.getElementById('imp-pos-ok').disabled = true;
+  openModal('modal-importar-pos');
+}
+function leerArchivoImportPos(input) {
+  const f = input.files && input.files[0];
+  if (!f) return;
+  if (/\.xlsx?$/i.test(f.name)) {
+    cargarXLSX().then(function (ok) {
+      if (!ok) { toast('No se pudo abrir el Excel; descárgalo como CSV'); return; }
+      const lector = new FileReader();
+      lector.onload = function (e) {
+        const wb = XLSX.read(new Uint8Array(e.target.result), { type: 'array', cellDates: false });
+        const filas = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { header: 1, raw: false, defval: '' });
+        prepararImportPos(filas);
+      };
+      lector.readAsArrayBuffer(f);
+    });
+  } else {
+    const lector = new FileReader();
+    lector.onload = function (e) { prepararImportPos(posLeerDelimitado(String(e.target.result))); };
+    lector.readAsText(f, 'utf-8');
+  }
+}
+function pegarImportPos() {
+  prepararImportPos(posLeerDelimitado(document.getElementById('imp-pos-texto').value));
+}
+function prepararImportPos(filas) {
+  const ids = new Set(postulacionesWeb.map(p => p._id));
+  const tels = new Set(postulacionesWeb.map(p => p.whatsapp));
+  const vistos = new Set();
+  posImportFilas = [];
+  let nuevas = 0, repetidas = 0, invalidas = 0, avisos = 0;
+  filas.forEach(r => {
+    const f = posFilaForm(r);
+    if (!f) return;
+    if (!f.valido) { f.estadoImp = 'invalida'; invalidas++; }
+    else if (ids.has(f.id) || tels.has(f.base.whatsapp) || vistos.has(f.base.whatsapp)) { f.estadoImp = 'repetida'; repetidas++; }
+    else { f.estadoImp = 'nueva'; nuevas++; vistos.add(f.base.whatsapp); if (f.form.avisos.length) avisos++; }
+    posImportFilas.push(f);
+  });
+  const res = document.getElementById('imp-pos-resumen');
+  if (!posImportFilas.length) {
+    res.innerHTML = '<p style="color:var(--red);font-size:13px">No se reconocieron filas del formulario. Revisa que el archivo tenga las columnas en el orden del Google Forms.</p>';
+    document.getElementById('imp-pos-ok').disabled = true;
+    return;
+  }
+  res.innerHTML = '<div class="imp-pos-cifras"><span><b>' + nuevas + '</b> se importarán</span><span><b>' + repetidas + '</b> ya estaban</span>' +
+    (invalidas ? '<span style="color:var(--red)"><b>' + invalidas + '</b> sin WhatsApp válido</span>' : '') +
+    (avisos ? '<span style="color:#92400E"><b>' + avisos + '</b> con curso o teléfono ajustado</span>' : '') + '</div>' +
+    '<div class="imp-pos-lista">' + posImportFilas.map(f =>
+      '<div class="' + f.estadoImp + '"><b>' + escP(f.base.nombre) + '</b><span>' + escP(f.base.curso) + ' · ' + escP(f.base.modalidad) +
+      (f.estadoImp === 'repetida' ? ' · ya estaba' : f.estadoImp === 'invalida' ? ' · sin WhatsApp válido' : '') +
+      (f.form.avisos.length ? '<br><em>' + escP(f.form.avisos.join(' · ')) + '</em>' : '') + '</span></div>').join('') + '</div>';
+  const btn = document.getElementById('imp-pos-ok');
+  btn.disabled = !nuevas; btn.textContent = 'Importar ' + nuevas;
+}
+async function ejecutarImportPos() {
+  if (!posPuedeEditar()) return;
+  const btn = document.getElementById('imp-pos-ok');
+  const estadoIni = document.getElementById('imp-pos-estado').value;
+  const nuevas = posImportFilas.filter(f => f.estadoImp === 'nueva');
+  btn.disabled = true;
+  let ok = 0, fallos = 0;
+  for (let i = 0; i < nuevas.length; i++) {
+    const f = nuevas[i];
+    btn.textContent = 'Importando ' + (i + 1) + ' de ' + nuevas.length + '…';
+    try {
+      await window.fb.setDoc('postulaciones', f.id, f.base);
+      const ahora = new Date().toISOString();
+      const seg = { estado: estadoIni, act: ahora, form: f.form,
+                    hist: estadoIni !== 'nueva' ? [{ e: estadoIni, t: ahora, por: quienSoy() }] : [] };
+      if (estadoIni !== 'nueva') seg.resp = quienSoy();
+      await window.fb.updateDoc('postulaciones', f.id, { seg: seg });
+      f.estadoImp = 'hecha'; ok++;
+    } catch (e) {
+      console.error('No se pudo importar ' + f.base.nombre, e); fallos++;
+    }
+  }
+  closeModal('modal-importar-pos');
+  toast(ok + ' importadas' + (fallos ? ' · ' + fallos + ' con error (revisa la consola o las reglas)' : ''));
+  cargarPostulaciones();
+}
+// Datos del formulario anterior dentro de la ficha
+function posFormHTML(p) {
+  const f = posSeg(p).form;
+  if (!f || typeof f !== 'object') return '';
+  const fila = (k, v) => v ? '<div><span>' + k + '</span>' + escP(v) + '</div>' : '';
+  const rep = [f.repNombre, f.repParentesco].filter(Boolean).join(' · ');
+  const repCont = [f.repTel, f.repCorreo].filter(Boolean).join(' · ');
+  return '<details class="pos-form"><summary>Ver datos del Google Forms</summary><div class="pos-ficha" style="margin:10px 0 0">' +
+    fila('Correo', f.correo) + fila('Edad', f.edad ? f.edad + ' años' : '') + fila('Ciudad', f.ciudad) + fila('Colegio / universidad', f.colegio) +
+    fila('Curso según el formulario', f.cursoOriginal) + fila('Representante', rep) + fila('Contacto del representante', repCont) +
+    fila('¿El representante sabe?', f.repInformado) + fila('Beca solicitada', f.becaSolicitada) + fila('Cómo se enteró', f.comoSeEntero) +
+    '</div>' +
+    (f.motivoBeca ? '<p class="pos-form-txt"><span>Por qué pide beca</span>' + escP(f.motivoBeca) + '</p>' : '') +
+    (f.comentario ? '<p class="pos-form-txt"><span>Comentario</span>' + escP(f.comentario) + '</p>' : '') +
+    (Array.isArray(f.avisos) && f.avisos.length ? '<p class="pos-form-txt" style="color:#92400E"><span>Avisos de la importación</span>' + escP(f.avisos.join(' · ')) + '</p>' : '') +
+    '</details>';
 }
 
 // ─── ASISTENCIA ───
