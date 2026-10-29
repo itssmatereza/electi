@@ -2491,6 +2491,29 @@ const authSec = initializeAuth(appSec, { persistence: inMemoryPersistence });
 auth.languageCode = 'es';
 authSec.languageCode = 'es';
 
+// ─── DEFENSA CONTRA HTML INYECTADO ───
+// Varias pantallas arman la tabla con innerHTML. Un alumno escribe su propio
+// nombre y datos al activar su cupo; si escribiera etiquetas HTML, ese texto
+// se ejecutaría en la sesión de administración. Aquí se neutraliza todo texto
+// al leerlo de Firestore: < > ` se cambian por signos parecidos e inofensivos,
+// y los campos de enlace (…url) solo aceptan http(s) o imágenes en base64.
+function neutralizarTexto(v, clave) {
+  if (typeof v === 'string') {
+    if (clave && /url$/i.test(clave)) {
+      const t = v.trim();
+      if (t === '' || /^https?:\/\/[^\s"'<>`]+$/i.test(t) || /^data:image\/[a-z+.-]+;base64,[A-Za-z0-9+/=]+$/i.test(t)) return t;
+      // Enlaces escritos sin https:// (drive.google.com/…) se completan en vez de perderse
+      if (/^[a-z0-9-]+(\.[a-z0-9-]+)+(\/[^\s"'<>`]*)?$/i.test(t)) return 'https://' + t;
+      return '';
+    }
+    return v.replace(/[<>`]/g, function (c) { return c === '<' ? '‹' : c === '>' ? '›' : '´'; });
+  }
+  if (Array.isArray(v)) return v.map(function (x) { return neutralizarTexto(x, clave); });
+  if (v && typeof v === 'object' && Object.getPrototypeOf(v) === Object.prototype) {
+    const o = {}; Object.keys(v).forEach(function (k) { o[k] = neutralizarTexto(v[k], k); }); return o;
+  }
+  return v;
+}
 window.fb = {
   auth, db, authSec,
   signIn: (e, p) => signInWithEmailAndPassword(auth, e, p),
@@ -2555,7 +2578,7 @@ window.fb = {
   getDocs: async (col) => {
     const snap = await getDocs(collection(db, col));
     const out = [];
-    snap.forEach(d => out.push({ _id: d.id, ...d.data() }));
+    snap.forEach(d => out.push({ _id: d.id, ...neutralizarTexto(d.data()) }));
     return out;
   },
   // Trae solo los documentos cuyo ID cae dentro de un rango alfabético.
@@ -2567,12 +2590,12 @@ window.fb = {
       where(documentId(), '<=', hasta));
     const snap = await getDocs(q);
     const out = [];
-    snap.forEach(d => out.push({ _id: d.id, ...d.data() }));
+    snap.forEach(d => out.push({ _id: d.id, ...neutralizarTexto(d.data()) }));
     return out;
   },
   getDoc: async (col, id) => {
     const d = await getDoc(doc(db, col, id));
-    return d.exists() ? { _id: d.id, ...d.data() } : null;
+    return d.exists() ? { _id: d.id, ...neutralizarTexto(d.data()) } : null;
   },
   setDoc: (col, id, data) => setDoc(doc(db, col, id), data),
   updateDoc: (col, id, data) => updateDoc(doc(db, col, id), data),
@@ -4377,6 +4400,8 @@ async function ejecutarImportPos() {
     const f = nuevas[i];
     btn.textContent = 'Importando ' + (i + 1) + ' de ' + nuevas.length + '…';
     try {
+      // Si otra persona ya la importó, setDoc la reemplazaría y borraría su seguimiento
+      if (await window.fb.getDoc('postulaciones', f.id)) { f.estadoImp = 'repetida'; continue; }
       await window.fb.setDoc('postulaciones', f.id, f.base);
       const ahora = new Date().toISOString();
       const seg = { estado: estadoIni, act: ahora, form: f.form,
@@ -6093,8 +6118,14 @@ function deleteMaterial(i) {
 }
 
 // ─── BACKUP ───
-function exportData() {
+async function exportData() {
+  let postulaciones = null;
+  if (tienePermiso('postulaciones')) {
+    try { postulaciones = await window.fb.getDocs('postulaciones'); }
+    catch (e) { console.error('Respaldo sin postulaciones', e); toast('⚠ El respaldo no pudo incluir las postulaciones'); }
+  }
   const data = {
+    postulaciones: postulaciones,
     alumnos: state.alumnos, asistencia: state.asistencia,
     materiales: state.materiales, anuncios: state.anuncios, pagos: state.pagos, multas: state.multas,
     equipo: state.equipo, config: state.config,
