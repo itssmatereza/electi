@@ -368,7 +368,7 @@ service cloud.firestore {
     // afuera puede leer, cambiar ni borrar postulaciones: solo administración.
 
     match /postulaciones/{id} {
-      allow create: if request.resource.data.keys().hasOnly(['nombre', 'whatsapp', 'quien', 'curso', 'modalidad', 'fecha', 'origen'])
+      allow create: if request.resource.data.keys().hasOnly(['nombre', 'whatsapp', 'quien', 'curso', 'modalidad', 'fecha', 'origen', 'ciudad'])
         && request.resource.data.keys().hasAll(['nombre', 'whatsapp', 'quien', 'curso', 'modalidad'])
         && request.resource.data.nombre is string
         && request.resource.data.nombre.size() >= 3 && request.resource.data.nombre.size() <= 80
@@ -378,7 +378,8 @@ service cloud.firestore {
         && request.resource.data.curso in ['10.º de básica', '1.º de bachillerato', '2.º de bachillerato', '3.º de bachillerato', 'Bachiller graduado (aún no inicio la universidad)', '1.er semestre de universidad', '2.º semestre de universidad', '3.er semestre de universidad']
         && request.resource.data.modalidad in ['Quito presencial', 'En línea']
         && request.resource.data.get('fecha', '') is string && request.resource.data.get('fecha', '').size() <= 40
-        && request.resource.data.get('origen', '') is string && request.resource.data.get('origen', '').size() <= 200;
+        && request.resource.data.get('origen', '') is string && request.resource.data.get('origen', '').size() <= 200
+        && request.resource.data.get('ciudad', '') is string && request.resource.data.get('ciudad', '').size() <= 60;
 
       allow get, list: if permiso('postulaciones');
       allow update, delete: if esAdmin() && permiso('postulaciones');

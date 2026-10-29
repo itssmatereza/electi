@@ -40,6 +40,7 @@ async function fill(page){
   await page.locator('[name=quien][value=Estudiante]').check();
   await page.locator('[name=curso]').selectOption({label:COURSE});
   await page.locator('[name=modalidad][value="En línea"]').check();
+  await page.locator('[name=ciudad]').fill('Guayaquil');
   await page.locator('[name=recomendado]').fill('Persona de prueba');
 }
 async function settled(page){
@@ -72,12 +73,22 @@ async function test(name,run){
       assert.equal(requests.length,0);assert.match(page.url(),/postular/);
       assert.match(await page.locator('#pf-err a').getAttribute('href'),/^https:\/\/wa\.me\//);await page.close();
     });
+    await test('online requires a city and in-person hides it',async()=>{
+      const {page,requests}=await setup(r=>r.fulfill(jsonResponse(r.request())));
+      await fill(page);await page.locator('[name=ciudad]').fill('');await page.locator('#pf-btn').click();
+      assert.equal(requests.length,0);assert.match(await page.locator('#pf-err').textContent(),/ciudad/);
+      await page.locator('[name=modalidad][value="Quito presencial"]').check();
+      assert.equal(await page.locator('#pf-ciudad').isHidden(),true);
+      await page.locator('#pf-btn').click();await page.waitForURL('**/gracias/');
+      assert.equal(requests[0].body.fields.ciudad,undefined);await page.close();
+    });
     await test('success persists the full payload, removes the draft, and redirects',async()=>{
       const {page,requests,errors}=await setup(r=>r.fulfill(jsonResponse(r.request())));
       await fill(page);await page.locator('#pf-btn').click();await page.waitForURL('**/gracias/');
       assert.equal(requests.length,1);assert.match(new URL(requests[0].url).searchParams.get('documentId'),/^web_[a-f0-9]{32}$/);
       assert.equal(requests[0].body.fields.curso.stringValue,COURSE);
       assert.equal(requests[0].body.fields.whatsapp.stringValue,'+593991234567');
+      assert.equal(requests[0].body.fields.ciudad.stringValue,'Guayaquil');
       assert.match(requests[0].body.fields.origen.stringValue,/Recomendado por: Persona de prueba/);
       assert.equal(await page.evaluate(k=>localStorage.getItem(k),KEY),null);assert.deepEqual(errors,[]);await page.close();
     });

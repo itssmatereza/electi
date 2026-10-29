@@ -3984,6 +3984,7 @@ function posFechaHora(v) {
   const t = Date.parse(v); if (Number.isNaN(t)) return '';
   return new Date(t).toLocaleString('es-EC', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
 }
+function posCiudad(p) { return textoPostulacion(p.ciudad) || textoPostulacion((posSeg(p).form || {}).ciudad); }
 function posPrimerNombre(p) { return textoPostulacion(p.nombre).split(/\s+/)[0] || ''; }
 // Mensaje de WhatsApp según el momento del proceso
 function posMensajeWA(p) {
@@ -4060,7 +4061,7 @@ function filtrarPostulaciones() {
     if (!q) return true;
     const s = posSeg(p);
     const f = s.form || {};
-    return [p.nombre, p.whatsapp, p.quien, p.curso, p.modalidad, p.origen, s.nota, s.resp, f.colegio, f.correo, f.ciudad, f.repNombre]
+    return [p.nombre, p.whatsapp, p.quien, p.curso, p.modalidad, p.origen, s.nota, s.resp, f.colegio, f.correo, posCiudad(p), f.repNombre]
       .some(v => textoPostulacion(v).toLocaleLowerCase('es').includes(q));
   });
   document.getElementById('postulaciones-count').textContent =
@@ -4090,7 +4091,7 @@ function filtrarPostulaciones() {
         (posSeg(p).form ? '<br><span class="pos-tag">Forms</span>' + (posSeg(p).form.becaSolicitada ? '<span style="font-size:11.5px;color:var(--gray)"> ' + escP(posSeg(p).form.becaSolicitada) + '</span>' : '') : '') + '</td>' +
       '<td data-l="WhatsApp" style="white-space:nowrap">' + (wa ? '<a href="' + escP(wa) + '" target="_blank" rel="noopener noreferrer">' + escP(p.whatsapp) + '</a><br>' +
           '<a class="pos-wa-btn" href="' + escP(waTxt) + '" target="_blank" rel="noopener noreferrer">💬 Escribir</a>' : escP(p.whatsapp || '—')) + '</td>' +
-      '<td data-l="Modalidad">' + escP(p.modalidad) + '</td>' +
+      '<td data-l="Modalidad">' + escP(p.modalidad) + (posCiudad(p) ? '<br><span style="font-size:11.5px;color:var(--gray)">📍 ' + escP(posCiudad(p)) + '</span>' : '') + '</td>' +
       '<td data-l="Estado">' + sel + '</td>' +
       '<td data-l="Próximo paso" style="font-size:12.5px;' + (pr.tarde ? 'color:var(--red);font-weight:700' : '') + '">' + escP(pr.txt) + '</td>' +
       '</tr>';
@@ -4168,6 +4169,7 @@ function abrirPostulacion(id) {
     '<div><span>Llena</span>' + escP(p.quien) + '</div>' +
     '<div><span>Curso</span>' + escP(p.curso) + '</div>' +
     '<div><span>Modalidad</span>' + escP(p.modalidad) + '</div>' +
+    (posCiudad(p) ? '<div><span>Ciudad</span>' + escP(posCiudad(p)) + '</div>' : '') +
     (rec ? '<div><span>Recomendado por</span>' + escP(rec) + '</div>' : '') +
     (org ? '<div><span>Origen</span>' + escP(org) + '</div>' : '');
   document.getElementById('pos-m-form').innerHTML = posFormHTML(p);
@@ -4278,7 +4280,7 @@ function exportarPostulaciones() {
     filas.push([posFechaHora(p.fecha), p.nombre || '', p.whatsapp || '', p.quien || '', p.curso || '', p.modalidad || '',
       posRecomendado(p), posOrigenLimpio(p), POS_ESTADOS[POS_IDX[posEstado(p)]][1], s.entrevista ? posFechaHora(s.entrevista) : '',
       s.prox || '', s.beca == null ? '' : s.beca, s.resp || '', s.nota || '', s.act ? posFechaHora(s.act) : '',
-      ...(function (f) { f = f || {}; return [f.correo || '', f.edad || '', f.ciudad || '', f.colegio || '', f.cursoOriginal || '', f.repNombre || '', f.repParentesco || '', f.repTel || '', f.repCorreo || '', f.becaSolicitada || '', f.comoSeEntero || '']; })(s.form)]);
+      ...(function (f) { f = f || {}; return [f.correo || '', f.edad || '', posCiudad(p), f.colegio || '', f.cursoOriginal || '', f.repNombre || '', f.repParentesco || '', f.repTel || '', f.repCorreo || '', f.becaSolicitada || '', f.comoSeEntero || '']; })(s.form)]);
   });
   descargarLibro([{ name: 'Postulaciones', data: filas }], 'ELECTI-postulaciones-' + hoyArchivo() + '.xlsx');
 }
@@ -4594,6 +4596,8 @@ function pintarAdmisiones() {
   const fuentes = {}; P.forEach(p => { const f = fuente(p); fuentes[f] = (fuentes[f] || 0) + 1; });
   const fuentesH = Object.keys(fuentes).sort((a, b) => fuentes[b] - fuentes[a]).map(k => '<span>' + escP(k) + ' <b>' + fuentes[k] + '</b></span>').join('');
   const quito = P.filter(p => p.modalidad === 'Quito presencial').length, linea = P.filter(p => p.modalidad === 'En línea').length;
+  const ciudades = {}; P.forEach(p => { if (p.modalidad !== 'En línea') return; const c = posCiudad(p).trim(); if (!c) return; const k = c.charAt(0).toUpperCase() + c.slice(1).toLowerCase(); ciudades[k] = (ciudades[k] || 0) + 1; });
+  const ciudadesH = Object.keys(ciudades).sort((a, b) => ciudades[b] - ciudades[a]).slice(0, 8).map(k => '<span>' + escP(k) + ' <b>' + ciudades[k] + '</b></span>').join('');
 
   // Preparación para la primera sesión (alumnos con cuenta en el portal)
   const A = state.alumnos.filter(a => !a.suspendido);
@@ -4615,6 +4619,7 @@ function pintarAdmisiones() {
       '<div class="card adm-card"><div class="card-head"><div class="card-title">Llegadas · 14 días</div><span class="badge badge-gray">' + semana + ' esta semana' + (semanaAnt ? ' · ' + semanaAnt + ' la anterior' : '') + '</span></div>' +
         '<div class="adm-spark">' + barras + '</div>' +
         '<div class="adm-split"><span>Quito presencial <b>' + quito + '</b></span><span>En línea <b>' + linea + '</b></span></div>' +
+        (ciudadesH ? '<div class="adm-sub" style="margin-top:12px">Ciudades en línea</div><div class="adm-fuentes">' + ciudadesH + '</div>' : '') +
         '<div class="adm-sub" style="margin-top:12px">De dónde vienen</div><div class="adm-fuentes">' + (fuentesH || '<span>—</span>') + '</div></div>' +
       '<div class="card adm-card"><div class="card-head"><div class="card-title">Listos para la primera sesión</div></div>' + prep + '</div>' +
     '</div>';

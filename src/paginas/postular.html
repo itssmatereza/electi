@@ -37,6 +37,9 @@ archivo: postular/index.html
         <fieldset class="pf"><legend>Modalidad</legend>
           <div class="pf-op"><label><input type="radio" name="modalidad" value="Quito presencial" required><span>Quito presencial<small>Martes por Zoom y sábados en Quito</small></span></label>
           <label><input type="radio" name="modalidad" value="En línea"><span>En línea<small>Martes y jueves por Zoom, desde todo el país</small></span></label></div></fieldset>
+        <label class="pf" id="pf-ciudad" style="display:none"><span>¿Desde qué ciudad te conectarías?</span>
+          <input name="ciudad" maxlength="60" list="ciudades-ec" autocomplete="address-level2" placeholder="Ej.: Guayaquil"></label>
+        <datalist id="ciudades-ec"><option value="Quito"><option value="Guayaquil"><option value="Cuenca"><option value="Santo Domingo"><option value="Ambato"><option value="Manta"><option value="Portoviejo"><option value="Machala"><option value="Loja"><option value="Riobamba"><option value="Ibarra"><option value="Esmeraldas"><option value="Latacunga"><option value="Babahoyo"><option value="Quevedo"><option value="Milagro"><option value="Tulcán"><option value="Otavalo"><option value="Salinas"><option value="Santa Elena"><option value="Durán"><option value="Sangolquí"><option value="Cayambe"><option value="Azogues"><option value="Guaranda"><option value="Puyo"><option value="Tena"><option value="Macas"><option value="Zamora"><option value="Nueva Loja"><option value="El Coca"><option value="Puerto Ayora"></datalist>
         <label class="pf"><span>¿Alguien te recomendó ELECTI? <small>(opcional)</small></span>
           <input name="recomendado" maxlength="80" autocomplete="off" placeholder="Nombre de quien te recomendó"></label>
         <input class="pf-hp" name="hp_web" tabindex="-1" autocomplete="off" aria-hidden="true">
@@ -68,8 +71,15 @@ archivo: postular/index.html
     return {
       nombre:f.elements.nombre.value.trim(), whatsapp:f.elements.whatsapp.value.trim(),
       quien:f.elements.quien.value||'', curso:f.elements.curso.value,
-      modalidad:f.elements.modalidad.value||'', recomendado:f.elements.recomendado.value.trim().slice(0,80)
+      modalidad:f.elements.modalidad.value||'', recomendado:f.elements.recomendado.value.trim().slice(0,80),
+      ciudad:(f.elements.modalidad.value==='En línea' ? f.elements.ciudad.value.replace(/\s+/g,' ').trim().slice(0,60) : '')
     };
+  }
+  // La ciudad solo se pide en la modalidad en línea: en presencial ya sabemos que es Quito
+  function syncCiudad(){
+    var online=f.elements.modalidad.value==='En línea';
+    document.getElementById('pf-ciudad').style.display=online ? '' : 'none';
+    f.elements.ciudad.required=online;
   }
   function note(text){ status.hidden=!text; status.textContent=text; }
   function save(){
@@ -87,7 +97,7 @@ archivo: postular/index.html
         localStorage.removeItem(STORAGE); return;
       }
       var d=draft.data;
-      ['nombre','whatsapp','curso','recomendado'].forEach(function(k){
+      ['nombre','whatsapp','curso','recomendado','ciudad'].forEach(function(k){
         if(typeof d[k]==='string') f.elements[k].value=d[k];
       });
       ['quien','modalidad'].forEach(function(k){
@@ -112,6 +122,7 @@ archivo: postular/index.html
   function makeBody(d,date,origin){
     var fields={};
     ['nombre','whatsapp','quien','curso','modalidad'].forEach(function(k){ fields[k]={stringValue:d[k]}; });
+    if(d.ciudad) fields.ciudad={stringValue:d.ciudad};
     fields.fecha={stringValue:date}; fields.origen={stringValue:origin};
     return {fields:fields};
   }
@@ -123,7 +134,7 @@ archivo: postular/index.html
     return {id:id,data:d,body:makeBody(d,new Date().toISOString(),origin)};
   }
   function whatsapp(d){
-    var text='Hola, quiero postular a ELECTI.\nNombre: '+d.nombre+'\nWhatsApp: '+d.whatsapp+'\nLlena: '+d.quien+'\nCurso: '+d.curso+'\nModalidad: '+d.modalidad;
+    var text='Hola, quiero postular a ELECTI.\nNombre: '+d.nombre+'\nWhatsApp: '+d.whatsapp+'\nLlena: '+d.quien+'\nCurso: '+d.curso+'\nModalidad: '+d.modalidad+(d.ciudad ? ' ('+d.ciudad+')' : '');
     if(d.recomendado) text+='\nRecomendado por: '+d.recomendado;
     return 'https://wa.me/593962893857?text='+encodeURIComponent(text);
   }
@@ -198,6 +209,7 @@ archivo: postular/index.html
     btn.textContent='Enviar postulación'; err.textContent=''; note(''); save();
   });
   f.addEventListener('change',function(){
+    syncCiudad();
     if(!busy) save();
   });
   f.addEventListener('submit',function(e){
@@ -206,6 +218,7 @@ archivo: postular/index.html
     if(d.nombre.length<3 || d.nombre.length>80){err.textContent='Escribe el nombre completo del estudiante (entre 3 y 80 caracteres).';f.elements.nombre.focus();return;}
     if(!d.whatsapp){err.textContent='Revisa el número de WhatsApp (ej.: 0991234567).';f.elements.whatsapp.focus();return;}
     if(!d.quien || !d.curso || !d.modalidad){err.textContent='Completa los cinco datos para continuar.';return;}
+    if(d.modalidad==='En línea' && d.ciudad.length<2){err.textContent='Escribe la ciudad desde la que te conectarías.';f.elements.ciudad.focus();return;}
     // Campo trampa invisible: solo un bot lo llena. No se guarda nada ni se abre
     // la página de gracias; si fuera una persona, le queda la vía de WhatsApp.
     if(f.elements.hp_web.value){
@@ -222,7 +235,7 @@ archivo: postular/index.html
   window.addEventListener('pageshow',function(e){
     if(e.persisted && !pending && busy){lock(false);f.reset();btn.textContent='Enviar postulación';note('Tu postulación anterior ya fue recibida.');}
   });
-  restore();
+  restore(); syncCiudad();
   try{
     if(pending && sessionStorage.getItem('electi_postulacion_recibida')===pending.id){
       localStorage.removeItem(STORAGE); pending=null; f.reset(); note('Tu postulación anterior ya fue recibida.');btn.textContent='Enviar postulación';
