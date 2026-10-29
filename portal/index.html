@@ -1094,6 +1094,48 @@ tbody tr:hover td { background: var(--off); }
 .pos-tr-sel td { background: #F4F7FC; }
 .pos-btn-borrar { color: var(--red); border-color: #FECACA; }
 .pos-btn-borrar.confirmar { background: var(--red) !important; color: #fff !important; border-color: var(--red) !important; }
+/* ─── Dashboard · Admisiones ─── */
+.adm { margin-bottom: 22px; }
+.adm-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+.adm-eyebrow { font-size: 11px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--blue); }
+.adm-title { font-size: 22px; font-weight: 800; color: var(--text); letter-spacing: -.4px; }
+.adm-hitos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
+.adm-hito { background: var(--navy); color: #fff; border-radius: 14px; padding: 12px 16px; display: flex; flex-direction: column; gap: 2px; }
+.adm-hito span { font-size: 11.5px; font-weight: 600; color: var(--sky-light); }
+.adm-hito b { font-size: 20px; font-weight: 800; letter-spacing: -.3px; }
+.adm-hito i { font-style: normal; font-size: 11.5px; color: rgba(255,255,255,.7); }
+.adm-hito.cerca { background: var(--blue); }
+.adm-hito.pasado { background: var(--off); color: var(--gray); }
+.adm-hito.pasado span, .adm-hito.pasado i { color: var(--gray); }
+.adm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.adm-card { margin: 0; }
+.adm-barra { display: grid; grid-template-columns: 140px 1fr 34px; align-items: center; gap: 10px; width: 100%; border: 0; background: none; padding: 5px 0; font: inherit; cursor: pointer; text-align: left; }
+.adm-barra span { font-size: 12.5px; color: var(--text); font-weight: 600; }
+.adm-barra i { height: 10px; background: var(--off); border-radius: 6px; overflow: hidden; }
+.adm-barra em { display: block; height: 100%; border-radius: 6px; }
+.adm-barra b { font-size: 14px; color: var(--navy); text-align: right; }
+.adm-barra:hover span { text-decoration: underline; }
+.adm-sub { font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--gray); margin: 10px 0 4px; }
+.adm-fila { display: flex; align-items: center; gap: 10px; padding: 6px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.adm-fila .pos-nombre { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; }
+.adm-fila span { font-size: 12px; color: var(--gray); white-space: nowrap; }
+.adm-fila span.tarde { color: var(--red); font-weight: 700; }
+.adm-fila .pos-wa-btn { margin: 0; font-size: 15px; }
+.adm-mas { border: 0; background: none; color: var(--blue); font: inherit; font-size: 12.5px; font-weight: 700; padding: 8px 0 0; cursor: pointer; }
+.adm-spark { display: flex; align-items: flex-end; gap: 5px; height: 90px; padding: 6px 0; }
+.adm-spark i { flex: 1; height: 100%; display: flex; align-items: flex-end; }
+.adm-spark em { display: block; width: 100%; background: var(--sky); border-radius: 4px 4px 2px 2px; }
+.adm-spark i:nth-last-child(-n+7) em { background: var(--blue); }
+.adm-split, .adm-fuentes { display: flex; flex-wrap: wrap; gap: 8px; font-size: 12.5px; color: var(--gray); }
+.adm-split span, .adm-fuentes span { background: var(--off); border-radius: 20px; padding: 5px 11px; }
+.adm-split b, .adm-fuentes b { color: var(--navy); }
+.adm-prog { margin-bottom: 14px; }
+.adm-prog div { display: flex; justify-content: space-between; font-size: 13px; color: var(--text); font-weight: 600; margin-bottom: 6px; }
+.adm-prog b { color: var(--navy); }
+.adm-prog i { display: block; height: 10px; background: var(--off); border-radius: 6px; overflow: hidden; }
+.adm-prog em { display: block; height: 100%; background: var(--green); border-radius: 6px; }
+@media (max-width: 900px) { .adm-grid { grid-template-columns: 1fr; } }
+@media (max-width: 560px) { .adm-hitos { grid-template-columns: 1fr 1fr 1fr; gap: 6px; } .adm-hito { padding: 10px; } .adm-hito b { font-size: 15px; } .adm-barra { grid-template-columns: 112px 1fr 28px; } }
 .pos-tabla-nota { display: none; }
 @media (max-width: 640px) {
   .pos-embudo { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; -webkit-overflow-scrolling: touch; }
@@ -1606,6 +1648,9 @@ tbody tr:hover td { background: var(--off); }
           </div>
         </div>
       </div>
+
+      <!-- Admisiones de la nueva generación (solo mientras dura la convocatoria) -->
+      <div class="adm" id="dash-admisiones" style="display:none"></div>
 
       <!-- Acciones rápidas -->
       <div class="qa-row" id="dash-acciones"></div>
@@ -3868,7 +3913,7 @@ function navigate(page) {
   const bd = document.getElementById('sidebar-backdrop');
   if (bd) bd.style.display = 'none';
 
-  if (page === 'dashboard') renderDashboard();
+  if (page === 'dashboard') { renderDashboard(); cargarAdmisionesDash(); }
   if (page === 'historial') renderHistorial();
   if (page === 'pagos') { renderPagos(); prepararBeneficioReferidos(); }
   if (page === 'multas') renderMultas();
@@ -4062,6 +4107,7 @@ async function cargarPostulaciones() {
     const resultados = await window.fb.getDocs('postulaciones');
     if (version !== postulacionesSolicitud || !tienePermiso('postulaciones')) return;
     postulacionesWeb = resultados.slice().sort((a, b) => textoPostulacion(b.fecha).localeCompare(textoPostulacion(a.fecha)));
+    _admCargado = true;
     const existentes = new Set(postulacionesWeb.map(p => p._id));
     Array.from(posSel).forEach(id => { if (!existentes.has(id)) posSel.delete(id); });
     pintarEmbudo(); filtrarPostulaciones();
@@ -4433,6 +4479,145 @@ function posFormHTML(p) {
     (f.comentario ? '<p class="pos-form-txt"><span>Comentario</span>' + escP(f.comentario) + '</p>' : '') +
     (Array.isArray(f.avisos) && f.avisos.length ? '<p class="pos-form-txt" style="color:#92400E"><span>Avisos de la importación</span>' + escP(f.avisos.join(' · ')) + '</p>' : '') +
     '</details>';
+}
+
+// ─── DASHBOARD: ADMISIONES DE LA NUEVA GENERACIÓN ───
+// Fechas de la convocatoria en curso. Cambiarlas aquí cuando se abra la siguiente.
+const ADMISION = {
+  generacion: '6.ª generación',
+  hitos: [
+    { k: 'becas',         fecha: '2026-11-05', txt: 'Cierre de becas' },
+    { k: 'postulaciones', fecha: '2026-11-10', txt: 'Cierre de postulaciones' },
+    { k: 'inicio',        fecha: '2026-11-14', txt: 'Primera sesión' },
+  ],
+  // Después de esta fecha el panel deja de mostrarse solo
+  ocultarDesde: '2026-12-15',
+};
+let _admCargando = false, _admCargado = false;
+
+function admDiasHasta(iso) {
+  const hoy = new Date(); hoy.setHours(0, 0, 0, 0);
+  const f = new Date(iso + 'T00:00:00');
+  return Math.round((f - hoy) / 86400000);
+}
+function admMostrar() {
+  return tienePermiso('postulaciones') && admDiasHasta(ADMISION.ocultarDesde) > 0;
+}
+async function cargarAdmisionesDash() {
+  if (!admMostrar() || _admCargando) return;
+  if (_admCargado) { pintarAdmisiones(); return; }
+  _admCargando = true;
+  try {
+    const r = await window.fb.getDocs('postulaciones');
+    postulacionesWeb = r.slice().sort((a, b) => textoPostulacion(b.fecha).localeCompare(textoPostulacion(a.fecha)));
+    _admCargado = true;
+  } catch (e) { console.error('Dashboard: no se pudieron leer las postulaciones', e); }
+  _admCargando = false;
+  pintarAdmisiones();
+}
+function irPostulaciones(filtro) {
+  posFiltroEstado = filtro || '';
+  navigate('postulaciones');
+}
+function pintarAdmisiones() {
+  const cont = document.getElementById('dash-admisiones');
+  if (!cont) return;
+  if (!admMostrar()) { cont.style.display = 'none'; return; }
+  cont.style.display = '';
+  const P = postulacionesWeb;
+  const ahora = Date.now(), hoy0 = new Date(); hoy0.setHours(0, 0, 0, 0);
+  const manana0 = new Date(hoy0.getTime() + 86400000), pasado0 = new Date(hoy0.getTime() + 2 * 86400000);
+
+  // Cuenta regresiva
+  const hitos = ADMISION.hitos.map(h => {
+    const d = admDiasHasta(h.fecha);
+    const cuando = d < 0 ? 'Cerrado' : d === 0 ? 'Hoy' : d === 1 ? 'Mañana' : 'En ' + d + ' días';
+    return '<div class="adm-hito' + (d < 0 ? ' pasado' : d <= 2 ? ' cerca' : '') + '"><span>' + escP(h.txt) + '</span><b>' + cuando + '</b><i>' +
+      new Date(h.fecha + 'T12:00:00').toLocaleDateString('es-EC', { weekday: 'short', day: 'numeric', month: 'short' }) + '</i></div>';
+  }).join('');
+
+  // Embudo
+  const n = {}; POS_ESTADOS.forEach(e => { n[e[0]] = 0; });
+  P.forEach(p => { n[posEstado(p)]++; });
+  const activos = P.length - n.no;
+  const max = Math.max(1, ...POS_ESTADOS.map(e => n[e[0]]));
+  const embudo = POS_ESTADOS.map(e =>
+    '<button type="button" class="adm-barra" onclick="irPostulaciones(\'' + e[0] + '\')"><span>' + escP(e[1]) + '</span>' +
+    '<i><em style="width:' + Math.max(3, Math.round(n[e[0]] * 100 / max)) + '%;background:' + (e[0] === 'matriculado' ? e[3] : e[2]) + '"></em></i><b>' + n[e[0]] + '</b></button>').join('');
+  const conv = P.length ? Math.round(n.matriculado * 100 / P.length) : 0;
+
+  // Lo que toca hoy
+  const sinContactar = P.filter(p => posEstado(p) === 'nueva').sort((a, b) => textoPostulacion(a.fecha).localeCompare(textoPostulacion(b.fecha)));
+  const entrevistas = P.filter(p => posEstado(p) === 'agendada' && posSeg(p).entrevista).map(p => ({ p: p, t: Date.parse(posSeg(p).entrevista) }))
+    .filter(x => !Number.isNaN(x.t) && x.t < pasado0.getTime()).sort((a, b) => a.t - b.t);
+  const yaListadas = new Set(entrevistas.map(x => x.p._id));
+  const vencidos = P.filter(p => { const pr = posProximo(p); return pr.tarde && posEstado(p) !== 'nueva' && !yaListadas.has(p._id); });
+  const fila = (p, extra, tarde) => {
+    const wa = posLinkWA(p, true);
+    return '<div class="adm-fila"><button type="button" class="pos-nombre" onclick="navigate(\'postulaciones\');abrirPostulacion(\'' + escP(p._id) + '\')">' + escP(p.nombre) + '</button>' +
+      '<span class="' + (tarde ? 'tarde' : '') + '">' + escP(extra) + '</span>' +
+      (wa ? '<a class="pos-wa-btn" href="' + escP(wa) + '" target="_blank" rel="noopener noreferrer">💬</a>' : '') + '</div>';
+  };
+  let tareas = '';
+  if (entrevistas.length) {
+    tareas += '<div class="adm-sub">🗓 Entrevistas hoy y mañana</div>' + entrevistas.slice(0, 6).map(x =>
+      fila(x.p, (x.t < manana0.getTime() ? (x.t < ahora ? 'Ya pasó · ' : 'Hoy · ') : 'Mañana · ') +
+        new Date(x.t).toLocaleTimeString('es-EC', { hour: '2-digit', minute: '2-digit' }), x.t < ahora)).join('');
+  }
+  if (sinContactar.length) {
+    tareas += '<div class="adm-sub">📞 Sin contactar (' + sinContactar.length + ')</div>' + sinContactar.slice(0, 6).map(p => {
+      const d = posDias(p.fecha); return fila(p, d === null ? '' : d === 0 ? 'llegó hoy' : d === 1 ? 'ayer' : 'hace ' + d + ' días', d !== null && d >= 2);
+    }).join('') + (sinContactar.length > 6 ? '<button type="button" class="adm-mas" onclick="irPostulaciones(\'nueva\')">Ver las ' + sinContactar.length + ' →</button>' : '');
+  }
+  if (vencidos.length) {
+    tareas += '<div class="adm-sub">⏰ Seguimientos vencidos (' + vencidos.length + ')</div>' + vencidos.slice(0, 4).map(p => fila(p, posProximo(p).txt, true)).join('') +
+      (vencidos.length > 4 ? '<button type="button" class="adm-mas" onclick="irPostulaciones(\'_tarde\')">Ver todos →</button>' : '');
+  }
+  if (!tareas) tareas = '<div class="empty" style="padding:18px 0"><p>Todo al día ✓ No hay pendientes con postulantes.</p></div>';
+
+  // Llegadas de los últimos 14 días y de dónde vienen
+  const dias = []; for (let i = 13; i >= 0; i--) { const d = new Date(hoy0.getTime() - i * 86400000); dias.push({ d: d, n: 0 }); }
+  P.forEach(p => { const t = Date.parse(p.fecha); if (Number.isNaN(t)) return; const i = Math.floor((t - (hoy0.getTime() - 13 * 86400000)) / 86400000); if (i >= 0 && i < 14) dias[i].n++; });
+  const maxD = Math.max(1, ...dias.map(x => x.n));
+  const semana = dias.slice(7).reduce((s, x) => s + x.n, 0), semanaAnt = dias.slice(0, 7).reduce((s, x) => s + x.n, 0);
+  const barras = dias.map(x => '<i title="' + x.d.toLocaleDateString('es-EC', { day: 'numeric', month: 'short' }) + ': ' + x.n + '"><em style="height:' + Math.max(4, Math.round(x.n * 100 / maxD)) + '%"></em></i>').join('');
+  const fuente = p => {
+    const o = textoPostulacion(p.origen).toLowerCase();
+    if (posSeg(p).form) return 'Google Forms';
+    if (posRecomendado(p)) return 'Recomendado';
+    if (/uide/.test(o)) return 'UIDE';
+    if (/presidenciables/.test(o)) return 'Presidenciables';
+    if (/instagram|ig\b|origen=ig|fbclid|facebook/.test(o)) return 'Instagram / Facebook';
+    if (/padres/.test(o)) return 'Página de padres';
+    return 'Página web';
+  };
+  const fuentes = {}; P.forEach(p => { const f = fuente(p); fuentes[f] = (fuentes[f] || 0) + 1; });
+  const fuentesH = Object.keys(fuentes).sort((a, b) => fuentes[b] - fuentes[a]).map(k => '<span>' + escP(k) + ' <b>' + fuentes[k] + '</b></span>').join('');
+  const quito = P.filter(p => p.modalidad === 'Quito presencial').length, linea = P.filter(p => p.modalidad === 'En línea').length;
+
+  // Preparación para la primera sesión (alumnos con cuenta en el portal)
+  const A = state.alumnos.filter(a => !a.suspendido);
+  const activados = A.filter(a => !onboardingPendiente(Object.assign({ rol: 'alumno' }, a))).length;
+  const acuerdos = A.filter(a => a.acuerdoUrl && String(a.acuerdoUrl).trim()).length;
+  const matricula = tienePermiso('pagos') ? A.filter(a => { const pg = getPagos(a); return pg.mat || pg.unico || matriculaCent(a) === 0; }).length : null;
+  const prog = (lbl, v, t, filtro) => '<div class="adm-prog"' + (filtro ? ' onclick="navigate(\'alumnos\')" style="cursor:pointer"' : '') + '><div><span>' + lbl + '</span><b>' + v + ' / ' + t + '</b></div><i><em style="width:' + (t ? Math.round(v * 100 / t) : 0) + '%"></em></i></div>';
+  const prep = A.length
+    ? prog('Activaron su cuenta', activados, A.length, 1) + prog('Acuerdo firmado subido', acuerdos, A.length, 1) + (matricula === null ? '' : prog('Matrícula pagada', matricula, A.length, 0))
+    : '<p style="font-size:13px;color:var(--gray)">Aún no hay alumnos de la nueva generación con cuenta. Créalas desde Alumnos al admitir a cada postulante.</p>';
+
+  cont.innerHTML =
+    '<div class="adm-head"><div><div class="adm-eyebrow">Admisiones · ' + escP(ADMISION.generacion) + '</div><div class="adm-title">' + activos + ' postulantes en proceso</div></div>' +
+      '<button type="button" class="btn btn-navy" onclick="irPostulaciones(\'\')">Abrir postulaciones →</button></div>' +
+    '<div class="adm-hitos">' + hitos + '</div>' +
+    '<div class="adm-grid">' +
+      '<div class="card adm-card"><div class="card-head"><div class="card-title">Embudo</div><span class="badge badge-navy">' + conv + ' % a matrícula</span></div>' + embudo + '</div>' +
+      '<div class="card adm-card"><div class="card-head"><div class="card-title">Lo que toca hoy</div></div>' + tareas + '</div>' +
+      '<div class="card adm-card"><div class="card-head"><div class="card-title">Llegadas · 14 días</div><span class="badge badge-gray">' + semana + ' esta semana' + (semanaAnt ? ' · ' + semanaAnt + ' la anterior' : '') + '</span></div>' +
+        '<div class="adm-spark">' + barras + '</div>' +
+        '<div class="adm-split"><span>Quito presencial <b>' + quito + '</b></span><span>En línea <b>' + linea + '</b></span></div>' +
+        '<div class="adm-sub" style="margin-top:12px">De dónde vienen</div><div class="adm-fuentes">' + (fuentesH || '<span>—</span>') + '</div></div>' +
+      '<div class="card adm-card"><div class="card-head"><div class="card-title">Listos para la primera sesión</div></div>' + prep + '</div>' +
+    '</div>';
 }
 
 // ─── ASISTENCIA ───
