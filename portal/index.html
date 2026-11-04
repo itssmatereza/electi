@@ -1093,6 +1093,22 @@ tbody tr:hover td { background: var(--off); }
 .pos-chk input { width: 17px; height: 17px; cursor: pointer; accent-color: var(--navy); }
 .pos-tr-sel td { background: #F4F7FC; }
 .pos-btn-borrar { color: var(--red); border-color: #FECACA; }
+/* Ficha de postulación: campos que no se salen en el teléfono */
+.pos-m-2col { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 12px; }
+.pos-m-2col .field { min-width: 0; }
+.field input[type="date"], .field input[type="datetime-local"] { display: block; min-width: 0; max-width: 100%; min-height: 42px; -webkit-appearance: none; appearance: none; }
+.field input::-webkit-date-and-time-value { text-align: left; }
+#modal-postulacion .modal-actions { position: sticky; bottom: -36px; background: var(--white); margin: 18px 0 0; padding: 14px 0 6px; border-top: 1px solid var(--border); z-index: 2; }
+@media (max-width: 640px) {
+  .field input, .field select, .field textarea { font-size: 16px; } /* iOS no hace zoom al tocar */
+  #modal-postulacion.modal-bg { padding: 0; align-items: flex-end; }
+  #modal-postulacion .modal { max-width: none; border-radius: 20px 20px 0 0; max-height: 92vh; max-height: 92dvh; padding: 22px 18px calc(14px + env(safe-area-inset-bottom)); }
+  #modal-postulacion .modal-title { font-size: 18px; margin-bottom: 14px; }
+  #modal-postulacion .pos-ficha { grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 8px 12px; padding: 12px; font-size: 13px; }
+  #modal-postulacion .pos-m-2col { grid-template-columns: 1fr; gap: 0; }
+  #modal-postulacion .pos-wa .btn { width: 100%; justify-content: center; text-align: center; }
+  #modal-postulacion .modal-actions { bottom: calc(-14px - env(safe-area-inset-bottom)); }
+}
 .pos-btn-borrar.confirmar { background: var(--red) !important; color: #fff !important; border-color: var(--red) !important; }
 /* ─── Dashboard · Admisiones ─── */
 .adm { margin-bottom: 22px; }
@@ -2351,11 +2367,11 @@ tbody tr:hover td { background: var(--off); }
     <div id="pos-m-form"></div>
     <div class="pos-wa" id="pos-m-wa"></div>
     <div class="field"><label>Estado</label><select id="pos-m-estado"></select></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+    <div class="pos-m-2col">
       <div class="field"><label>Entrevista</label><input type="datetime-local" id="pos-m-entrevista"></div>
       <div class="field"><label>Próximo seguimiento</label><input type="date" id="pos-m-prox"></div>
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+    <div class="pos-m-2col">
       <div class="field"><label>Beca conversada</label>
         <select id="pos-m-beca"><option value="">Sin definir</option><option value="0">Sin beca</option><option value="25">25 %</option><option value="40">40 %</option><option value="50">50 %</option><option value="100">100 %</option></select></div>
       <div class="field"><label>Responsable</label><input type="text" id="pos-m-resp" maxlength="60" placeholder="Quién le da seguimiento"></div>
