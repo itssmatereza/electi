@@ -2796,6 +2796,18 @@ function cicloArrancado(sede) {
   return new Date() >= inicioClases(sede);
 }
 
+// Vencimiento de una cuota: el día 5 de su mes, salvo la primera, que vence
+// el día de inicio de clases si este cae después del 5 (ej. 14 de noviembre).
+function vencimientoCuota(sede, m) {
+  let d = new Date(m.y, m.n - 1, 5);
+  if (m.idx === 0) {
+    const ini = inicioClases(sede);
+    if (ini.getFullYear() === m.y && ini.getMonth() === m.n - 1 && ini.getDate() > 5) d = new Date(ini);
+  }
+  d.setHours(23, 59, 59, 0);
+  return d;
+}
+
 function fechaLarga(d) {
   return d.getDate() + ' de ' + MES_NOMBRES[d.getMonth()].toLowerCase() + ' de ' + d.getFullYear();
 }
@@ -2822,8 +2834,10 @@ function getMeses(sede) {
   for (let i = 0; i < cfg.numCuotas; i++) {
     const d = new Date(cfg.inicioAnio, cfg.inicioMes - 1 + i, 1);
     // label con el año completo: «Nov 26» se leía como «26 de noviembre»
-    out.push({ k: CUOTAS_KEYS[i] || ('c' + (i + 1)), label: MES_NOMBRES[d.getMonth()] + ' ' + d.getFullYear(), n: d.getMonth() + 1, y: d.getFullYear(), idx: i,
-      vence: '5 de ' + MES_LARGOS[d.getMonth()] });
+    const m = { k: CUOTAS_KEYS[i] || ('c' + (i + 1)), label: MES_NOMBRES[d.getMonth()] + ' ' + d.getFullYear(), n: d.getMonth() + 1, y: d.getFullYear(), idx: i };
+    const v = vencimientoCuota(sede, m);
+    m.vence = v.getDate() + ' de ' + MES_LARGOS[v.getMonth()];
+    out.push(m);
   }
   return out;
 }
@@ -3538,7 +3552,7 @@ function estadoMes(al, mesObj) {
   if (p.m[mesObj.k]) return 'paid';
   if (!cicloArrancado(al.sede)) return 'previo';
   const hoy = new Date();
-  const venc = new Date(mesObj.y, mesObj.n - 1, 5, 23, 59, 59);
+  const venc = vencimientoCuota(al.sede, mesObj);
   return hoy > venc ? 'overdue' : 'pending';
 }
 function resumenPago(al) {
@@ -3548,7 +3562,7 @@ function resumenPago(al) {
   const M = getMeses(al.sede);
   const primero = M[0];
   const cicloIniciado = cicloArrancado(al.sede) &&
-                        hoy > new Date(primero.y, primero.n - 1, 5, 23, 59, 59);
+                        hoy > vencimientoCuota(al.sede, primero);
 
   if (al.plan === 'unico') {
     const totCent = totalCent(al, 'unico');
@@ -5889,7 +5903,7 @@ function renderAlumnoHome() {
               : '<span class="badge badge-gray">Pendiente</span>';
       det += '<div class="al-cuota-row"><span>Cuota ' + m.label + ' <span style="color:var(--gray);font-size:11.5px;">$' + dinero(cuotaMesDe(me,m.k)) + (refPct(me,m.k)?' · referido '+refPct(me,m.k)+'%':'') + '</span></span>' + b + '</div>';
     });
-    pagosHTML += '<details class="al-det"><summary>Ver todas mis cuotas</summary><div class="al-det-nota">Las cuotas vencen el día 5 de cada mes.</div>' + det + '</details>';
+    pagosHTML += '<details class="al-det"><summary>Ver todas mis cuotas</summary><div class="al-det-nota">' + (M[0] && M[0].vence.indexOf('5 de') !== 0 ? 'La primera cuota vence el ' + M[0].vence + ', día de inicio; las demás, el día 5 de cada mes.' : 'Las cuotas vencen el día 5 de cada mes.') + '</div>' + det + '</details>';
   }
   const misMultas = multasDe(me.username);
   if (misMultas.length > 0) {
@@ -7112,7 +7126,7 @@ function diasMora(al) {
   const mat = matriculaDe(al);
   const M = getMeses(al.sede);
   let venc = null;
-  const due = m => new Date(m.y, m.n - 1, 5, 23, 59, 59);
+  const due = m => vencimientoCuota(al.sede, m);
   if (al.plan === 'unico') {
     const r = resumenPago(al);
     if (!r.unicoPagado && r.total > 0) venc = due(M[0]);
