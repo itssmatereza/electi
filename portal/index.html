@@ -1113,7 +1113,11 @@ tbody tr:hover td { background: var(--off); }
   #modal-postulacion .pos-m-2col { grid-template-columns: 1fr; gap: 0; }
   #modal-postulacion .pos-wa .btn { width: 100%; justify-content: center; text-align: center; }
   #modal-postulacion .modal-actions { bottom: calc(-14px - env(safe-area-inset-bottom)); }
+  #modal-alumno.modal-bg { padding: 0; align-items: flex-end; }
+  #modal-alumno .modal { max-width: none; border-radius: 20px 20px 0 0; max-height: 92vh; max-height: 92dvh; padding: 22px 18px calc(14px + env(safe-area-inset-bottom)); }
+  #modal-alumno .modal-actions { position: sticky; bottom: calc(-14px - env(safe-area-inset-bottom)); background: var(--white); margin: 18px 0 0; padding: 14px 0 6px; border-top: 1px solid var(--border); z-index: 2; }
 }
+.pos-ver-al { font-size: 12px; padding: 7px 12px; margin-left: 6px; }
 .pos-btn-borrar.confirmar { background: var(--red) !important; color: #fff !important; border-color: var(--red) !important; }
 /* ─── Dashboard · Admisiones ─── */
 .adm { margin-bottom: 22px; }
@@ -2260,7 +2264,7 @@ tbody tr:hover td { background: var(--off); }
     </div>
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeModal('modal-alumno')">Cancelar</button>
-      <button class="btn btn-navy" onclick="addAlumno()">Agregar alumno</button>
+      <button class="btn btn-navy" id="m-btn-add" onclick="addAlumno()">Agregar alumno</button>
     </div>
   </div>
 </div>
@@ -4244,9 +4248,15 @@ function posPuedeCrearCuenta() { return esAdmin() && tienePermiso('equipo'); }
 function posCuentaHTML(p, editar) {
   const uid = posSeg(p).cuenta;
   const al = uid && state.alumnos.find(a => a.username === uid);
-  if (al) return '<span class="pos-cuenta-ok">✓ Ya tiene cuenta en el portal · ' + escP(al.email || al.name || '') + '</span>';
+  if (al) return '<span class="pos-cuenta-ok">✓ Ya tiene cuenta en el portal · ' + escP(al.email || al.name || '') + '</span>' +
+    ' <button type="button" class="btn btn-ghost pos-ver-al" onclick="verAlumnoDesdePos(\'' + escP(uid) + '\')">Ver en Alumnos →</button>';
   if (!editar || !posPuedeCrearCuenta()) return '';
   return '<button type="button" class="btn btn-navy" onclick="crearCuentaDesdePos(\'' + escP(p._id) + '\')">👤 Crear cuenta de alumno</button>';
+}
+function verAlumnoDesdePos(uid) {
+  closeModal('modal-postulacion');
+  navigate('alumnos');
+  setTimeout(() => abrirFicha(uid), 150);
 }
 function posNombreBonito(n) {
   n = textoPostulacion(n).replace(/\s+/g, ' ').trim();
@@ -6205,8 +6215,10 @@ function editAlumno(u) {
   openModal('modal-alumno');
 }
 
+let creandoAlumno = false;
 async function addAlumno() {
   if (!soloEditorAlumnos()) return;
+  if (creandoAlumno) return;   // doble toque en «Agregar alumno» no crea dos cuentas
   const editU = document.getElementById('m-edit').value;
   const name = document.getElementById('m-nombre').value.trim();
   const email = document.getElementById('m-user').value.trim().toLowerCase();
@@ -6246,6 +6258,9 @@ async function addAlumno() {
     if (state.alumnos.find(a => (a.email || '').toLowerCase() === email)) { toast('Ese correo ya está registrado'); return; }
     toast('Creando cuenta...');
     let uidCreado = null;
+    creandoAlumno = true;
+    const btnAdd = document.getElementById('m-btn-add');
+    if (btnAdd) { btnAdd.disabled = true; btnAdd.textContent = 'Creando…'; }
     try {
       uidCreado = await window.fb.crearUsuarioAuth(email, pass);
       const nuevo = Object.assign({ username: uidCreado, email: email, rol: 'alumno', creadoPor: quienSoy(), creadoT: new Date().toISOString() }, datos);
@@ -6267,8 +6282,11 @@ async function addAlumno() {
         document.getElementById('aviso-borrado').querySelector('.modal-title').textContent = 'Ese correo ya tiene una cuenta';
         openModal('aviso-borrado');
       } else {
-        toast(c.includes('invalid-email') ? 'Correo inválido' : 'No se pudo crear la cuenta — no quedó nada a medias, intenta de nuevo');
+        toast(c.includes('invalid-email') ? 'Correo inválido' : c.includes('weak-password') ? 'La contraseña es muy débil' : 'No se pudo crear la cuenta — no quedó nada a medias, intenta de nuevo');
       }
+    } finally {
+      creandoAlumno = false;
+      if (btnAdd) { btnAdd.disabled = false; btnAdd.textContent = 'Agregar alumno'; }
     }
   }
 }
@@ -8275,7 +8293,9 @@ function openModal(id) {
     if (inp) inp.type = 'password';
     if (btn) pintarOjo(btn, false);
   });
-  document.getElementById(id).classList.add('open');
+  const m = document.getElementById(id);
+  m.dataset.sucio = '';
+  m.classList.add('open');
 }
 function closeModal(id) {
   const el = document.getElementById(id);
@@ -8283,8 +8303,24 @@ function closeModal(id) {
   // Algunos avisos se abrieron con estilo en linea; sin esto no se cierran.
   el.style.display = '';
 }
+// Tocar fuera del recuadro cierra el modal, pero solo si:
+//  · el toque empezó y terminó fuera (al seleccionar texto y soltar fuera no se cierra)
+//  · no hay nada escrito sin guardar. En el teléfono es normal tocar fuera para
+//    bajar el teclado, y eso no debe borrar lo que se estaba llenando.
 document.querySelectorAll('.modal-bg').forEach(bg => {
-  bg.addEventListener('click', e => { if (e.target === bg) closeModal(bg.id); });
+  let abajoFuera = false;
+  bg.addEventListener('pointerdown', e => { abajoFuera = e.target === bg; });
+  bg.addEventListener('input', () => { bg.dataset.sucio = '1'; });
+  bg.addEventListener('change', () => { bg.dataset.sucio = '1'; });
+  bg.addEventListener('click', e => {
+    if (e.target !== bg || !abajoFuera) return;
+    abajoFuera = false;
+    if (bg.dataset.sucio === '1') {
+      if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+      return;
+    }
+    closeModal(bg.id);
+  });
 });
 function formatDate(d) {
   if (!d) return '—';
