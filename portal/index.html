@@ -4237,8 +4237,8 @@ function abrirPostulacion(id) {
   openModal('modal-postulacion');
 }
 // ── Crear la cuenta del alumno a partir de la postulación ──
-// Abre el formulario de «Agregar alumno» ya lleno con lo que sabemos del
-// postulante. El admin revisa, pone la contraseña y la beca, y guarda.
+// Abre «Agregar alumno» con los datos de la postulación (nombre, modalidad,
+// beca conversada y WhatsApp). Los datos del Google Forms no se copian.
 let posCuentaPara = '';
 function posPuedeCrearCuenta() { return esAdmin() && tienePermiso('equipo'); }
 function posCuentaHTML(p, editar) {
@@ -4263,26 +4263,20 @@ function posTelLocal(w) {
 function crearCuentaDesdePos(id) {
   const p = postulacionesWeb.find(x => x._id === id);
   if (!p || !posPuedeCrearCuenta()) return;
-  const f = (posSeg(p).form && typeof posSeg(p).form === 'object') ? posSeg(p).form : {};
   const val = (k, v) => { const el = document.getElementById(k); if (el && v) el.value = String(v).trim(); };
   closeModal('modal-postulacion');
   abrirNuevoAlumno();
   posCuentaPara = id;
   document.getElementById('modal-alumno-title').textContent = 'Crear cuenta · ' + (posNombreBonito(p.nombre) || 'postulante');
   val('m-nombre', posNombreBonito(p.nombre));
-  const correo = textoPostulacion(f.correo).toLowerCase();
-  if (/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(correo)) { val('m-user', correo); val('m-correo', correo); }
   document.getElementById('m-sede').value = p.modalidad === 'En línea' ? 'NAC' : 'UIO';
   const beca = posSeg(p).beca;
   if (beca !== null && beca !== undefined && beca !== '') { document.getElementById('m-beca').value = String(beca); }
   // El WhatsApp es del alumno o del representante, según quién llenó
   if (p.quien === 'Representante') val('m-rep-tel', posTelLocal(p.whatsapp)); else val('m-tel', posTelLocal(p.whatsapp));
-  val('m-colegio', f.colegio);
-  val('m-rep-nombre', f.repNombre); val('m-rep-tel', f.repTel); val('m-rep-correo', f.repCorreo);
   previewBeca();
-  const hayExtras = ['m-tel', 'm-colegio', 'm-rep-nombre', 'm-rep-tel', 'm-rep-correo'].some(k => document.getElementById(k).value);
-  toggleAvanzado(hayExtras);
-  setTimeout(() => document.getElementById(document.getElementById('m-user').value ? 'm-pass' : 'm-user').focus(), 60);
+  toggleAvanzado(false);
+  setTimeout(() => document.getElementById('m-user').focus(), 60);
 }
 
 async function guardarSeguimiento() {
