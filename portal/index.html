@@ -1118,6 +1118,9 @@ tbody tr:hover td { background: var(--off); }
   #modal-alumno .modal-actions { position: sticky; bottom: calc(-14px - env(safe-area-inset-bottom)); background: var(--white); margin: 18px 0 0; padding: 14px 0 6px; border-top: 1px solid var(--border); z-index: 2; }
 }
 .pos-ver-al { font-size: 12px; padding: 7px 12px; margin-left: 6px; }
+.pos-cuenta-quiza { font-size: 12.5px; color: #92400E; background: #FFFBEB; border: 1px solid #FDE68A; border-radius: 10px; padding: 9px 12px; margin-bottom: 10px; line-height: 1.5; }
+.pos-tag-cuenta { background: #F0FDF4 !important; color: #15803D !important; }
+.pos-tag-quiza { background: #FFFBEB !important; color: #92400E !important; }
 .pos-btn-borrar.confirmar { background: var(--red) !important; color: #fff !important; border-color: var(--red) !important; }
 /* ─── Dashboard · Admisiones ─── */
 .adm { margin-bottom: 22px; }
@@ -4130,7 +4133,7 @@ function filtrarPostulaciones() {
       (editar ? '<td class="pos-chk"><input type="checkbox" aria-label="Seleccionar" ' + (posSel.has(p._id) ? 'checked ' : '') + 'onchange="selPos(\'' + id + '\', this.checked)"></td>' : '') +
       '<td data-l="Llegó" style="white-space:nowrap"><strong>' + posFechaCorta(p.fecha) + '</strong><br><span style="font-size:11px;color:var(--gray)">' + (d === null ? '' : d === 0 ? 'hoy' : 'hace ' + d + ' d') + '</span></td>' +
       '<td data-l="Postulante"><button type="button" class="pos-nombre" onclick="abrirPostulacion(\'' + id + '\')">' + escP(p.nombre) + '</button><br><span style="font-size:11.5px;color:var(--gray)">' + escP(p.curso) + ' · llena: ' + escP(p.quien) + '</span>' +
-        (rec ? '<br><span style="font-size:11.5px;color:var(--navy)">🤝 Recomendado por ' + escP(rec) + '</span>' : '') +
+        (rec ? '<br><span style="font-size:11.5px;color:var(--navy)">🤝 Recomendado por ' + escP(rec) + '</span>' : '') + posChipCuenta(p) +
         (posSeg(p).form ? '<br><span class="pos-tag">Forms</span>' + (posSeg(p).form.becaSolicitada ? '<span style="font-size:11.5px;color:var(--gray)"> ' + escP(posSeg(p).form.becaSolicitada) + '</span>' : '') : '') + '</td>' +
       '<td data-l="WhatsApp" style="white-space:nowrap">' + (wa ? '<a href="' + escP(wa) + '" target="_blank" rel="noopener noreferrer">' + escP(p.whatsapp) + '</a><br>' +
           '<a class="pos-wa-btn" href="' + escP(waTxt) + '" target="_blank" rel="noopener noreferrer">💬 Escribir</a>' : escP(p.whatsapp || '—')) + '</td>' +
@@ -4245,13 +4248,60 @@ function abrirPostulacion(id) {
 // beca conversada y WhatsApp). Los datos del Google Forms no se copian.
 let posCuentaPara = '';
 function posPuedeCrearCuenta() { return esAdmin() && tienePermiso('equipo'); }
+// ¿Este postulante ya tiene cuenta? Se cruza con TODAS las cuentas de alumno,
+// no solo con las creadas desde el botón: si el alumno se creó antes a mano y
+// después postuló, también aparece.
+//  · seguro:  enlace guardado, mismo teléfono del alumno o mismo correo
+//  · posible: mismo nombre, o mismo teléfono del representante (puede ser un hermano)
+function posTelNorm(t) {
+  t = String(t || '').replace(/\D/g, '');
+  if (t.indexOf('593') === 0) t = t.slice(3);
+  if (t.charAt(0) === '0') t = t.slice(1);
+  return t.length >= 8 ? t.slice(-9) : '';
+}
+const POS_NOM_VACIAS = ['de', 'del', 'la', 'las', 'los', 'y', 'da', 'e'];
+function posNomNorm(n) {
+  return String(n || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+    .replace(/[^a-z\s]/g, ' ').split(/\s+/).filter(w => w.length > 1 && POS_NOM_VACIAS.indexOf(w) < 0);
+}
+function posNomComunes(a, b) {
+  const na = posNomNorm(a), nb = posNomNorm(b);
+  return { n: na.filter(w => nb.indexOf(w) >= 0).length, min: Math.min(na.length, nb.length) };
+}
+function posCuentaDe(p) {
+  const s = posSeg(p), als = state.alumnos || [];
+  if (s.cuenta) { const al = als.find(a => a.username === s.cuenta); if (al) return { al: al, por: 'enlace', seguro: true }; }
+  const tel = posTelNorm(p.whatsapp);
+  const mail = textoPostulacion(s.form && s.form.correo).toLowerCase().trim();
+  if (tel) { const al = als.find(a => posTelNorm(a.telefono) === tel); if (al) return { al: al, por: 'el teléfono', seguro: true }; }
+  if (mail) { const al = als.find(a => [a.email, a.correo].some(e => textoPostulacion(e).toLowerCase().trim() === mail)); if (al) return { al: al, por: 'el correo', seguro: true }; }
+  let mejor = null;
+  als.forEach(a => {
+    const c = posNomComunes(p.nombre, a.name);
+    if (c.n >= 2 && c.n >= c.min && (!mejor || c.n > mejor.n)) mejor = { al: a, n: c.n };
+  });
+  if (mejor) return { al: mejor.al, por: 'el nombre', seguro: false };
+  if (tel) {
+    const al = als.find(a => posTelNorm(a.repTel) === tel);
+    if (al) return { al: al, por: posNomComunes(p.nombre, al.name).n ? 'el teléfono del representante' : 'el teléfono del representante (¿hermano?)', seguro: false };
+  }
+  return null;
+}
 function posCuentaHTML(p, editar) {
-  const uid = posSeg(p).cuenta;
-  const al = uid && state.alumnos.find(a => a.username === uid);
-  if (al) return '<span class="pos-cuenta-ok">✓ Ya tiene cuenta en el portal · ' + escP(al.email || al.name || '') + '</span>' +
-    ' <button type="button" class="btn btn-ghost pos-ver-al" onclick="verAlumnoDesdePos(\'' + escP(uid) + '\')">Ver en Alumnos →</button>';
-  if (!editar || !posPuedeCrearCuenta()) return '';
-  return '<button type="button" class="btn btn-navy" onclick="crearCuentaDesdePos(\'' + escP(p._id) + '\')">👤 Crear cuenta de alumno</button>';
+  const m = posCuentaDe(p);
+  const ver = m ? ' <button type="button" class="btn btn-ghost pos-ver-al" onclick="verAlumnoDesdePos(\'' + escP(m.al.username) + '\')">Ver en Alumnos →</button>' : '';
+  const crear = editar && posPuedeCrearCuenta()
+    ? '<button type="button" class="btn btn-navy" onclick="crearCuentaDesdePos(\'' + escP(p._id) + '\')">👤 Crear cuenta de alumno</button>' : '';
+  if (m && m.seguro) return '<span class="pos-cuenta-ok">✓ Ya tiene cuenta · ' + escP(m.al.name || '') + (m.al.email ? ' (' + escP(m.al.email) + ')' : '') +
+    (m.por !== 'enlace' ? ' · coincide ' + escP(m.por) : '') + '</span>' + ver;
+  if (m) return '<div class="pos-cuenta-quiza">⚠ Puede que ya tenga cuenta: <b>' + escP(m.al.name || '') + '</b>' + (m.al.email ? ' (' + escP(m.al.email) + ')' : '') +
+    ' · coincide ' + escP(m.por) + '.' + ver + '</div>' + crear;
+  return crear;
+}
+function posChipCuenta(p) {
+  const m = posCuentaDe(p);
+  if (!m) return '';
+  return m.seguro ? '<br><span class="pos-tag pos-tag-cuenta">👤 Con cuenta</span>' : '<br><span class="pos-tag pos-tag-quiza">👤 ¿Ya tiene cuenta?</span>';
 }
 function verAlumnoDesdePos(uid) {
   closeModal('modal-postulacion');
