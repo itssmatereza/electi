@@ -1074,6 +1074,9 @@ tbody tr:hover td { background: var(--off); }
 .pos-wa-btn { display: inline-block; margin-top: 4px; font-size: 11.5px; font-weight: 700; color: #15803D; text-decoration: none; }
 .pos-ficha { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; padding: 14px; border-radius: 12px; background: var(--off); margin-bottom: 14px; font-size: 13.5px; font-weight: 600; color: var(--text); }
 .pos-ficha span { display: block; font-size: 11px; font-weight: 600; color: var(--gray); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 2px; }
+.pos-cuenta { margin: -4px 0 14px; }
+.pos-cuenta .btn { font-size: 13px; }
+.pos-cuenta-ok { display: inline-flex; align-items: center; gap: 8px; font-size: 12.5px; font-weight: 700; color: #15803D; background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: 10px; padding: 8px 12px; }
 .pos-wa { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; font-size: 12px; color: var(--gray); }
 .btn-wa-pos { background: #16A34A; color: #fff; text-decoration: none; }
 .pos-hist { margin: 4px 0 8px; }
@@ -2368,6 +2371,7 @@ tbody tr:hover td { background: var(--off); }
     <div class="pos-ficha" id="pos-m-datos"></div>
     <div id="pos-m-form"></div>
     <div class="pos-wa" id="pos-m-wa"></div>
+    <div class="pos-cuenta" id="pos-m-cuenta"></div>
     <div class="field"><label>Estado</label><select id="pos-m-estado"></select></div>
     <div class="pos-m-2col">
       <div class="field"><label>Entrevista</label><input type="datetime-local" id="pos-m-entrevista"></div>
@@ -4225,12 +4229,62 @@ function abrirPostulacion(id) {
     ? '<div class="pos-hist-t">Historial</div>' + hist.map(h => '<div>' + posChip(POS_IDX[h.e] !== undefined ? h.e : 'nueva') +
         '<span>' + escP(posFechaHora(h.t)) + (h.por ? ' · ' + escP(h.por) : '') + '</span></div>').join('')
     : '';
+  document.getElementById('pos-m-cuenta').innerHTML = posCuentaHTML(p, editar);
   ['pos-m-estado', 'pos-m-entrevista', 'pos-m-prox', 'pos-m-beca', 'pos-m-resp', 'pos-m-nota'].forEach(k => { document.getElementById(k).disabled = !editar; });
   document.getElementById('pos-m-guardar').style.display = editar ? '' : 'none';
   const b = document.getElementById('pos-m-borrar');
   b.style.display = editar ? '' : 'none'; b.textContent = 'Eliminar';
   openModal('modal-postulacion');
 }
+// ── Crear la cuenta del alumno a partir de la postulación ──
+// Abre el formulario de «Agregar alumno» ya lleno con lo que sabemos del
+// postulante. El admin revisa, pone la contraseña y la beca, y guarda.
+let posCuentaPara = '';
+function posPuedeCrearCuenta() { return esAdmin() && tienePermiso('equipo'); }
+function posCuentaHTML(p, editar) {
+  const uid = posSeg(p).cuenta;
+  const al = uid && state.alumnos.find(a => a.username === uid);
+  if (al) return '<span class="pos-cuenta-ok">✓ Ya tiene cuenta en el portal · ' + escP(al.email || al.name || '') + '</span>';
+  if (!editar || !posPuedeCrearCuenta()) return '';
+  return '<button type="button" class="btn btn-navy" onclick="crearCuentaDesdePos(\'' + escP(p._id) + '\')">👤 Crear cuenta de alumno</button>';
+}
+function posNombreBonito(n) {
+  n = textoPostulacion(n).replace(/\s+/g, ' ').trim();
+  // «ANA PÉREZ» o «ana pérez» → «Ana Pérez»; si ya viene bien escrito, se respeta
+  if (n && (n === n.toUpperCase() || n === n.toLowerCase())) {
+    n = n.toLowerCase().replace(/(^|[\s-])(\S)/g, (m, a, b) => a + b.toUpperCase());
+  }
+  return n.slice(0, 80);
+}
+function posTelLocal(w) {
+  w = textoPostulacion(w).replace(/[^0-9+]/g, '');
+  return w.indexOf('+593') === 0 ? '0' + w.slice(4) : w;
+}
+function crearCuentaDesdePos(id) {
+  const p = postulacionesWeb.find(x => x._id === id);
+  if (!p || !posPuedeCrearCuenta()) return;
+  const f = (posSeg(p).form && typeof posSeg(p).form === 'object') ? posSeg(p).form : {};
+  const val = (k, v) => { const el = document.getElementById(k); if (el && v) el.value = String(v).trim(); };
+  closeModal('modal-postulacion');
+  abrirNuevoAlumno();
+  posCuentaPara = id;
+  document.getElementById('modal-alumno-title').textContent = 'Crear cuenta · ' + (posNombreBonito(p.nombre) || 'postulante');
+  val('m-nombre', posNombreBonito(p.nombre));
+  const correo = textoPostulacion(f.correo).toLowerCase();
+  if (/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(correo)) { val('m-user', correo); val('m-correo', correo); }
+  document.getElementById('m-sede').value = p.modalidad === 'En línea' ? 'NAC' : 'UIO';
+  const beca = posSeg(p).beca;
+  if (beca !== null && beca !== undefined && beca !== '') { document.getElementById('m-beca').value = String(beca); }
+  // El WhatsApp es del alumno o del representante, según quién llenó
+  if (p.quien === 'Representante') val('m-rep-tel', posTelLocal(p.whatsapp)); else val('m-tel', posTelLocal(p.whatsapp));
+  val('m-colegio', f.colegio);
+  val('m-rep-nombre', f.repNombre); val('m-rep-tel', f.repTel); val('m-rep-correo', f.repCorreo);
+  previewBeca();
+  const hayExtras = ['m-tel', 'm-colegio', 'm-rep-nombre', 'm-rep-tel', 'm-rep-correo'].some(k => document.getElementById(k).value);
+  toggleAvanzado(hayExtras);
+  setTimeout(() => document.getElementById(document.getElementById('m-user').value ? 'm-pass' : 'm-user').focus(), 60);
+}
+
 async function guardarSeguimiento() {
   const id = document.getElementById('pos-m-id').value;
   let estado = document.getElementById('pos-m-estado').value;
@@ -6093,6 +6147,7 @@ function toggleAvanzado(forzar) {
 
 function abrirNuevoAlumno() {
   if (!soloEditorAlumnos()) return;
+  posCuentaPara = '';
   document.getElementById('m-edit').value = '';
   document.getElementById('modal-alumno-title').textContent = 'Agregar alumno';
   ['m-nombre','m-user','m-pass','m-colegio','m-tel','m-correo','m-rep-nombre','m-rep-tel','m-rep-correo','m-cedula','m-rep-cedula','m-acuerdo-url','m-foto'].forEach(id => document.getElementById(id).value = '');
@@ -6208,6 +6263,8 @@ async function addAlumno() {
       closeModal('modal-alumno');
       renderAlumnos();
       toast('✓ Alumno creado — ya puede iniciar sesión');
+      // Si vino de una postulación, queda enlazada para no crearla dos veces
+      if (posCuentaPara) { const pid = posCuentaPara; posCuentaPara = ''; guardarSegPos(pid, { cuenta: uidCreado }); }
     } catch (e) {
       if (uidCreado) await window.fb.cancelarUsuarioAuth();
       const c = e && e.code ? e.code : '';
