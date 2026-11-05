@@ -36,6 +36,20 @@
   Cache-Control: public, max-age=31536000, immutable
 
 # ══════════════════════════════════════════════════════════
+# App instalable del portal · el service worker y el manifiesto
+# siempre se revalidan para que cada cambio llegue a los teléfonos
+# ══════════════════════════════════════════════════════════
+/portal/sw.js
+  Cache-Control: public, max-age=0, must-revalidate
+
+/portal/manifest.webmanifest
+  Content-Type: application/manifest+json
+  Cache-Control: public, max-age=3600
+
+/portal/app-*
+  Cache-Control: public, max-age=604800
+
+# ══════════════════════════════════════════════════════════
 # Rastreo
 # ══════════════════════════════════════════════════════════
 /sitemap.xml
