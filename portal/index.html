@@ -2815,7 +2815,7 @@ function cicloArrancado(sede) {
 }
 
 // Vencimiento de una cuota: el día 5 de su mes, salvo la primera, que vence
-// el día de inicio de clases si este cae después del 5 (ej. 14 de noviembre).
+// el día de inicio de clases si este cae después del 5 (ej. 28 de noviembre).
 function vencimientoCuota(sede, m) {
   let d = new Date(m.y, m.n - 1, 5);
   if (m.idx === 0) {
@@ -4639,11 +4639,11 @@ const ADMISION = {
   generacion: '6.ª generación',
   hitos: [
     { k: 'becas',         fecha: '2026-11-05', txt: 'Cierre de becas' },
-    { k: 'postulaciones', fecha: '2026-11-10', txt: 'Cierre de postulaciones' },
-    { k: 'inicio',        fecha: '2026-11-14', txt: 'Primera sesión' },
+    { k: 'postulaciones', fecha: '2026-11-23', txt: 'Cierre de postulaciones' },
+    { k: 'inicio',        fecha: '2026-11-28', txt: 'Primera sesión' },
   ],
   // Después de esta fecha el panel deja de mostrarse solo
-  ocultarDesde: '2026-12-15',
+  ocultarDesde: '2026-12-29',
 };
 let _admCargando = false, _admCargado = false;
 
