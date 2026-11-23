@@ -18,17 +18,20 @@
 /equipo                   /docentes/         301
 /metodologia              /programa/         301
 
-# ── Sedes en pausa: mientras solo opera Quito, todo lo que
-#    apuntaba a otra ciudad cae en la modalidad en linea,
-#    que cubre todo el pais.
-/santo-domingo            /online/           302
-/sto-domingo              /online/           302
-/santodomingo/*           /online/           302
-/guayaquil/*              /online/           302
-/cuenca/*                 /online/           302
-/sedes/*                  /online/           302
-/virtual                  /online/           301
-/en-linea                 /online/           301
+# ── Sedes en pausa: solo opera Quito. La modalidad en línea
+#    ahora es ELECTI Nacional, por invitación, sin página
+#    pública: todo lo que apuntaba a otra ciudad o a /online/
+#    cae en la sede Quito.
+/santo-domingo            /quito/            302
+/sto-domingo              /quito/            302
+/santodomingo/*           /quito/            302
+/guayaquil/*              /quito/            302
+/cuenca/*                 /quito/            302
+/sedes/*                  /quito/            302
+/virtual                  /quito/            302
+/online                   /quito/            302
+/online/*                 /quito/            302
+/en-linea                 /quito/            302
 
 # ── Malla académica
 /malla-academica          /malla/            301

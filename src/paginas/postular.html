@@ -1,6 +1,6 @@
 <!--
 titulo: Postular · ELECTI 6.ª generación
-descripcion: Postula a la 6.ª generación de ELECTI (ciclo 2027). Inicio el 28 de noviembre, en Quito presencial o en línea. Toma un minuto.
+descripcion: Postula a la 6.ª generación de ELECTI (ciclo 2027). Inicio el 28 de noviembre en Quito: martes por Zoom y sábados presenciales. Toma un minuto.
 compartir: Postula a ELECTI · 6.ª generación
 whatsapp: Hola, quiero postular a ELECTI y tengo una pregunta.
 ruta: /postular/
@@ -12,7 +12,7 @@ archivo: postular/index.html
       <div class="pos-txt">
         <p class="eyebrow">6.ª generación · ciclo 2027</p>
         <h1>Postula a ELECTI.<br><span>Toma un minuto.</span></h1>
-        <p class="pos-lead">Déjanos tus datos y te escribimos por WhatsApp para agendar una entrevista corta. Ahí conversamos de la beca.</p>
+        <p class="pos-lead">Déjanos tus datos y te escribimos por WhatsApp para agendar una entrevista corta. Ahí conversamos de la beca. Las clases son los martes por Zoom y los sábados presenciales en Quito.</p>
         <ul class="pos-datos">
           <li><b>28 de noviembre</b><span>Primera sesión</span></li>
           <li><b>23 de noviembre</b><span>Cierre de postulaciones</span></li>
@@ -34,11 +34,8 @@ archivo: postular/index.html
             <option>Bachiller graduado (aún no inicio la universidad)</option>
             <option>1.er semestre de universidad</option><option>2.º semestre de universidad</option><option>3.er semestre de universidad</option>
           </select></label>
-        <fieldset class="pf"><legend>Modalidad</legend>
-          <div class="pf-op"><label><input type="radio" name="modalidad" value="Quito presencial" required><span>Quito presencial<small>Martes por Zoom y sábados en Quito</small></span></label>
-          <label><input type="radio" name="modalidad" value="En línea"><span>En línea<small>Martes y jueves por Zoom, desde todo el país</small></span></label></div></fieldset>
-        <label class="pf" id="pf-ciudad" style="display:none"><span>¿Desde qué ciudad te conectarías?</span>
-          <input name="ciudad" maxlength="60" autocomplete="address-level2" placeholder="Ej.: Guayaquil"></label>
+        <!-- Una sola modalidad pública: Quito. ELECTI Nacional (provincias) es por invitación y se carga desde el portal. -->
+        <input type="hidden" name="modalidad" value="Quito presencial">
         <label class="pf"><span>¿Alguien te recomendó ELECTI? <small>(opcional)</small></span>
           <input name="recomendado" maxlength="80" autocomplete="off" placeholder="Nombre de quien te recomendó"></label>
         <input class="pf-hp" name="hp_web" tabindex="-1" autocomplete="off" aria-hidden="true">
@@ -71,14 +68,8 @@ archivo: postular/index.html
       nombre:f.elements.nombre.value.trim(), whatsapp:f.elements.whatsapp.value.trim(),
       quien:f.elements.quien.value||'', curso:f.elements.curso.value,
       modalidad:f.elements.modalidad.value||'', recomendado:f.elements.recomendado.value.trim().slice(0,80),
-      ciudad:(f.elements.modalidad.value==='En línea' ? f.elements.ciudad.value.replace(/\s+/g,' ').trim().slice(0,60) : '')
+      ciudad:''
     };
-  }
-  // La ciudad solo se pide en la modalidad en línea: en presencial ya sabemos que es Quito
-  function syncCiudad(){
-    var online=f.elements.modalidad.value==='En línea';
-    document.getElementById('pf-ciudad').style.display=online ? '' : 'none';
-    f.elements.ciudad.required=online;
   }
   function note(text){ status.hidden=!text; status.textContent=text; }
   function save(){
@@ -96,10 +87,10 @@ archivo: postular/index.html
         localStorage.removeItem(STORAGE); return;
       }
       var d=draft.data;
-      ['nombre','whatsapp','curso','recomendado','ciudad'].forEach(function(k){
+      ['nombre','whatsapp','curso','recomendado'].forEach(function(k){
         if(typeof d[k]==='string') f.elements[k].value=d[k];
       });
-      ['quien','modalidad'].forEach(function(k){
+      ['quien'].forEach(function(k){
         Array.from(f.querySelectorAll('input[name="'+k+'"]')).forEach(function(input){ input.checked=input.value===d[k]; });
       });
       expiry=draft.expires;
@@ -208,7 +199,6 @@ archivo: postular/index.html
     btn.textContent='Enviar postulación'; err.textContent=''; note(''); save();
   });
   f.addEventListener('change',function(){
-    syncCiudad();
     if(!busy) save();
   });
   f.addEventListener('submit',function(e){
@@ -216,8 +206,7 @@ archivo: postular/index.html
     var d=values(); d.whatsapp=tel(d.whatsapp);
     if(d.nombre.length<3 || d.nombre.length>80){err.textContent='Escribe el nombre completo del estudiante (entre 3 y 80 caracteres).';f.elements.nombre.focus();return;}
     if(!d.whatsapp){err.textContent='Revisa el número de WhatsApp (ej.: 0991234567).';f.elements.whatsapp.focus();return;}
-    if(!d.quien || !d.curso || !d.modalidad){err.textContent='Completa los cinco datos para continuar.';return;}
-    if(d.modalidad==='En línea' && d.ciudad.length<2){err.textContent='Escribe la ciudad desde la que te conectarías.';f.elements.ciudad.focus();return;}
+    if(!d.quien || !d.curso || !d.modalidad){err.textContent='Completa los cuatro datos para continuar.';return;}
     // Campo trampa invisible: solo un bot lo llena. No se guarda nada ni se abre
     // la página de gracias; si fuera una persona, le queda la vía de WhatsApp.
     if(f.elements.hp_web.value){
@@ -234,7 +223,7 @@ archivo: postular/index.html
   window.addEventListener('pageshow',function(e){
     if(e.persisted && !pending && busy){lock(false);f.reset();btn.textContent='Enviar postulación';note('Tu postulación anterior ya fue recibida.');}
   });
-  restore(); syncCiudad();
+  restore();
   try{
     if(pending && sessionStorage.getItem('electi_postulacion_recibida')===pending.id){
       localStorage.removeItem(STORAGE); pending=null; f.reset(); note('Tu postulación anterior ya fue recibida.');btn.textContent='Enviar postulación';
