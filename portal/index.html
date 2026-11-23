@@ -7510,7 +7510,7 @@ function generarAcuerdo(u) {
   let bloqueCond = '', textoCond = '', calendario = '';
 
   if (nacional) {
-    textoCond = '<p><b>ELECTI Nacional no tiene costo.</b> ' + nom + ' participa becado al 100 %: no paga matrícula ' +
+    textoCond = '<p><b>ELECTI Nacional no tiene costo.</b> ' + nom + ' participa con una beca del 100 %: no paga matrícula ' +
       'ni cuotas durante el ciclo. Su compromiso con el programa no es económico sino de participación.</p>';
   } else if (becaTotal) {
     textoCond = '<p><b>' + nom + ' participa con una beca completa del 100%</b> sobre el valor de las cuotas, ' +
@@ -7576,8 +7576,8 @@ function generarAcuerdo(u) {
   const sec03 = nacional
     ? '<h2><span class="n">03</span>Compromiso de participación</h2>' +
       '<p>La plaza en ELECTI Nacional la financia Unión Estudiantil y deja de estar disponible para otra persona. ' +
-      'Por eso ' + el + ' participante se compromete a conectarse puntualmente a las sesiones de los martes con la cámara ' +
-      'encendida, participar en las actividades y responder las comunicaciones oficiales. Superar el límite de faltas o ' +
+      'Por eso ' + el + ' participante se compromete a conectarse puntualmente a las sesiones de los martes, participar ' +
+      'en las actividades y responder las comunicaciones oficiales. Superar el límite de faltas o ' +
       'dejar de responder podrá terminar su participación, sin ningún valor que reembolsar.</p>'
     : esBecado
     ? '<h2><span class="n">03</span>Permanencia de la beca y respaldo</h2>' +
