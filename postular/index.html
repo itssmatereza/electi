@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Postular · ELECTI 6.ª generación</title>
-<meta name="description" content="Postula a la 6.ª generación de ELECTI (ciclo 2027). Inicio el 28 de noviembre, en Quito presencial o en línea. Toma un minuto.">
+<meta name="description" content="Postula a la 6.ª generación de ELECTI (ciclo 2027). Inicio el 28 de noviembre en Quito: martes por Zoom y sábados presenciales. Toma un minuto.">
 <meta property="og:title" content="Postula a ELECTI · 6.ª generación">
-<meta property="og:description" content="Postula a la 6.ª generación de ELECTI (ciclo 2027). Inicio el 28 de noviembre, en Quito presencial o en línea. Toma un minuto.">
+<meta property="og:description" content="Postula a la 6.ª generación de ELECTI (ciclo 2027). Inicio el 28 de noviembre en Quito: martes por Zoom y sábados presenciales. Toma un minuto.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://electi.unionestudiantil.org/postular/">
 <meta property="og:image" content="https://electi.unionestudiantil.org/compartir.jpg">
@@ -17,7 +17,7 @@
 <meta property="og:site_name" content="ELECTI">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Postula a ELECTI · 6.ª generación">
-<meta name="twitter:description" content="Postula a la 6.ª generación de ELECTI (ciclo 2027). Inicio el 28 de noviembre, en Quito presencial o en línea. Toma un minuto.">
+<meta name="twitter:description" content="Postula a la 6.ª generación de ELECTI (ciclo 2027). Inicio el 28 de noviembre en Quito: martes por Zoom y sábados presenciales. Toma un minuto.">
 <meta name="twitter:image" content="https://electi.unionestudiantil.org/compartir.jpg">
 <link rel="canonical" href="https://electi.unionestudiantil.org/postular/">
 <link rel="icon" type="image/jpeg" href="/assets/logo-electi.jpg">
@@ -95,12 +95,6 @@ document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)
           </span>
           <span class="dd-tx"><strong>Sede Quito</strong><span>Híbrida · sábados presenciales</span></span>
         </a>
-        <a class="dd-link" href="/online/">
-          <span class="dd-ic" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.8"/><path d="M3.2 12h17.6"/><path d="M12 3.2a13.6 13.6 0 0 1 0 17.6 13.6 13.6 0 0 1 0-17.6z"/></svg>
-          </span>
-          <span class="dd-tx"><strong>En línea, nacional</strong><span>La misma malla desde cualquier ciudad</span></span>
-        </a>
         <a class="dd-link" href="/docentes/">
           <span class="dd-ic" aria-hidden="true">
             <svg viewBox="0 0 24 24"><circle cx="9.2" cy="8.4" r="3.1"/><path d="M3.4 19.6a5.8 5.8 0 0 1 11.6 0"/><path d="M16.2 6.1a3.1 3.1 0 0 1 0 5.6M17.6 14.6a5.8 5.8 0 0 1 3 5"/></svg>
@@ -172,7 +166,6 @@ document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)
     <div class="mob-sub">
       <a href="/programa/">Metodología</a>
       <a href="/quito/">Sede Quito · híbrida</a>
-      <a href="/online/">Modalidad en línea · nacional</a>
       <a href="/docentes/">Docentes</a>
       <a href="/programa/#proceso">Proceso de admisión</a>
       <a href="/padres/">Para padres</a>
@@ -203,7 +196,7 @@ document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)
       <div class="pos-txt">
         <p class="eyebrow">6.ª generación · ciclo 2027</p>
         <h1>Postula a ELECTI.<br><span>Toma un minuto.</span></h1>
-        <p class="pos-lead">Déjanos tus datos y te escribimos por WhatsApp para agendar una entrevista corta. Ahí conversamos de la beca.</p>
+        <p class="pos-lead">Déjanos tus datos y te escribimos por WhatsApp para agendar una entrevista corta. Ahí conversamos de la beca. Las clases son los martes por Zoom y los sábados presenciales en Quito.</p>
         <ul class="pos-datos">
           <li><b>28 de noviembre</b><span>Primera sesión</span></li>
           <li><b>23 de noviembre</b><span>Cierre de postulaciones</span></li>
@@ -225,11 +218,8 @@ document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)
             <option>Bachiller graduado (aún no inicio la universidad)</option>
             <option>1.er semestre de universidad</option><option>2.º semestre de universidad</option><option>3.er semestre de universidad</option>
           </select></label>
-        <fieldset class="pf"><legend>Modalidad</legend>
-          <div class="pf-op"><label><input type="radio" name="modalidad" value="Quito presencial" required><span>Quito presencial<small>Martes por Zoom y sábados en Quito</small></span></label>
-          <label><input type="radio" name="modalidad" value="En línea"><span>En línea<small>Martes y jueves por Zoom, desde todo el país</small></span></label></div></fieldset>
-        <label class="pf" id="pf-ciudad" style="display:none"><span>¿Desde qué ciudad te conectarías?</span>
-          <input name="ciudad" maxlength="60" autocomplete="address-level2" placeholder="Ej.: Guayaquil"></label>
+        <!-- Una sola modalidad pública: Quito. ELECTI Nacional (provincias) es por invitación y se carga desde el portal. -->
+        <input type="hidden" name="modalidad" value="Quito presencial">
         <label class="pf"><span>¿Alguien te recomendó ELECTI? <small>(opcional)</small></span>
           <input name="recomendado" maxlength="80" autocomplete="off" placeholder="Nombre de quien te recomendó"></label>
         <input class="pf-hp" name="hp_web" tabindex="-1" autocomplete="off" aria-hidden="true">
@@ -262,14 +252,8 @@ document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)
       nombre:f.elements.nombre.value.trim(), whatsapp:f.elements.whatsapp.value.trim(),
       quien:f.elements.quien.value||'', curso:f.elements.curso.value,
       modalidad:f.elements.modalidad.value||'', recomendado:f.elements.recomendado.value.trim().slice(0,80),
-      ciudad:(f.elements.modalidad.value==='En línea' ? f.elements.ciudad.value.replace(/\s+/g,' ').trim().slice(0,60) : '')
+      ciudad:''
     };
-  }
-  // La ciudad solo se pide en la modalidad en línea: en presencial ya sabemos que es Quito
-  function syncCiudad(){
-    var online=f.elements.modalidad.value==='En línea';
-    document.getElementById('pf-ciudad').style.display=online ? '' : 'none';
-    f.elements.ciudad.required=online;
   }
   function note(text){ status.hidden=!text; status.textContent=text; }
   function save(){
@@ -287,10 +271,10 @@ document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)
         localStorage.removeItem(STORAGE); return;
       }
       var d=draft.data;
-      ['nombre','whatsapp','curso','recomendado','ciudad'].forEach(function(k){
+      ['nombre','whatsapp','curso','recomendado'].forEach(function(k){
         if(typeof d[k]==='string') f.elements[k].value=d[k];
       });
-      ['quien','modalidad'].forEach(function(k){
+      ['quien'].forEach(function(k){
         Array.from(f.querySelectorAll('input[name="'+k+'"]')).forEach(function(input){ input.checked=input.value===d[k]; });
       });
       expiry=draft.expires;
@@ -399,7 +383,6 @@ document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)
     btn.textContent='Enviar postulación'; err.textContent=''; note(''); save();
   });
   f.addEventListener('change',function(){
-    syncCiudad();
     if(!busy) save();
   });
   f.addEventListener('submit',function(e){
@@ -407,8 +390,7 @@ document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)
     var d=values(); d.whatsapp=tel(d.whatsapp);
     if(d.nombre.length<3 || d.nombre.length>80){err.textContent='Escribe el nombre completo del estudiante (entre 3 y 80 caracteres).';f.elements.nombre.focus();return;}
     if(!d.whatsapp){err.textContent='Revisa el número de WhatsApp (ej.: 0991234567).';f.elements.whatsapp.focus();return;}
-    if(!d.quien || !d.curso || !d.modalidad){err.textContent='Completa los cinco datos para continuar.';return;}
-    if(d.modalidad==='En línea' && d.ciudad.length<2){err.textContent='Escribe la ciudad desde la que te conectarías.';f.elements.ciudad.focus();return;}
+    if(!d.quien || !d.curso || !d.modalidad){err.textContent='Completa los cuatro datos para continuar.';return;}
     // Campo trampa invisible: solo un bot lo llena. No se guarda nada ni se abre
     // la página de gracias; si fuera una persona, le queda la vía de WhatsApp.
     if(f.elements.hp_web.value){
@@ -425,7 +407,7 @@ document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)
   window.addEventListener('pageshow',function(e){
     if(e.persisted && !pending && busy){lock(false);f.reset();btn.textContent='Enviar postulación';note('Tu postulación anterior ya fue recibida.');}
   });
-  restore(); syncCiudad();
+  restore();
   try{
     if(pending && sessionStorage.getItem('electi_postulacion_recibida')===pending.id){
       localStorage.removeItem(STORAGE); pending=null; f.reset(); note('Tu postulación anterior ya fue recibida.');btn.textContent='Enviar postulación';
@@ -463,7 +445,6 @@ document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)
         <div class="ft-col">
           <h5>La generación</h5>
           <a href="/quito/">Sede Quito · híbrida</a>
-          <a href="/online/">Modalidad en línea · nacional</a>
           <a href="/malla/">Malla académica</a>
           <a href="/malla/#fases">Las seis fases</a>
           <a href="/#metodologia">Horarios y calendario</a>
@@ -493,7 +474,7 @@ document.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)
         </div>
       </div>
     </div>
-    <p class="ft-legal">ELECTI es un programa de formación de Fundación Unión Estudiantil, con aval académico de la Universidad Metropolitana del Ecuador (UMET). Sede presencial en Quito y modalidad 100% en línea para todo el país.</p>
+    <p class="ft-legal">ELECTI es un programa de formación de Fundación Unión Estudiantil, con aval académico de la Universidad Metropolitana del Ecuador (UMET). Sede en Quito: martes por Zoom y sábados presenciales.</p>
     <div class="ft-bot">
       <p class="ft-copy">© 2026 ELECTI — Fundación Unión Estudiantil. Quito, Ecuador.</p>
       <div class="ft-social">

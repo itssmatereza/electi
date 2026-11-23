@@ -1759,7 +1759,7 @@ tbody tr:hover td { background: var(--off); }
               style="padding:9px 14px;border:1px solid var(--border);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;color:var(--text);background:var(--white);outline:none;">
               <option value="ALL">Todas las modalidades</option>
               <option value="UIO">Solo Quito (presencial)</option>
-              <option value="NAC">Solo Nacional (en línea)</option>
+              <option value="NAC">Solo ELECTI Nacional (martes)</option>
             </select>
             <button class="btn btn-ghost" onclick="marcarTodosPresentes()">Marcar todos presentes</button>
             <button class="btn btn-sky" id="att-guardar" onclick="saveAttendance()">Guardar asistencia</button>
@@ -1810,7 +1810,7 @@ tbody tr:hover td { background: var(--off); }
           <select id="pagos-sede" onchange="renderPagos()" style="padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;font-family:'DM Sans',sans-serif;">
             <option value="ALL">Todas las modalidades</option>
             <option value="UIO">Solo Quito (presencial)</option>
-            <option value="NAC">Solo Nacional (en línea)</option>
+            <option value="NAC">Solo ELECTI Nacional (martes)</option>
           </select>
           <button class="btn btn-ghost" onclick="exportFinancieroExcel()">⬇ Excel financiero</button>
           <div class="pay-legend">
@@ -1909,7 +1909,7 @@ tbody tr:hover td { background: var(--off); }
           <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
             <div class="buscador"><input type="search" id="postulaciones-buscar" placeholder="Buscar nombre, teléfono, curso…" aria-label="Buscar postulaciones" oninput="filtrarPostulaciones()"></div>
             <select id="pos-f-modalidad" class="pos-sel" onchange="filtrarPostulaciones()" aria-label="Filtrar por modalidad">
-              <option value="">Todas las modalidades</option><option>Quito presencial</option><option>En línea</option>
+              <option value="">Todas las modalidades</option><option>Quito presencial</option><option value="En línea">En línea (ELECTI Nacional)</option>
             </select>
             <button type="button" class="btn btn-ghost" onclick="cargarPostulaciones()">↻ Actualizar</button>
             <button type="button" class="btn btn-ghost" onclick="exportarPostulaciones()">⬇ Excel</button>
@@ -2065,7 +2065,7 @@ tbody tr:hover td { background: var(--off); }
       <div class="card" style="max-width:620px;">
         <div class="card-head"><div class="card-title">Calendario del ciclo</div></div>
         <p style="font-size:13px;color:var(--gray);margin-bottom:16px;line-height:1.6;">
-          Quito (presencial) y Nacional (en línea) siguen el mismo calendario y los mismos precios.
+          Quito (presencial) y ELECTI Nacional siguen el mismo calendario. ELECTI Nacional es becado al 100 %, así que los precios solo aplican a Quito.
           Aquí defines cuándo arranca el ciclo y cuántas cuotas tiene.
           Si dejas un campo vacío, se hereda lo del ciclo activo.
         </p>
@@ -2223,9 +2223,9 @@ tbody tr:hover td { background: var(--off); }
     <div class="field"><label>Correo (con este inicia sesión)</label><input type="email" id="m-user" placeholder="alumno@correo.com"></div>
     <div class="field"><label>Contraseña inicial (mínimo 6 caracteres)</label><input type="text" id="m-pass" placeholder="Ej: electi2026"></div>
     <div class="field"><label>Modalidad</label>
-      <select id="m-sede">
-        <option value="UIO">Quito · presencial</option>
-        <option value="NAC">Nacional · en línea</option>
+      <select id="m-sede" onchange="previewBeca()">
+        <option value="UIO">Quito · presencial (ELECTI)</option>
+        <option value="NAC">ELECTI Nacional · solo martes, becado</option>
       </select>
     </div>
 
@@ -2445,7 +2445,7 @@ tbody tr:hover td { background: var(--off); }
     </div>
     <div id="rp-alumno-extra" style="display:none;">
       <div class="field"><label>Modalidad</label>
-        <select id="rp-sede"><option value="UIO">Quito · presencial</option><option value="NAC">Nacional · en línea</option></select>
+        <select id="rp-sede"><option value="UIO">Quito · presencial</option><option value="NAC">ELECTI Nacional · solo martes, becado</option></select>
       </div>
       <div class="field"><label>Beca — porcentaje de descuento</label>
         <div class="beca-input-row">
@@ -2702,14 +2702,18 @@ const CUOTAS_KEYS = ['c1','c2','c3','c4','c5','c6'];
 //
 // El programa tiene dos modalidades:
 //   UIO · Quito, presencial: martes virtual + sabado presencial en Quito.
-//   NAC · Nacional, en linea: martes + jueves, ambos por Zoom.
+//   NAC · ELECTI Nacional: solo la sesion del martes por Zoom (eje persona),
+//         becado al 100 %, sin matricula ni cuotas. No es el programa ELECTI
+//         completo: no tiene el eje de gestion de proyectos, recibe una
+//         constancia de participacion y no el certificado de egreso. Se
+//         entra solo por invitacion, desde la red de Union Estudiantil.
 // El campo en Firestore se sigue llamando 'sede' y Quito conserva el codigo
 // 'UIO', asi los perfiles, pagos, asistencias y acuerdos ya firmados no se
 // tocan. GYE, CUE y SDO son sedes cerradas: se siguen leyendo y mostrando si
 // algun registro viejo las tiene, pero ya no se pueden elegir.
 const MODALIDADES = {
   UIO: { nombre: 'Quito',    largo: 'Quito · presencial',  sesiones: ['martes', 'sabado'] },
-  NAC: { nombre: 'Nacional', largo: 'Nacional · en línea', sesiones: ['martes', 'jueves'] },
+  NAC: { nombre: 'Nacional', largo: 'ELECTI Nacional · martes en línea', sesiones: ['martes'] },
 };
 const SEDES_HISTORICAS = { GYE: 'Guayaquil', CUE: 'Cuenca', SDO: 'Santo Domingo' };
 
@@ -2717,6 +2721,14 @@ function codSede(s) { return s || 'UIO'; }
 function esNacional(s) { return s === 'NAC'; }
 // Las sedes historicas tenian el formato de Quito (martes + sabado).
 function sesionesDe(s) { return esNacional(s) ? MODALIDADES.NAC.sesiones : MODALIDADES.UIO.sesiones; }
+// ELECTI Nacional es gratuito: beca del 100 %, matricula exenta y sin plan
+// de pago. Se aplica al cargar, asi los inscritos con el formato anterior
+// (martes y jueves con cuotas) pasan al nuevo y la proxima vez que
+// coordinacion guarde queda escrito en Firestore.
+function normalizarNacional(a) {
+  if (a && esNacional(a.sede)) { a.beca = 100; a.matricula = 'exenta'; a.plan = 'mensual'; }
+  return a;
+}
 function alumnoEnSesion(al, tipo) { return sesionesDe(al.sede).indexOf(tipo) !== -1; }
 function nombreModalidad(s) {
   const c = codSede(s);
@@ -3365,7 +3377,7 @@ async function cargarDatosAlumno(uid, previa) {
     Promise.resolve(cfgPrevio),
   ]);
   state.equipo = [];
-  state.alumnos = perfil ? [Object.assign({}, perfil, { username: uid })] : [];
+  state.alumnos = perfil ? [normalizarNacional(Object.assign({}, perfil, { username: uid }))] : [];
   state.pagos = {};
   if (misPagos) { const o = Object.assign({}, misPagos); delete o._id; state.pagos[uid] = o; }
   state.asistencia = {};
@@ -3413,7 +3425,7 @@ async function cargarDatos(rol, previa) {
   state.equipo  = listaUsuarios.filter(u => u.rol === 'dueno' || u.rol === 'admin' || u.rol === 'profesor')
                           .map(u => Object.assign({}, u, { username: u._id }));
   state.alumnos = listaUsuarios.filter(u => u.rol === 'alumno')
-                          .map(u => Object.assign({}, u, { username: u._id }));
+                          .map(u => normalizarNacional(Object.assign({}, u, { username: u._id })));
   state.pagos = {};
   (pagos || []).forEach(p => { const o = Object.assign({}, p); delete o._id; state.pagos[p._id] = o; });
   state.asistencia = {};
@@ -3538,6 +3550,7 @@ function dinero(v) { return (Math.round((Number(v) || 0) * 100) / 100).toFixed(2
 // Cuota con beca aplicada, redondeada al centavo. La beca es un porcentaje
 // sobre el valor de la cuota, no un descuento en dolares redondos.
 function cuotaCent(al) {
+  if (esNacional(al.sede)) return 0;
   return Math.round(aCent(getConfig().cuotaBase) * (1 - (al.beca || 0) / 100));
 }
 function cuotaDe(al) { return deCent(cuotaCent(al)); }
@@ -3545,7 +3558,7 @@ function refBeneficio(al) { return getPagos(al).referidos || {}; }
 function refPct(al,k) { const b=refBeneficio(al),v=Number(k==='mat'?b.matricula:(b.meses||{})[k]); return Number.isFinite(v)&&v>=0&&v<=100?v:0; }
 function cuotaMesCent(al,k) { return Math.round(cuotaCent(al)*(1-refPct(al,k)/100)); }
 function cuotaMesDe(al,k) { return deCent(cuotaMesCent(al,k)); }
-function matriculaCent(al) { const base=al.matricula==='exenta'?0:aCent(getConfig().matricula); return Math.round(base*(1-refPct(al,'mat')/100)); }
+function matriculaCent(al) { const base=(al.matricula==='exenta'||esNacional(al.sede))?0:aCent(getConfig().matricula); return Math.round(base*(1-refPct(al,'mat')/100)); }
 // La beca aplica solo sobre las cuotas. La matrícula se cobra siempre,
 // salvo que se marque explícitamente como exenta para ese alumno.
 function matriculaDe(al) { return deCent(matriculaCent(al)); }
@@ -5871,14 +5884,18 @@ function renderAnuncios() {
 const BLOQUES_ALUMNO = [
   { id: 'asistencia', titulo: '🗓 Mi asistencia', contenido: '<div id="al-faltas"></div><div id="al-asistencia-tl" style="margin-top:6px;"></div>' },
   { id: 'pagos', titulo: '💳 Mi cuenta', contenido: '<div id="al-pagos"></div>' },
-  { id: 'cert', titulo: '🎓 Mi certificado', contenido: '<div id="al-cert"></div>' },
+  { id: 'cert', titulo: function(){ return esNacional(state.user && miAlumnoSede()) ? '🎓 Mi constancia' : '🎓 Mi certificado'; }, contenido: '<div id="al-cert"></div>' },
   { id: 'anuncios', titulo: '🔔 Últimos anuncios', contenido: '<div id="al-anuncios"></div>' },
 ];
+function miAlumnoSede() {
+  const yo = state.user && state.alumnos.find(function(x){ return x.username === state.user.username; });
+  return yo ? yo.sede : '';
+}
 const FASES_NOMBRE = ['Explorar','Decidir','Planificar','Conseguir','Ejecutar','Cerrar y proyectar'];
 
 function construirBloques() {
   document.getElementById('al-blocks').innerHTML = BLOQUES_ALUMNO.map(function(b){
-    return '<div class="al-status-card al-block"><div class="al-block-head"><h4>' + b.titulo + '</h4></div>' + b.contenido + '</div>';
+    return '<div class="al-status-card al-block"><div class="al-block-head"><h4>' + (typeof b.titulo === 'function' ? b.titulo() : b.titulo) + '</h4></div>' + b.contenido + '</div>';
   }).join('');
 }
 
@@ -6055,7 +6072,9 @@ function renderAlumnoHome() {
   certHTML += '<div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px;">' +
     '<span style="font-size:13.5px;font-weight:700;">Estado</span>' +
     (elegible ? '<span class="badge badge-green">Vas bien 🎓</span>' : '<span class="badge badge-yellow">Aún no elegible</span>') + '</div>';
-  if (me.beca > 0) {
+  if (esNacional(me.sede)) {
+    certHTML += '<div style="margin-top:12px;font-size:12px;color:var(--gray);line-height:1.6;">Al terminar recibes la constancia de participación de ELECTI Nacional, emitida por Unión Estudiantil.</div>';
+  } else if (me.beca > 0) {
     certHTML += '<div style="margin-top:12px;font-size:12px;color:var(--gray);line-height:1.6;">Tu beca se mantiene cumpliendo el acuerdo: asistencia, puntualidad y cuenta al día.</div>';
   }
   document.getElementById('al-cert').innerHTML = certHTML;
@@ -6163,6 +6182,16 @@ function previewBeca() {
   if (String(beca) !== inp.value && inp.value !== '') inp.value = beca;
   pintarAtajosBeca();
 
+  // ELECTI Nacional no tiene nada que cobrar: beca, plan y matricula quedan fijos.
+  const nac = document.getElementById('m-sede').value === 'NAC';
+  ['m-beca', 'm-plan', 'm-matricula'].forEach(function(id){ document.getElementById(id).disabled = nac; });
+  const quick = document.getElementById('m-beca-quick'); if (quick) quick.style.display = nac ? 'none' : '';
+  if (nac) {
+    inp.value = 100; document.getElementById('m-plan').value = 'mensual'; document.getElementById('m-matricula').value = 'exenta';
+    document.getElementById('m-beca-preview').innerHTML = '<b>ELECTI Nacional.</b> Becado al 100 %: sin matrícula ni cuotas.<br>' +
+      'Solo la sesión del martes por Zoom (eje persona). Recibe constancia de participación, no el certificado ELECTI.';
+    return;
+  }
   const cfg = getConfig();
   const plan = document.getElementById('m-plan').value;
   const matExenta = document.getElementById('m-matricula').value === 'exenta';
@@ -6295,8 +6324,8 @@ async function addAlumno() {
   const acuerdoUrl = document.getElementById('m-acuerdo-url').value.trim();
   const fotoUrl = document.getElementById('m-foto').value;
   const initials = name.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
-  const datos = { name, colegio, sede, beca, plan, matricula, telefono, correo,
-                  repNombre, repTel, repCorreo, cedula, repCedula, acuerdoUrl, initials };
+  const datos = normalizarNacional({ name, colegio, sede, beca, plan, matricula, telefono, correo,
+                  repNombre, repTel, repCorreo, cedula, repCedula, acuerdoUrl, initials });
   if (editU) {
     if (!name) { toast('El nombre es obligatorio'); return; }
     const a = state.alumnos.find(x => x.username === editU);
@@ -7466,7 +7495,7 @@ function generarAcuerdo(u) {
 
   const ficha = '<div class="ficha">' +
     filaFicha('Participante', nom, 'Documento de identidad', ced) +
-    filaFicha('Institución educativa', esc(a.colegio), nacional ? 'Modalidad' : 'Sede', nacional ? 'Nacional · en línea' : ciudad) +
+    filaFicha('Institución educativa', esc(a.colegio), nacional ? 'Modalidad' : 'Sede', nacional ? 'ELECTI Nacional · martes en línea' : ciudad) +
     (autonomo
       ? filaFicha('Responsable del compromiso', nom + ' (mayor de edad)', 'Documento del responsable', ced)
       : filaFicha('Representante legal', repNom, 'Documento del representante', repCed)) +
@@ -7480,7 +7509,10 @@ function generarAcuerdo(u) {
   // ── Condiciones económicas ──
   let bloqueCond = '', textoCond = '', calendario = '';
 
-  if (becaTotal) {
+  if (nacional) {
+    textoCond = '<p><b>ELECTI Nacional no tiene costo.</b> ' + nom + ' participa becado al 100 %: no paga matrícula ' +
+      'ni cuotas durante el ciclo. Su compromiso con el programa no es económico sino de participación.</p>';
+  } else if (becaTotal) {
     textoCond = '<p><b>' + nom + ' participa con una beca completa del 100%</b> sobre el valor de las cuotas, ' +
       'otorgada como reconocimiento a su perfil y como herramienta de acceso al programa. ' +
       '<b>No paga mensualidades durante el ciclo.</b> ' +
@@ -7500,7 +7532,7 @@ function generarAcuerdo(u) {
                : ', con el plan de <b>pago mensual</b> del ciclo completo.') + '</p>';
   }
 
-  bloqueCond = '<div class="cond"><div class="cond-fila">' +
+  if (!nacional) bloqueCond = '<div class="cond"><div class="cond-fila">' +
     '<div class="cond-c"><div class="cond-lbl">' + (esBecado ? 'Beca otorgada' : 'Modalidad') + '</div><div class="cond-val">' +
       (esBecado ? beca + '% sobre las cuotas' : 'Tarifa regular') + '</div></div>' +
     '<div class="cond-c"><div class="cond-lbl">Plan de pago</div><div class="cond-val">' +
@@ -7533,7 +7565,7 @@ function generarAcuerdo(u) {
       filas + '</tbody></table>';
   }
 
-  const textoVencimiento = esUnico
+  const textoVencimiento = nacional ? '' : esUnico
     ? '<p>El pago único se realiza <b>por adelantado, al momento de la inscripción</b>, y cubre la totalidad del ciclo. No genera cuotas mensuales ni fechas de vencimiento posteriores.</p>'
     : (r.cuota > 0
         ? '<p>Las cuotas se pagan dentro de los <b>primeros cinco días de cada mes</b>. Un retraso mayor a diez días suspende el acceso al portal hasta regularizar la situación.</p>'
@@ -7541,7 +7573,13 @@ function generarAcuerdo(u) {
           (r.mat > 0 ? ' La matrícula de $' + dinero(r.mat) + ' se paga al momento de la inscripción.' : '') + '</p>');
 
   // ── Sección 03: cambia por completo según haya beca o no ──
-  const sec03 = esBecado
+  const sec03 = nacional
+    ? '<h2><span class="n">03</span>Compromiso de participación</h2>' +
+      '<p>La plaza en ELECTI Nacional la financia Unión Estudiantil y deja de estar disponible para otra persona. ' +
+      'Por eso ' + el + ' participante se compromete a conectarse puntualmente a las sesiones de los martes con la cámara ' +
+      'encendida, participar en las actividades y responder las comunicaciones oficiales. Superar el límite de faltas o ' +
+      'dejar de responder podrá terminar su participación, sin ningún valor que reembolsar.</p>'
+    : esBecado
     ? '<h2><span class="n">03</span>Permanencia de la beca y respaldo</h2>' +
       '<p>La beca se renueva mes a mes con el cumplimiento de este acuerdo: mantenerse dentro del límite de faltas, ' +
       'sostener la puntualidad, cumplir las entregas del proyecto y conservar la cuenta al día. Ante un incumplimiento ' +
@@ -7620,7 +7658,7 @@ function generarAcuerdo(u) {
     '<div class="enc-sub">La Élite Juvenil</div></div></div>' +
     '<div class="enc-meta">' + metaDerecha + '</div></div><div class="enc-linea"></div>';
 
-  const pieIzq = 'Acuerdo de Compromiso · ' + nom + ' · ' + (becaTotal ? 'Beca completa' : esBecado ? 'Beca ' + beca + '%' : 'Tarifa regular');
+  const pieIzq = 'Acuerdo de Compromiso · ' + nom + ' · ' + (nacional ? 'ELECTI Nacional' : becaTotal ? 'Beca completa' : esBecado ? 'Beca ' + beca + '%' : 'Tarifa regular');
   const ISO = ISO_ACUERDO;
   const doc = '<!DOCTYPE html><html lang="es"><head><meta charset="utf-8">' +
     '<title>Acuerdo — ' + nom + '</title>' +
@@ -7641,10 +7679,10 @@ function generarAcuerdo(u) {
     '<div class="hoja"><div class="agua"><img src="' + ISO + '" alt=""></div><div class="contenido">' +
     encabezado('<b>' + esc(cfg.cicloNombre) + '</b><br>' + rango + '<br>' + lugar + ', ' + fecha) +
     '<div class="doc-tit">Acuerdo de Compromiso y Participación</div>' +
-    '<div class="doc-tit-sub">' + (becaTotal ? 'Beca completa'
+    '<div class="doc-tit-sub">' + (nacional ? 'ELECTI Nacional · Sin costo' : (becaTotal ? 'Beca completa'
         : esBecado ? 'Modalidad con beca ' + beca + '%' : 'Tarifa regular') + ' · ' +
       (sinCuotas ? (r.mat > 0 ? 'Solo matrícula' : 'Sin costo')
-        : esUnico ? 'Pago único' : 'Pago mensual') + '</div>' +
+        : esUnico ? 'Pago único' : 'Pago mensual')) + '</div>' +
     ficha +
     '<p>ELECTI es un programa de formación impulsado por <b>Unión Estudiantil</b>, que fortalece el liderazgo, la gestión ' +
     'de proyectos y el desarrollo integral de jóvenes. <b>Toda persona participante — con o sin beca — asume el mismo nivel ' +
@@ -7652,17 +7690,19 @@ function generarAcuerdo(u) {
 
     '<h2><span class="n">01</span>Sobre el programa</h2>' +
     '<p>Periodo ' + periodo + '. ' + (nacional
-      ? 'Modalidad en línea: martes de 18:00 a 20:00 y jueves de 18:00 a 21:30, en sesiones sincrónicas por Zoom; ' +
-        'la sesión del jueves incluye una hora y media de taller acompañado. '
+      ? 'ELECTI Nacional: martes de 18:00 a 20:00, en sesión sincrónica por Zoom junto a la generación de Quito. ' +
+        'Cubre el eje persona del programa (liderazgo, habilidades blandas y orientación vocacional); no incluye el eje ' +
+        'de gestión de proyectos. '
       : 'Modalidad híbrida: martes de 18:00 a 20:00 en sesión virtual, y sábados de 10:00 a 13:30 ' +
         'en sesión presencial en la sede ' + ciudad + '. ') +
-    'El programa culmina con la ejecución de un proyecto real y con ' +
-    'certificación oficial para quienes cumplan este acuerdo.</p>' +
+    (nacional ? 'Quienes cumplan este acuerdo reciben una constancia de participación emitida por Unión Estudiantil.</p>'
+      : 'El programa culmina con la ejecución de un proyecto real y con ' +
+    'certificación oficial para quienes cumplan este acuerdo.</p>') +
 
     '<h2><span class="n">02</span>Condiciones económicas</h2>' +
     textoCond + bloqueCond + textoVencimiento + calendario +
 
-    '</div><div class="pie"><span>' + pieIzq + '</span><span>Página 1 de 3</span></div></div>' +
+    '</div><div class="pie"><span>' + pieIzq + '</span><span>Página 1 de ' + (nacional ? 2 : 3) + '</span></div></div>' +
 
     // ── HOJA 2 ──
     '<div class="hoja"><div class="agua"><img src="' + ISO + '" alt=""></div><div class="contenido">' +
@@ -7691,9 +7731,12 @@ function generarAcuerdo(u) {
     'información falsa— podrán derivar en suspensión o desvinculación inmediata, sin extinguir las obligaciones económicas ' +
     'pendientes.</p>' +
 
+    (nacional ? '<h2><span class="n">08</span>Constancia de participación</h2>' +
+    '<p>Se entrega a quienes se mantengan dentro del límite de faltas y estén al día en las multas del fondo de convivencia. ' +
+    'No equivale al certificado de egreso de ELECTI, que exige el eje de gestión de proyectos.</p>' :
     '<h2><span class="n">08</span>Certificación</h2>' +
     '<p>Se entrega a quienes se mantengan dentro del límite de faltas, participen en la ejecución del proyecto final y ' +
-    'conserven la cuenta al día, incluidas las multas del fondo de convivencia.</p>' +
+    'conserven la cuenta al día, incluidas las multas del fondo de convivencia.</p>') +
 
     '<h2><span class="n">09</span>Autorización de uso de imagen</h2>' +
     '<p>La persona participante y su representante autorizan a ELECTI y a Unión Estudiantil el uso de fotografías y ' +
@@ -7712,10 +7755,10 @@ function generarAcuerdo(u) {
     '<div class="firma"><div class="firma-linea"></div><div class="firma-nom">' + esc(cfg.firmante) + '</div><div class="firma-rol">' + esc(cfg.firmanteRol) + ' · ELECTI</div></div>' +
     '</div>' +
 
-    '</div><div class="pie"><span>' + pieIzq + '</span><span>Página 2 de 3</span></div></div>' +
+    '</div><div class="pie"><span>' + pieIzq + '</span><span>Página 2 de ' + (nacional ? 2 : 3) + '</span></div></div>' +
 
-    // ── HOJA 3 · ANEXO ──
-    '<div class="hoja"><div class="agua"><img src="' + ISO + '" alt=""></div><div class="contenido">' +
+    // ── HOJA 3 · ANEXO ── (ELECTI Nacional no tiene pagaré: es gratuito)
+    (nacional ? '' : '<div class="hoja"><div class="agua"><img src="' + ISO + '" alt=""></div><div class="contenido">' +
     encabezado('<b>' + esc(cfg.cicloNombre) + '</b><br>Anexo — ' + (esBecado ? 'Pagaré por el valor de la beca' : 'Compromiso de pago')) +
     '<div class="anexo anexo-solo">' + anexo +
     '<div class="firmas' + (autonomo ? '' : ' dos') + '" style="margin-top:40px' +
@@ -7725,7 +7768,7 @@ function generarAcuerdo(u) {
       '<div class="firma"><div class="firma-linea"></div><div class="firma-nom">' + repNom + '</div><div class="firma-rol">Responsable solidario · fecha y firma</div></div>') +
     '</div></div>' +
 
-    '</div><div class="pie"><span>Un programa de Unión Estudiantil</span><span>Página 3 de 3</span></div></div>' +
+    '</div><div class="pie"><span>Un programa de Unión Estudiantil</span><span>Página 3 de 3</span></div></div>') +
     '</body></html>';
 
   const nombreArchivo = (a.name || 'alumno').toLowerCase()
@@ -8541,17 +8584,26 @@ function abrirBienvenida(sinPass) {
 
   // El parrafo introduce; el bloque de abajo entrega el numero. Repetir el
   // porcentaje en los dos lugares lo vuelve ruido.
-  const conBeca = beca > 0;
+  const conBeca = beca > 0 && !esNacional(a.sede);
   bvEl('bv-intro').innerHTML =
+    esNacional(a.sede) ? 'Unión Estudiantil te invitó a ELECTI Nacional. Tu cupo queda reservado a tu nombre: las sesiones de los martes por Zoom, becado al 100 %.' :
     (conBeca
       ? 'El comité revisó tu entrevista y decidió otorgarte una beca. '
       : 'El comité revisó tu entrevista y confirmó tu admisión. ') +
     (esNacional(a.sede)
-      ? 'Tu cupo en la modalidad <b>Nacional, en línea</b>, queda reservado a tu nombre.'
+      ? 'Tu cupo en <b>ELECTI Nacional</b> queda reservado a tu nombre: las sesiones de los martes por Zoom, becado al 100 %.'
       : 'Tu cupo en la sede de <b>' + nombreSede(a.sede) + '</b> queda reservado a tu nombre.');
 
   let cajaBeca = '';
-  if (beca >= 100) {
+  if (esNacional(a.sede)) {
+    cajaBeca =
+      '<div class="bv-beca-caja">' +
+        '<div class="bv-beca-lbl">ELECTI Nacional</div>' +
+        '<div class="bv-beca-num">Becado al 100 %</div>' +
+        '<div class="bv-beca-sub">martes por Zoom · sin matrícula ni cuotas</div>' +
+      '</div>' +
+      '<div class="bv-beca-nota">Tu compromiso es conectarte y participar cada martes.</div>';
+  } else if (beca >= 100) {
     // Con beca total el porcentaje sobra: lo que importa es que no hay mensualidades.
     cajaBeca =
       '<div class="bv-beca-caja">' +
