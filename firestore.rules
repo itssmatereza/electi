@@ -66,6 +66,12 @@ service cloud.firestore {
       );
     }
 
+    // Crear y editar cuentas de alumno. Es su propio permiso para que revocar
+    // «Gestión de equipo» (cuentas del personal) no impida gestionar alumnos.
+    function gestionaAlumnos() {
+      return permiso('alumnos') || permiso('equipo');
+    }
+
     function conservaPermisos() {
       return request.resource.data.get('permisos', {}) == resource.data.get('permisos', {});
     }
@@ -173,11 +179,18 @@ service cloud.firestore {
       allow list: if esEquipo();
 
       // Dueño crea admin/profesor/alumno. Admin crea profesor/alumno.
-      allow create: if permiso('equipo')
-        && request.resource.data.keys().hasAll(['rol'])
-        && rolValido(request.resource.data.rol)
-        && nivel(request.resource.data.rol) < miNivel()
-        && (esDueno() || !request.resource.data.keys().hasAny(['permisos']));
+      allow create: if (
+          permiso('equipo')
+          && request.resource.data.keys().hasAll(['rol'])
+          && rolValido(request.resource.data.rol)
+          && nivel(request.resource.data.rol) < miNivel()
+          && (esDueno() || !request.resource.data.keys().hasAny(['permisos']))
+        ) || (
+          gestionaAlumnos()
+          && esAdmin()
+          && request.resource.data.get('rol', '') == 'alumno'
+          && !request.resource.data.keys().hasAny(['permisos'])
+        );
 
       allow update: if autenticado()
         && (
@@ -189,6 +202,17 @@ service cloud.firestore {
             && miNivel() > nivelActualUsuario(uid)
             && rolValido(request.resource.data.rol)
             && nivel(request.resource.data.rol) < miNivel()
+          )
+
+          ||
+
+          // ─── Gestión de alumnos ───
+          (
+            gestionaAlumnos()
+            && esAdmin()
+            && resource.data.get('rol', '') == 'alumno'
+            && request.resource.data.get('rol', '') == 'alumno'
+            && conservaPermisos()
           )
 
           ||
@@ -221,9 +245,10 @@ service cloud.firestore {
           marcaSuClave(uid)
         );
 
-      allow delete: if permiso('equipo')
+      allow delete: if (permiso('equipo')
         && request.auth.uid != uid
-        && miNivel() > nivelActualUsuario(uid);
+        && miNivel() > nivelActualUsuario(uid))
+        || (gestionaAlumnos() && esAdmin() && resource.data.get('rol', '') == 'alumno');
     }
 
 
