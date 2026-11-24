@@ -35,11 +35,16 @@ var EVENTO = {
 var CUPO_PERSONAS = 60;          // aforo total, contando acompañantes
 var MAX_ACOMPANANTES = 4;
 var HOJA = 'Reservas';
+var HOJA_ASISTENTES = 'Asistentes';   // una fila por persona: quien reserva y cada acompañante
+var RELACIONES = ['Padre, madre o representante', 'Hermano/a u otro familiar', 'Amigo/a',
+                  'Estudiante de la 6.ª generación', 'Consejo estudiantil', 'Otro'];
 var RESPONDER_A = 'electi@unionestudiantil.org';
 var SITIO = 'https://electi.unionestudiantil.org';
 
 var COLUMNAS = ['Fecha', 'Nombre', 'Correo', 'WhatsApp', 'Perfil', 'Colegio / institución', 'Acompañantes',
                 'Nombres de acompañantes', 'Total personas', 'Origen', 'Correo enviado'];
+var COLUMNAS_ASISTENTES = ['Fecha', 'Nombre', 'Tipo', 'Asiste como / relación', 'Colegio / institución',
+                           'Reservó', 'Correo de quien reservó', 'WhatsApp de quien reservó'];
 
 function doPost(e) {
   var lock = LockService.getScriptLock();
@@ -53,8 +58,13 @@ function doPost(e) {
       whatsapp: limpio(d.whatsapp, 20),
       perfil: limpio(d.perfil, 60),
       institucion: limpio(d.institucion, 100),
+      // Cada acompañante llega como { nombre, relacion }
       acompanantes: (Array.isArray(d.acompanantes) ? d.acompanantes : []).slice(0, MAX_ACOMPANANTES)
-        .map(function (x) { return limpio(x, 80); }).filter(function (x) { return x.length >= 2; }),
+        .map(function (x) {
+          var o = (x && typeof x === 'object') ? x : { nombre: x };
+          var rel = limpio(o.relacion, 60);
+          return { nombre: limpio(o.nombre, 80), relacion: RELACIONES.indexOf(rel) >= 0 ? rel : 'Otro' };
+        }).filter(function (x) { return x.nombre.length >= 2; }),
       origen: limpio(d.origen, 90)
     };
     if (r.nombre.length < 3) return json({ ok: false, error: 'Falta tu nombre.' });
@@ -77,10 +87,18 @@ function doPost(e) {
     var personas = 1 + r.acompanantes.length;
     if (ocupados + personas > CUPO_PERSONAS) return json({ ok: false, lleno: true, quedan: Math.max(0, CUPO_PERSONAS - ocupados) });
 
-    hoja.appendRow([new Date(), r.nombre, r.correo, r.whatsapp, r.perfil, r.institucion, r.acompanantes.length,
-                    r.acompanantes.join(', '), personas, r.origen, '']);
+    var ahora = new Date();
+    var nombresAcomp = r.acompanantes.map(function (a) { return a.nombre + ' (' + a.relacion + ')'; });
+    hoja.appendRow([ahora, r.nombre, r.correo, r.whatsapp, r.perfil, r.institucion, r.acompanantes.length,
+                    nombresAcomp.join(', '), personas, r.origen, '']);
+    // Hoja «Asistentes»: una fila por persona, para filtrar por padres, amigos, estudiantes…
+    var asist = hojaAsistentes();
+    asist.appendRow([ahora, r.nombre, 'Reservó', r.perfil, r.institucion, r.nombre, r.correo, r.whatsapp]);
+    r.acompanantes.forEach(function (a) {
+      asist.appendRow([ahora, a.nombre, 'Acompañante', a.relacion, '', r.nombre, r.correo, r.whatsapp]);
+    });
     var fila = hoja.getLastRow();
-    var enviado = enviarCorreo(r);
+    var enviado = enviarCorreo({ nombre: r.nombre, correo: r.correo, acompanantes: nombresAcomp });
     hoja.getRange(fila, 11).setValue(enviado ? 'Sí' : 'Error');
     return json({ ok: true });
   } catch (err) {
@@ -104,6 +122,17 @@ function hojaReservas() {
   if (hoja.getLastRow() === 0) {
     hoja.appendRow(COLUMNAS);
     hoja.getRange(1, 1, 1, COLUMNAS.length).setFontWeight('bold').setBackground('#0D2A6E').setFontColor('#FFFFFF');
+    hoja.setFrozenRows(1);
+  }
+  return hoja;
+}
+
+function hojaAsistentes() {
+  var libro = SpreadsheetApp.getActiveSpreadsheet();
+  var hoja = libro.getSheetByName(HOJA_ASISTENTES) || libro.insertSheet(HOJA_ASISTENTES);
+  if (hoja.getLastRow() === 0) {
+    hoja.appendRow(COLUMNAS_ASISTENTES);
+    hoja.getRange(1, 1, 1, COLUMNAS_ASISTENTES.length).setFontWeight('bold').setBackground('#0D2A6E').setFontColor('#FFFFFF');
     hoja.setFrozenRows(1);
   }
   return hoja;
@@ -143,7 +172,7 @@ function enviarCorreo(r) {
     '</td></tr>' +
     '<tr><td style="padding:18px 38px 6px">' +
       '<p style="margin:0 0 14px;font-size:18px;color:#0E1C4E">Hola, ' + esc(nombre) + ':</p>' +
-      '<p style="margin:0 0 14px;font-size:17px;line-height:1.6;color:#4A4236">Bienvenido a la inauguración de la nueva generación de ELECTI. Su reserva quedó registrada y le esperamos con mucho gusto.</p>' +
+      '<p style="margin:0 0 14px;font-size:17px;line-height:1.6;color:#4A4236">Le damos la bienvenida a la inauguración de la nueva generación de ELECTI. Su reserva quedó registrada y le esperamos con mucho gusto.</p>' +
       '<p style="margin:0 0 22px;font-size:17px;line-height:1.6;color:#4A4236">ELECTI es la escuela de liderazgo y gestión de proyectos de Unión Estudiantil: un espacio donde, durante 24 semanas, jóvenes de colegio y de los primeros semestres de universidad trabajan su desarrollo personal y, en equipo, planifican, financian y ejecutan un proyecto real. Este sábado empieza la sexta generación, y nos alegra que nos acompañe en ese primer paso.</p>' +
       '<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;margin-bottom:26px">' +
         fila('FECHA', EVENTO.fecha) + fila('HORA', EVENTO.hora) + fila('LUGAR', EVENTO.lugar) + fila('DRESS CODE', EVENTO.vestimenta) + acomp +
@@ -175,5 +204,5 @@ function enviarCorreo(r) {
 
 // Ejecuta esta función desde el editor (botón ▶) para recibir un correo de prueba en tu propia cuenta.
 function probarCorreo() {
-  enviarCorreo({ nombre: 'Mateo Reza', correo: Session.getActiveUser().getEmail(), acompanantes: ['Ana Reza'] });
+  enviarCorreo({ nombre: 'Mateo Reza', correo: Session.getActiveUser().getEmail(), acompanantes: ['Ana Reza (Hermano/a u otro familiar)'] });
 }

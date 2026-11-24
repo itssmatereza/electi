@@ -97,7 +97,10 @@ html,body{background:#06122F}
 #inv .ac-btn:disabled{opacity:.3;cursor:default}
 #inv .ac-n{font-family:Cor;font-weight:600;font-size:26px;min-width:20px;text-align:center}
 #inv .ac-help{font-family:Cor;font-style:italic;font-size:19px;color:var(--tx)}
-#inv .ac-nombres{display:grid;gap:4px;margin-top:6px}
+#inv .ac-nombres{display:grid;gap:14px;margin-top:10px}
+#inv .ac-item{display:grid;grid-template-columns:1fr;gap:0;padding-left:12px;border-left:2px solid rgba(164,122,53,.35)}
+#inv .ac-item select{font-size:18px}
+#inv .ac-item select:invalid{color:rgba(14,28,78,.4);font-style:italic;font-weight:500}
 #inv .pf-hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
 #inv .err{font-family:Cor;font-weight:600;font-size:18px;color:#A3262A;min-height:0;margin:6px 0 0;text-align:left}
 #inv .err a{color:var(--nv)}
@@ -223,16 +226,23 @@ html,body{background:#06122F}
   var nEl = document.getElementById('ac-n'), help = document.getElementById('ac-help'), box = document.getElementById('ac-nombres');
   var menos = document.getElementById('ac-menos'), mas = document.getElementById('ac-mas');
   var n = 0;
+  // Relación de cada acompañante con quien reserva: queda en su propia fila en la hoja «Asistentes»
+  var RELACIONES = ['Padre, madre o representante', 'Hermano/a u otro familiar', 'Amigo/a',
+                    'Estudiante de la 6.ª generación', 'Consejo estudiantil', 'Otro'];
 
   function pintar(){
     nEl.textContent = n;
     help.textContent = n === 0 ? 'Solo yo' : (n === 1 ? '1 acompañante' : n + ' acompañantes');
     menos.disabled = n === 0; mas.disabled = n >= MAX_ACOMP;
     while (box.children.length < n) {
-      var i = box.children.length + 1, inp = document.createElement('input');
+      var i = box.children.length + 1, item = document.createElement('div'), inp = document.createElement('input'), sel = document.createElement('select');
+      item.className = 'ac-item';
       inp.name = 'acomp'; inp.maxLength = 80; inp.required = true; inp.autocomplete = 'off';
       inp.placeholder = 'Nombre del acompañante ' + i; inp.setAttribute('aria-label', 'Nombre del acompañante ' + i);
-      box.appendChild(inp);
+      sel.name = 'acomp-rel'; sel.required = true; sel.setAttribute('aria-label', '¿Quién es el acompañante ' + i + '?');
+      sel.add(new Option('¿Quién es para ti?', '', true, true)); sel.options[0].disabled = true;
+      RELACIONES.forEach(function(r){ sel.add(new Option(r)); });
+      item.append(inp, sel); box.appendChild(item);
     }
     while (box.children.length > n) box.removeChild(box.lastChild);
   }
@@ -285,7 +295,7 @@ html,body{background:#06122F}
   }
   function fallbackWA(d){
     var t = 'Hola, quiero reservar mi lugar para la inauguración de ELECTI.\nNombre: ' + d.nombre + '\nCorreo: ' + d.correo +
-            '\nWhatsApp: ' + d.whatsapp + '\nPerfil: ' + d.perfil + (d.institucion ? '\nInstitución: ' + d.institucion : '') + (d.acompanantes.length ? '\nAcompañantes: ' + d.acompanantes.join(', ') : '');
+            '\nWhatsApp: ' + d.whatsapp + '\nPerfil: ' + d.perfil + (d.institucion ? '\nInstitución: ' + d.institucion : '') + (d.acompanantes.length ? '\nAcompañantes: ' + d.acompanantes.map(function(a){ return a.nombre + ' (' + a.relacion + ')'; }).join(', ') : '');
     return 'https://wa.me/593962893857?text=' + encodeURIComponent(t);
   }
   function fallar(msg, d){
@@ -315,15 +325,19 @@ html,body{background:#06122F}
       whatsapp: tel(f.elements.whatsapp.value),
       perfil: f.elements.perfil.value,
       institucion: f.elements.institucion.value.replace(/\s+/g, ' ').trim().slice(0, 100),
-      acompanantes: Array.from(box.querySelectorAll('input')).map(function(i){ return i.value.replace(/\s+/g, ' ').trim().slice(0, 80); })
+      acompanantes: Array.from(box.querySelectorAll('.ac-item')).map(function(it){
+        return { nombre: it.querySelector('input').value.replace(/\s+/g, ' ').trim().slice(0, 80), relacion: it.querySelector('select').value };
+      })
     };
     if (d.nombre.length < 3) { err.textContent = 'Escribe tu nombre y apellido.'; f.elements.nombre.focus(); return; }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(d.correo)) { err.textContent = 'Revisa tu correo: ahí te llega la confirmación.'; f.elements.correo.focus(); return; }
     if (!/^0\d{8,9}$/.test(d.whatsapp)) { err.textContent = 'Escribe tu WhatsApp con el formato 09XXXXXXXX.'; f.elements.whatsapp.focus(); return; }
     if (!d.perfil) { err.textContent = 'Cuéntanos cómo te relacionas con ELECTI.'; f.elements.perfil.focus(); return; }
     if (INST[d.perfil] && INST[d.perfil][2] && d.institucion.length < 3) { err.textContent = 'Escribe el nombre de tu colegio o universidad.'; f.elements.institucion.focus(); return; }
-    var vacio = d.acompanantes.findIndex(function(x){ return x.length < 2; });
-    if (vacio >= 0) { err.textContent = 'Escribe el nombre de cada acompañante.'; box.children[vacio].focus(); return; }
+    var vacio = d.acompanantes.findIndex(function(x){ return x.nombre.length < 2; });
+    if (vacio >= 0) { err.textContent = 'Escribe el nombre de cada acompañante.'; box.children[vacio].querySelector('input').focus(); return; }
+    var sinRel = d.acompanantes.findIndex(function(x){ return !x.relacion; });
+    if (sinRel >= 0) { err.textContent = 'Cuéntanos quién es cada acompañante.'; box.children[sinRel].querySelector('select').focus(); return; }
     if (!ENDPOINT) { fallar('Las reservas en línea se activan en unos minutos.', d); return; }
 
     btn.disabled = true; var txt = btn.innerHTML; btn.textContent = 'Confirmando…';
