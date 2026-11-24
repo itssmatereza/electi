@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Invitación · Inauguración de la 6.ª generación de ELECTI</title>
-<meta name="description" content="Sábado 28 de noviembre, 11:00, Auditorio Casa Patrimonial (Quito). Padres de familia, amigos, consejos estudiantiles e interesados son bienvenidos. Reserva tu lugar.">
+<meta name="description" content="Sábado 28 de noviembre, 11:00, Auditorio Casa Patrimonial (Quito). Dress code: business casual. Padres de familia, amigos, consejos estudiantiles e interesados son bienvenidos. Reserva tu lugar.">
 <meta name="robots" content="noindex, nofollow">
 <meta property="og:title" content="Tienes una invitación · Inauguración de ELECTI">
-<meta property="og:description" content="Sábado 28 de noviembre, 11:00, Auditorio Casa Patrimonial (Quito). Padres de familia, amigos, consejos estudiantiles e interesados son bienvenidos. Reserva tu lugar.">
+<meta property="og:description" content="Sábado 28 de noviembre, 11:00, Auditorio Casa Patrimonial (Quito). Dress code: business casual. Padres de familia, amigos, consejos estudiantiles e interesados son bienvenidos. Reserva tu lugar.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://electi.unionestudiantil.org/inauguracion/">
 <meta property="og:image" content="https://electi.unionestudiantil.org/assets/inauguracion/compartir.jpg">
@@ -18,7 +18,7 @@
 <meta property="og:site_name" content="ELECTI">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Tienes una invitación · Inauguración de ELECTI">
-<meta name="twitter:description" content="Sábado 28 de noviembre, 11:00, Auditorio Casa Patrimonial (Quito). Padres de familia, amigos, consejos estudiantiles e interesados son bienvenidos. Reserva tu lugar.">
+<meta name="twitter:description" content="Sábado 28 de noviembre, 11:00, Auditorio Casa Patrimonial (Quito). Dress code: business casual. Padres de familia, amigos, consejos estudiantiles e interesados son bienvenidos. Reserva tu lugar.">
 <meta name="twitter:image" content="https://electi.unionestudiantil.org/assets/inauguracion/compartir.jpg">
 <link rel="canonical" href="https://electi.unionestudiantil.org/inauguracion/">
 <link rel="icon" type="image/jpeg" href="/assets/logo-electi.jpg">
@@ -268,6 +268,8 @@ html,body{background:#06122F}
 #inv .rsvp .sub{font-family:Cor;font-style:italic;font-size:20px;color:var(--tx);margin:4px 0 26px}
 #inv .campo{display:block;text-align:left;margin-bottom:18px}
 #inv .campo>span,#inv .campo>legend{display:block;font-family:Cin;font-weight:600;font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--gd);margin-bottom:6px;padding:0}
+#inv .campo[hidden]{display:none}
+#inv .opc{font-family:Cor;font-style:italic;font-weight:500;font-size:15px;letter-spacing:0;text-transform:none;color:#8A7F6C;margin-left:8px;padding:1px 9px;border:1px solid rgba(164,122,53,.35);border-radius:999px;vertical-align:1px}
 #inv fieldset.campo{border:0;padding:0;margin:0 0 18px}
 #inv .campo input,#inv .campo select{font-variant-numeric:lining-nums;width:100%;font-family:Cor,Georgia,serif;font-weight:600;font-size:21px;color:var(--nv);background:transparent;border:0;border-bottom:1.5px solid rgba(164,122,53,.5);border-radius:0;padding:8px 2px;outline:none;-webkit-appearance:none;appearance:none}
 #inv .campo select{background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8'><path d='M1 1l5 5 5-5' stroke='%23A47A35' stroke-width='1.6' fill='none'/></svg>") right 4px center no-repeat}
@@ -329,6 +331,7 @@ html,body{background:#06122F}
       <p class="fecha">Sábado 28 de noviembre</p>
       <p class="lugar">11:00 · Auditorio Casa Patrimonial</p>
       <p class="ciudad">Quito</p>
+      <p class="k" style="margin-top:14px">Dress code · Business casual</p>
       <p class="bienv">Padres de familia, amigos, consejos estudiantiles e interesados en el programa son bienvenidos.</p>
       <a class="bajar" href="#rsvp">Reservar mi lugar</a>
     </article>
@@ -352,6 +355,8 @@ html,body{background:#06122F}
             <option>Amigo o familiar</option>
             <option>Me interesa conocer el programa</option>
           </select></label>
+        <label class="campo" id="campo-inst" hidden><span id="inst-lbl">Colegio o universidad</span>
+          <input name="institucion" maxlength="100" autocomplete="organization" placeholder="Nombre de tu colegio o universidad"></label>
         <div class="campo"><span>¿Vienes con alguien más?</span>
           <div class="ac-row">
             <button type="button" class="ac-btn" id="ac-menos" aria-label="Quitar acompañante">−</button>
@@ -371,7 +376,7 @@ html,body{background:#06122F}
         <img class="sello-ok" src="/assets/inauguracion/sello.png" alt="" width="360" height="360" data-sin-webp>
         <h2 id="ok-tit">Tu lugar está confirmado</h2>
         <p id="ok-txt"></p>
-        <p>Te esperamos el sábado 28 de noviembre a las 11:00 en el Auditorio Casa Patrimonial.</p>
+        <p>Te esperamos el sábado 28 de noviembre a las 11:00 en el Auditorio Casa Patrimonial. Dress code: business casual.</p>
         <div class="acc">
           <a class="a1" id="ok-cal" target="_blank" rel="noopener">Agregar a mi calendario</a>
           <a class="a2" id="ok-wa" target="_blank" rel="noopener">Invitar a alguien</a>
@@ -418,6 +423,27 @@ html,body{background:#06122F}
   mas.addEventListener('click', function(){ if (n < MAX_ACOMP) { n++; pintar(); box.lastChild.focus(); } });
   pintar();
 
+  // ── Colegio o institución, según quién asiste ──
+  // [etiqueta, ejemplo, obligatorio]. A los estudiantes y consejos se les pide
+  // el colegio; a padres y demás, dónde trabajan o estudian (opcional).
+  var INST = {
+    'Estudiante de la 6.ª generación': ['Colegio o universidad', 'Nombre de tu colegio o universidad', true],
+    'Consejo estudiantil': ['Colegio o universidad', 'Nombre de tu colegio o universidad', true],
+    'Padre, madre o representante': ['Empresa o institución donde trabaja', 'Nombre de la empresa o institución', false],
+    'Amigo o familiar': ['Colegio, universidad o trabajo', 'Dónde estudias o trabajas', false],
+    'Me interesa conocer el programa': ['Colegio, universidad o trabajo', 'Dónde estudias o trabajas', false]
+  };
+  var campoInst = document.getElementById('campo-inst');
+  f.elements.perfil.addEventListener('change', function(){
+    var c = INST[f.elements.perfil.value];
+    campoInst.hidden = !c; if (!c) return;
+    var lbl = document.getElementById('inst-lbl');
+    lbl.textContent = c[0];
+    if (!c[2]) { var o = document.createElement('em'); o.className = 'opc'; o.textContent = 'opcional'; lbl.appendChild(o); }
+    f.elements.institucion.placeholder = c[1];
+    f.elements.institucion.required = c[2];
+  });
+
   // ── Sobre: se abre al tocar el sello ──
   var inv = document.getElementById('inv');
   function mostrar(sinAnim){
@@ -442,7 +468,7 @@ html,body{background:#06122F}
   }
   function fallbackWA(d){
     var t = 'Hola, quiero reservar mi lugar para la inauguración de ELECTI.\nNombre: ' + d.nombre + '\nCorreo: ' + d.correo +
-            '\nWhatsApp: ' + d.whatsapp + '\nPerfil: ' + d.perfil + (d.acompanantes.length ? '\nAcompañantes: ' + d.acompanantes.join(', ') : '');
+            '\nWhatsApp: ' + d.whatsapp + '\nPerfil: ' + d.perfil + (d.institucion ? '\nInstitución: ' + d.institucion : '') + (d.acompanantes.length ? '\nAcompañantes: ' + d.acompanantes.join(', ') : '');
     return 'https://wa.me/593962893857?text=' + encodeURIComponent(t);
   }
   function fallar(msg, d){
@@ -471,12 +497,14 @@ html,body{background:#06122F}
       correo: f.elements.correo.value.trim().toLowerCase().slice(0, 120),
       whatsapp: tel(f.elements.whatsapp.value),
       perfil: f.elements.perfil.value,
+      institucion: f.elements.institucion.value.replace(/\s+/g, ' ').trim().slice(0, 100),
       acompanantes: Array.from(box.querySelectorAll('input')).map(function(i){ return i.value.replace(/\s+/g, ' ').trim().slice(0, 80); })
     };
     if (d.nombre.length < 3) { err.textContent = 'Escribe tu nombre y apellido.'; f.elements.nombre.focus(); return; }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(d.correo)) { err.textContent = 'Revisa tu correo: ahí te llega la confirmación.'; f.elements.correo.focus(); return; }
     if (!/^0\d{8,9}$/.test(d.whatsapp)) { err.textContent = 'Escribe tu WhatsApp con el formato 09XXXXXXXX.'; f.elements.whatsapp.focus(); return; }
     if (!d.perfil) { err.textContent = 'Cuéntanos cómo te relacionas con ELECTI.'; f.elements.perfil.focus(); return; }
+    if (INST[d.perfil] && INST[d.perfil][2] && d.institucion.length < 3) { err.textContent = 'Escribe el nombre de tu colegio o universidad.'; f.elements.institucion.focus(); return; }
     var vacio = d.acompanantes.findIndex(function(x){ return x.length < 2; });
     if (vacio >= 0) { err.textContent = 'Escribe el nombre de cada acompañante.'; box.children[vacio].focus(); return; }
     if (!ENDPOINT) { fallar('Las reservas en línea se activan en unos minutos.', d); return; }
