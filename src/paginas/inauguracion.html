@@ -1,0 +1,314 @@
+<!--
+titulo: Invitación · Inauguración de la 6.ª generación de ELECTI
+descripcion: Sábado 28 de noviembre, 11:00, Auditorio Casa Patrimonial (Quito). Padres de familia, amigos, consejos estudiantiles e interesados son bienvenidos. Reserva tu lugar.
+compartir: Tienes una invitación · Inauguración de ELECTI
+whatsapp: Hola, tengo una pregunta sobre la inauguración de ELECTI.
+ruta: /inauguracion/
+archivo: inauguracion/index.html
+imagen: /assets/inauguracion/compartir.jpg
+noindex: si
+-->
+<style>
+@font-face{font-family:Pin;src:url(/assets/inauguracion/pinyon.woff2) format('woff2');font-display:swap}
+@font-face{font-family:Cor;font-weight:500;src:url(/assets/inauguracion/cor-500.woff2) format('woff2');font-display:swap}
+@font-face{font-family:Cor;font-weight:600;src:url(/assets/inauguracion/cor-600.woff2) format('woff2');font-display:swap}
+@font-face{font-family:Cor;font-weight:500;font-style:italic;src:url(/assets/inauguracion/cor-500i.woff2) format('woff2');font-display:swap}
+@font-face{font-family:Cor;font-weight:600;font-style:italic;src:url(/assets/inauguracion/cor-600i.woff2) format('woff2');font-display:swap}
+@font-face{font-family:Cin;font-weight:500;src:url(/assets/inauguracion/cin-500.woff2) format('woff2');font-display:swap}
+@font-face{font-family:Cin;font-weight:600;src:url(/assets/inauguracion/cin-600.woff2) format('woff2');font-display:swap}
+/* Página inmersiva: sin menú ni pie del sitio */
+#nav,#mobMenu,footer,.progreso{display:none!important}
+html,body{background:#06122F}
+#inv{--nv:#0E1C4E;--gd:#A47A35;--gl:#E3C27E;--cr:#F5EFE4;--tx:#4A4236;font-variant-numeric:lining-nums;color:var(--cr);
+  min-height:100vh;background:radial-gradient(ellipse 90% 60% at 50% 30%,#1B3B87 0%,#0F2763 45%,#06122F 100%) fixed;position:relative;overflow-x:hidden}
+#inv::before{content:'';position:fixed;inset:0;pointer-events:none;opacity:.2;mix-blend-mode:overlay;
+  background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='260' height='260'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 .6 0'/></filter><rect width='260' height='260' filter='url(%23n)'/></svg>")}
+#inv *{box-sizing:border-box}
+#inv img{height:auto}
+#inv .cin{font-family:Cin,serif;font-weight:600;text-transform:uppercase}
+#inv .pin{font-family:Pin,cursive;font-weight:400}
+#inv .cor{font-family:Cor,Georgia,serif}
+
+/* ── Sobre ── */
+#inv .sobre-esc{min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;text-align:center;transition:opacity .8s ease,transform .8s ease}
+#inv .sobre-pre{font-size:13px;letter-spacing:.32em;color:rgba(245,239,228,.7)}
+#inv .sobre-tit{font-size:clamp(50px,12vw,92px);line-height:1.1;color:var(--cr);margin:6px 0 calc(min(86vw,460px) / 1.45 * .6)}
+#inv .sobre{position:relative;width:min(86vw,460px);aspect-ratio:1.45;perspective:1400px}
+#inv .sobre-cuerpo{position:absolute;inset:0;border-radius:6px;background:linear-gradient(160deg,#1E3A80,#132A66 55%,#0D1F52);box-shadow:0 30px 70px rgba(0,0,0,.5),inset 0 0 0 1px rgba(227,194,126,.18);overflow:hidden}
+#inv .sobre-cuerpo::before{content:'';position:absolute;inset:0;background:linear-gradient(to top right,transparent 49.6%,rgba(0,0,0,.18) 50%,transparent 50.4%),linear-gradient(to top left,transparent 49.6%,rgba(0,0,0,.18) 50%,transparent 50.4%)}
+#inv .sobre-carta{position:absolute;left:6%;right:6%;top:8%;height:84%;background:var(--cr);border-radius:3px;transition:transform 1.1s cubic-bezier(.2,.8,.2,1) .55s;z-index:1;
+  display:flex;align-items:center;justify-content:center}
+#inv .sobre-carta span{font-family:Cin;font-weight:600;font-size:clamp(15px,4vw,20px);letter-spacing:.4em;color:var(--nv);margin-top:-30%}
+#inv .sobre-frente{position:absolute;inset:0;z-index:2;border-radius:6px;overflow:hidden;pointer-events:none}
+#inv .sobre-frente::before{content:'';position:absolute;inset:0;background:linear-gradient(170deg,#1C397C,#10265E);clip-path:polygon(0 0,50% 56%,100% 0,100% 100%,0 100%)}
+#inv .sobre-frente::after{content:'';position:absolute;inset:0;background:linear-gradient(to top right,transparent 49.7%,rgba(0,0,0,.22) 50%,transparent 50.4%) left bottom/50% 100% no-repeat,linear-gradient(to top left,transparent 49.7%,rgba(0,0,0,.22) 50%,transparent 50.4%) right bottom/50% 100% no-repeat}
+#inv .sobre-solapa{position:absolute;left:0;right:0;top:0;height:58%;z-index:3;transform-origin:top;transition:transform .7s cubic-bezier(.4,0,.2,1),z-index 0s .35s;
+  background:linear-gradient(180deg,#2A4C9E,#1A3679);clip-path:polygon(0 0,100% 0,50% 100%);filter:drop-shadow(0 6px 8px rgba(0,0,0,.38))}
+#inv .sello{position:absolute;left:50%;top:58%;width:30%;transform:translate(-50%,-50%);z-index:4;border:0;padding:0;background:none;cursor:pointer;transition:transform .35s ease,opacity .4s ease;border-radius:50%}
+#inv .sello img{width:100%;display:block;filter:drop-shadow(0 8px 14px rgba(0,0,0,.45))}
+#inv .sello:hover{transform:translate(-50%,-50%) scale(1.05)}
+#inv .sello:focus-visible{outline:2px solid var(--gl);outline-offset:6px}
+#inv .sobre-pista{margin-top:30px;font-size:13px;letter-spacing:.3em;color:var(--gl);animation:inv-lat 2.2s ease-in-out infinite}
+@keyframes inv-lat{0%,100%{opacity:.45}50%{opacity:1}}
+#inv .sobre-saltar{margin-top:16px;font-family:Cor;font-style:italic;font-size:17px;color:rgba(245,239,228,.6);background:none;border:0;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+#inv.abierto .sello{opacity:0;transform:translate(-50%,-50%) scale(.6)}
+#inv.abierto .sobre-solapa{transform:rotateX(180deg);z-index:0}
+#inv.abierto .sobre-carta{transform:translateY(-58%)}
+#inv.listo .sobre-esc{display:none}
+
+/* ── Contenido ── */
+#inv .cont{display:none;padding:70px 18px 50px;max-width:640px;margin:0 auto}
+#inv.listo .cont{display:block;animation:inv-in 1s ease both}
+@keyframes inv-in{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+#inv .papel{position:relative;background:var(--cr);color:var(--nv);box-shadow:0 30px 70px rgba(0,0,0,.45),0 6px 16px rgba(0,0,0,.25);padding:clamp(70px,14vw,96px) clamp(26px,7vw,64px) clamp(46px,8vw,60px);text-align:center}
+#inv .papel::before{content:'';position:absolute;inset:14px;border:1.5px solid rgba(164,122,53,.6);pointer-events:none}
+#inv .papel::after{content:'';position:absolute;inset:20px;border:.8px solid rgba(164,122,53,.4);pointer-events:none}
+#inv .papel>*{position:relative;z-index:1}
+#inv .papel .sello-top{position:absolute;left:50%;top:0;width:clamp(110px,26vw,150px);transform:translate(-50%,-50%);z-index:3;filter:drop-shadow(0 10px 16px rgba(0,0,0,.4))}
+#inv .marca{font-size:14px;letter-spacing:.42em;margin-bottom:6px}
+#inv .inv-h{font-size:clamp(64px,17vw,104px);line-height:1.15;margin:0}
+#inv .k{font-family:Cin;font-weight:500;text-transform:uppercase;font-size:clamp(11px,2.8vw,14px);letter-spacing:.24em;color:var(--gd)}
+#inv .gen{font-family:Cor;font-style:italic;font-weight:600;font-size:clamp(38px,9vw,50px);line-height:1.05;margin:6px 0 4px}
+#inv .orn{display:flex;align-items:center;justify-content:center;gap:14px;margin:26px 0}
+#inv .orn i{display:block;height:1px;width:80px;background:linear-gradient(90deg,rgba(164,122,53,0),var(--gd))}
+#inv .orn i:last-child{transform:scaleX(-1)}
+#inv .orn b{width:8px;height:8px;background:var(--gd);transform:rotate(45deg)}
+#inv .fecha{font-family:Cin;font-weight:600;font-size:clamp(17px,4.4vw,23px);letter-spacing:.1em;text-transform:uppercase}
+#inv .lugar{font-family:Cor;font-weight:600;font-size:clamp(22px,5.4vw,28px);margin-top:6px}
+#inv .ciudad{font-family:Cor;font-style:italic;font-size:22px;color:#5C5242}
+#inv .bienv{font-family:Cor;font-style:italic;font-weight:500;font-size:clamp(19px,4.6vw,23px);line-height:1.38;color:var(--tx);max-width:440px;margin:22px auto 0}
+#inv .bajar{display:inline-block;margin-top:30px;font-family:Cin;font-weight:600;font-size:13px;letter-spacing:.26em;text-transform:uppercase;color:var(--nv);text-decoration:none;background:linear-gradient(135deg,#F3D99B,#C9993F);padding:15px 26px}
+
+/* ── Formulario ── */
+#inv .rsvp{margin-top:56px}
+#inv .rsvp h2{font-family:Pin;font-weight:400;font-size:clamp(46px,12vw,66px);line-height:1.15;margin:0;color:var(--nv)}
+#inv .rsvp .sub{font-family:Cor;font-style:italic;font-size:20px;color:var(--tx);margin:4px 0 26px}
+#inv .campo{display:block;text-align:left;margin-bottom:18px}
+#inv .campo>span,#inv .campo>legend{display:block;font-family:Cin;font-weight:600;font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--gd);margin-bottom:6px;padding:0}
+#inv fieldset.campo{border:0;padding:0;margin:0 0 18px}
+#inv .campo input,#inv .campo select{font-variant-numeric:lining-nums;width:100%;font-family:Cor,Georgia,serif;font-weight:600;font-size:21px;color:var(--nv);background:transparent;border:0;border-bottom:1.5px solid rgba(164,122,53,.5);border-radius:0;padding:8px 2px;outline:none;-webkit-appearance:none;appearance:none}
+#inv .campo select{background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8'><path d='M1 1l5 5 5-5' stroke='%23A47A35' stroke-width='1.6' fill='none'/></svg>") right 4px center no-repeat}
+#inv .campo input::placeholder{color:rgba(14,28,78,.32);font-weight:500;font-style:italic}
+#inv .campo input:focus,#inv .campo select:focus{border-bottom-color:var(--nv)}
+#inv .ac-row{display:flex;align-items:center;gap:14px;margin-top:4px}
+#inv .ac-btn{width:40px;height:40px;border-radius:50%;border:1.5px solid var(--gd);background:transparent;color:var(--gd);font-size:20px;cursor:pointer;line-height:1;font-family:Cor}
+#inv .ac-btn:disabled{opacity:.3;cursor:default}
+#inv .ac-n{font-family:Cor;font-weight:600;font-size:26px;min-width:20px;text-align:center}
+#inv .ac-help{font-family:Cor;font-style:italic;font-size:19px;color:var(--tx)}
+#inv .ac-nombres{display:grid;gap:4px;margin-top:6px}
+#inv .pf-hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+#inv .err{font-family:Cor;font-weight:600;font-size:18px;color:#A3262A;min-height:0;margin:6px 0 0;text-align:left}
+#inv .err a{color:var(--nv)}
+#inv .enviar{width:100%;margin-top:18px;border:0;cursor:pointer;background:var(--nv);color:var(--gl);font-family:Cin;font-weight:600;font-size:14px;letter-spacing:.28em;text-transform:uppercase;padding:19px 20px;transition:background .2s}
+#inv .enviar:hover{background:#16296b}
+#inv .enviar:disabled{opacity:.6;cursor:wait}
+#inv .fino{font-family:Cor;font-size:15px;color:#7A705F;margin-top:14px;line-height:1.4}
+#inv .fino a{color:inherit}
+#inv .ok{display:none}
+#inv .ok.on{display:block;animation:inv-in .8s ease both}
+#inv .ok .sello-ok{width:96px;margin:0 auto 6px;display:block;filter:drop-shadow(0 8px 12px rgba(0,0,0,.25))}
+#inv .ok p{font-family:Cor;font-size:21px;line-height:1.45;color:var(--tx);margin:8px 0}
+#inv .ok .acc{display:flex;flex-direction:column;gap:10px;margin-top:24px}
+#inv .ok .acc a{display:block;text-decoration:none;font-family:Cin;font-weight:600;font-size:13px;letter-spacing:.24em;text-transform:uppercase;padding:17px}
+#inv .ok .a1{background:var(--nv);color:var(--gl)}
+#inv .ok .a2{border:1.5px solid var(--gd);color:var(--nv)}
+
+#inv .que{text-align:center;margin:60px auto 0;max-width:520px}
+#inv .que .pin{font-size:44px;color:var(--gl);line-height:1.2}
+#inv .que p{font-family:Cor;font-size:20px;line-height:1.55;color:rgba(245,239,228,.85);margin-top:8px}
+#inv .que a{color:var(--gl)}
+#inv .firma{margin-top:40px;text-align:center;font-family:Cin;font-weight:500;font-size:11px;letter-spacing:.3em;color:rgba(245,239,228,.5);text-transform:uppercase}
+@media (prefers-reduced-motion:reduce){#inv *{animation:none!important;transition:none!important}}
+</style>
+<div id="inv">
+  <section class="sobre-esc" id="sobre-esc">
+    <p class="sobre-pre cin">Unión Estudiantil presenta</p>
+    <p class="sobre-tit pin">Tienes una invitación</p>
+    <div class="sobre" aria-hidden="false">
+      <div class="sobre-cuerpo"></div>
+      <div class="sobre-carta"><span>ELECTI</span></div>
+      <div class="sobre-frente"></div>
+      <div class="sobre-solapa"></div>
+      <button class="sello" id="abrir" type="button" aria-label="Abrir la invitación"><picture><source type="image/webp" srcset="/assets/inauguracion/sello.webp"><img src="/assets/inauguracion/sello.png" alt="" width="360" height="360" data-sin-webp></picture></button>
+    </div>
+    <p class="sobre-pista cin">Toca el sello para abrir</p>
+  </section>
+
+  <div class="cont" id="cont">
+    <article class="papel" aria-label="Invitación">
+      <img class="sello-top" src="/assets/inauguracion/sello.png" alt="Sello de ELECTI" width="360" height="360" data-sin-webp>
+      <p class="marca cin">E L E C T I</p>
+      <h1 class="inv-h pin">Invitación</h1>
+      <p class="k">a la inauguración de la</p>
+      <p class="gen">Sexta generación</p>
+      <p class="k" style="letter-spacing:.3em">Ciclo 2027</p>
+      <div class="orn"><i></i><b></b><i></i></div>
+      <p class="fecha">Sábado 28 de noviembre</p>
+      <p class="lugar">11:00 · Auditorio Casa Patrimonial</p>
+      <p class="ciudad">Quito</p>
+      <p class="bienv">Padres de familia, amigos, consejos estudiantiles e interesados en el programa son bienvenidos.</p>
+      <a class="bajar" href="#rsvp">Reservar mi lugar</a>
+    </article>
+
+    <section class="papel rsvp" id="rsvp">
+      <form id="form-inaug" novalidate>
+        <h2>Confirma tu asistencia</h2>
+        <p class="sub">Te llega la confirmación a tu correo.</p>
+        <label class="campo"><span>Nombre y apellido</span>
+          <input name="nombre" autocomplete="name" required minlength="3" maxlength="80" placeholder="Sofía Andrade"></label>
+        <label class="campo"><span>Correo electrónico</span>
+          <input name="correo" type="email" autocomplete="email" required maxlength="120" placeholder="tucorreo@ejemplo.com"></label>
+        <label class="campo"><span>WhatsApp</span>
+          <input name="whatsapp" type="tel" inputmode="tel" autocomplete="tel" required placeholder="09XXXXXXXX"></label>
+        <label class="campo"><span>Asisto como</span>
+          <select name="perfil" required>
+            <option value="" disabled selected>Elige una opción</option>
+            <option>Estudiante de la 6.ª generación</option>
+            <option>Padre, madre o representante</option>
+            <option>Consejo estudiantil</option>
+            <option>Amigo o familiar</option>
+            <option>Me interesa conocer el programa</option>
+          </select></label>
+        <div class="campo"><span>¿Vienes con alguien más?</span>
+          <div class="ac-row">
+            <button type="button" class="ac-btn" id="ac-menos" aria-label="Quitar acompañante">−</button>
+            <span class="ac-n" id="ac-n" aria-live="polite">0</span>
+            <button type="button" class="ac-btn" id="ac-mas" aria-label="Agregar acompañante">+</button>
+            <span class="ac-help" id="ac-help">Solo yo</span>
+          </div>
+          <div class="ac-nombres" id="ac-nombres"></div>
+        </div>
+        <input class="pf-hp" name="hp_web" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <p class="err" id="pf-err" role="alert"></p>
+        <button class="enviar" type="submit" id="pf-btn">Confirmar mi lugar</button>
+        <p class="fino">Usamos tus datos solo para gestionar tu asistencia y contarte sobre ELECTI (<a href="/privacidad.html">privacidad</a>).</p>
+      </form>
+
+      <div class="ok" id="ok" tabindex="-1">
+        <img class="sello-ok" src="/assets/inauguracion/sello.png" alt="" width="360" height="360" data-sin-webp>
+        <h2 id="ok-tit">Tu lugar está confirmado</h2>
+        <p id="ok-txt"></p>
+        <p>Te esperamos el sábado 28 de noviembre a las 11:00 en el Auditorio Casa Patrimonial.</p>
+        <div class="acc">
+          <a class="a1" id="ok-cal" target="_blank" rel="noopener">Agregar a mi calendario</a>
+          <a class="a2" id="ok-wa" target="_blank" rel="noopener">Invitar a alguien</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="que">
+      <p class="pin">Qué es ELECTI</p>
+      <p>La escuela de liderazgo y gestión de proyectos de Unión Estudiantil. Durante 24 semanas, jóvenes desde 10.º de básica hasta 3.er semestre de universidad trabajan su desarrollo personal y, en equipo, planifican, financian y ejecutan un proyecto real. <a href="/programa/">Conoce el programa</a>.</p>
+    </section>
+    <p class="firma">ELECTI · Unión Estudiantil · Quito</p>
+  </div>
+</div>
+<script>
+(function(){
+  'use strict';
+  // ── Configuración del evento ──
+  // ENDPOINT: URL de la aplicación web de Google Apps Script (ver herramientas/inauguracion.gs).
+  // Guarda cada reserva en la hoja de cálculo y envía el correo de confirmación.
+  var ENDPOINT = '';
+  var MAX_ACOMP = 4;
+  var EVENTO = { titulo:'Inauguración ELECTI · 6.ª generación', lugar:'Auditorio Casa Patrimonial, Quito',
+                 inicio:'20261128T160000Z', fin:'20261128T173000Z' }; // 11:00–12:30 hora de Ecuador
+
+  var f = document.getElementById('form-inaug'), err = document.getElementById('pf-err'), btn = document.getElementById('pf-btn');
+  var nEl = document.getElementById('ac-n'), help = document.getElementById('ac-help'), box = document.getElementById('ac-nombres');
+  var menos = document.getElementById('ac-menos'), mas = document.getElementById('ac-mas');
+  var n = 0;
+
+  function pintar(){
+    nEl.textContent = n;
+    help.textContent = n === 0 ? 'Solo yo' : (n === 1 ? '1 acompañante' : n + ' acompañantes');
+    menos.disabled = n === 0; mas.disabled = n >= MAX_ACOMP;
+    while (box.children.length < n) {
+      var i = box.children.length + 1, inp = document.createElement('input');
+      inp.name = 'acomp'; inp.maxLength = 80; inp.required = true; inp.autocomplete = 'off';
+      inp.placeholder = 'Nombre del acompañante ' + i; inp.setAttribute('aria-label', 'Nombre del acompañante ' + i);
+      box.appendChild(inp);
+    }
+    while (box.children.length > n) box.removeChild(box.lastChild);
+  }
+  menos.addEventListener('click', function(){ if (n > 0) { n--; pintar(); } });
+  mas.addEventListener('click', function(){ if (n < MAX_ACOMP) { n++; pintar(); box.lastChild.focus(); } });
+  pintar();
+
+  // ── Sobre: se abre al tocar el sello ──
+  var inv = document.getElementById('inv');
+  function mostrar(sinAnim){
+    if (inv.classList.contains('listo')) return;
+    if (sinAnim) { inv.classList.add('listo'); return; }
+    inv.classList.add('abierto');
+    setTimeout(function(){ inv.classList.add('listo'); window.scrollTo(0, 0); }, 1750);
+  }
+  document.getElementById('abrir').addEventListener('click', function(){ mostrar(matchMedia('(prefers-reduced-motion: reduce)').matches); });
+  // Si llegan con #rsvp o ya la abrieron antes en esta sesión, se salta el sobre
+  try { if (location.hash === '#rsvp' || sessionStorage.getItem('inv_abierta')) mostrar(true); } catch (e) {}
+  document.getElementById('abrir').addEventListener('click', function(){ try { sessionStorage.setItem('inv_abierta', '1'); } catch (e) {} });
+
+  function tel(v){ v = String(v).replace(/[^\d+]/g, ''); if (/^\+?593/.test(v)) v = '0' + v.replace(/^\+?593/, ''); return v; }
+  function calendario(){
+    return 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=' + encodeURIComponent(EVENTO.titulo) +
+      '&dates=' + EVENTO.inicio + '/' + EVENTO.fin + '&location=' + encodeURIComponent(EVENTO.lugar) +
+      '&details=' + encodeURIComponent('Inauguración de la 6.ª generación de ELECTI. ' + location.origin + '/inauguracion/');
+  }
+  function invitarWA(){
+    return 'https://wa.me/?text=' + encodeURIComponent('Te invito a la inauguración de la nueva generación de ELECTI, este sábado 28 de noviembre a las 11:00. Reserva tu lugar aquí: ' + location.origin + '/inauguracion/');
+  }
+  function fallbackWA(d){
+    var t = 'Hola, quiero reservar mi lugar para la inauguración de ELECTI.\nNombre: ' + d.nombre + '\nCorreo: ' + d.correo +
+            '\nWhatsApp: ' + d.whatsapp + '\nPerfil: ' + d.perfil + (d.acompanantes.length ? '\nAcompañantes: ' + d.acompanantes.join(', ') : '');
+    return 'https://wa.me/593962893857?text=' + encodeURIComponent(t);
+  }
+  function fallar(msg, d){
+    err.replaceChildren(document.createTextNode(msg + ' '));
+    var a = document.createElement('a'); a.href = fallbackWA(d); a.target = '_blank'; a.rel = 'noopener';
+    a.textContent = 'Reservar por WhatsApp'; err.appendChild(a);
+  }
+  function exito(d, r){
+    f.style.display = 'none';
+    var ok = document.getElementById('ok'); ok.classList.add('on');
+    var nombre = d.nombre.split(' ')[0];
+    document.getElementById('ok-tit').textContent = (r && r.repetido) ? 'Ya tenías tu lugar, ' + nombre : 'Gracias, ' + nombre;
+    var personas = 1 + d.acompanantes.length;
+    document.getElementById('ok-txt').textContent = (r && r.repetido ? 'Te volvimos a enviar la confirmación a ' : 'Tu lugar está confirmado. Te enviamos los detalles a ') + d.correo +
+      (personas > 1 ? '. Reservamos ' + personas + ' lugares a tu nombre.' : '.') + ' Si no la ves, revisa spam o promociones.';
+    document.getElementById('ok-cal').href = calendario();
+    document.getElementById('ok-wa').href = invitarWA();
+    ok.focus(); ok.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  f.addEventListener('submit', function(e){
+    e.preventDefault(); err.textContent = '';
+    if (f.elements.hp_web.value) return;
+    var d = {
+      nombre: f.elements.nombre.value.replace(/\s+/g, ' ').trim().slice(0, 80),
+      correo: f.elements.correo.value.trim().toLowerCase().slice(0, 120),
+      whatsapp: tel(f.elements.whatsapp.value),
+      perfil: f.elements.perfil.value,
+      acompanantes: Array.from(box.querySelectorAll('input')).map(function(i){ return i.value.replace(/\s+/g, ' ').trim().slice(0, 80); })
+    };
+    if (d.nombre.length < 3) { err.textContent = 'Escribe tu nombre y apellido.'; f.elements.nombre.focus(); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(d.correo)) { err.textContent = 'Revisa tu correo: ahí te llega la confirmación.'; f.elements.correo.focus(); return; }
+    if (!/^0\d{8,9}$/.test(d.whatsapp)) { err.textContent = 'Escribe tu WhatsApp con el formato 09XXXXXXXX.'; f.elements.whatsapp.focus(); return; }
+    if (!d.perfil) { err.textContent = 'Cuéntanos cómo te relacionas con ELECTI.'; f.elements.perfil.focus(); return; }
+    var vacio = d.acompanantes.findIndex(function(x){ return x.length < 2; });
+    if (vacio >= 0) { err.textContent = 'Escribe el nombre de cada acompañante.'; box.children[vacio].focus(); return; }
+    if (!ENDPOINT) { fallar('Las reservas en línea se activan en unos minutos.', d); return; }
+
+    btn.disabled = true; var txt = btn.innerHTML; btn.textContent = 'Confirmando…';
+    fetch(ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                      body: JSON.stringify(Object.assign({ origen: (location.search || '').slice(0, 90) }, d)) })
+      .then(function(res){ return res.json(); })
+      .then(function(r){
+        if (r && r.ok) { exito(d, r); return; }
+        btn.disabled = false; btn.innerHTML = txt;
+        if (r && r.lleno) { err.textContent = 'Ya no quedan lugares para ' + (1 + d.acompanantes.length) + (d.acompanantes.length ? ' personas' : ' persona') + '. Escríbenos por WhatsApp y vemos qué podemos hacer.'; return; }
+        fallar((r && r.error) || 'No pudimos guardar tu reserva.', d);
+      })
+      .catch(function(){ btn.disabled = false; btn.innerHTML = txt; fallar('No pudimos conectar. Intenta de nuevo o', d); });
+  });
+})();
+</script>
