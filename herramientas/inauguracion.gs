@@ -27,6 +27,7 @@ var EVENTO = {
   fecha: 'Sábado 28 de noviembre de 2026',
   hora: '11:00',
   lugar: 'Auditorio Casa Patrimonial, Quito',
+  vestimenta: 'Business casual',
   // 11:00 a 12:30 hora de Ecuador (UTC-5)
   inicioUTC: '20261128T160000Z',
   finUTC: '20261128T173000Z'
@@ -144,7 +145,7 @@ function enviarCorreo(r) {
       '<p style="margin:0 0 14px;font-size:17px;line-height:1.6;color:#4A4236">Bienvenido a la inauguración de la nueva generación de ELECTI. Su reserva quedó registrada y le esperamos con mucho gusto.</p>' +
       '<p style="margin:0 0 22px;font-size:17px;line-height:1.6;color:#4A4236">ELECTI es la escuela de liderazgo y gestión de proyectos de Unión Estudiantil: un espacio donde, durante 24 semanas, jóvenes de colegio y de los primeros semestres de universidad trabajan su desarrollo personal y, en equipo, planifican, financian y ejecutan un proyecto real. Este sábado empieza la sexta generación, y nos alegra que nos acompañe en ese primer paso.</p>' +
       '<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;margin-bottom:26px">' +
-        fila('FECHA', EVENTO.fecha) + fila('HORA', EVENTO.hora) + fila('LUGAR', EVENTO.lugar) + acomp +
+        fila('FECHA', EVENTO.fecha) + fila('HORA', EVENTO.hora) + fila('LUGAR', EVENTO.lugar) + fila('DRESS CODE', EVENTO.vestimenta) + acomp +
       '</table>' +
       '<div style="text-align:center"><a href="' + cal + '" style="display:inline-block;background:#0E1C4E;color:#E3C27E;text-decoration:none;font-family:Georgia,serif;font-size:13px;letter-spacing:3px;text-transform:uppercase;padding:16px 28px">Agregar a mi calendario</a></div>' +
       '<p style="margin:26px 0 0;font-size:15px;line-height:1.6;color:#7A705F;text-align:center;font-style:italic">Le recomendamos llegar 10 minutos antes. Si necesita cambiar su reserva o tiene alguna pregunta, responda a este correo o escríbanos por WhatsApp al 096 289 3857.</p>' +
@@ -159,7 +160,7 @@ function enviarCorreo(r) {
   '</div>';
 
   var texto = 'Hola, ' + nombre + ':\n\nSu lugar para la ' + EVENTO.nombre + ' está confirmado.\n\n' +
-    'Fecha: ' + EVENTO.fecha + '\nHora: ' + EVENTO.hora + '\nLugar: ' + EVENTO.lugar + '\n' +
+    'Fecha: ' + EVENTO.fecha + '\nHora: ' + EVENTO.hora + '\nLugar: ' + EVENTO.lugar + '\nDress code: ' + EVENTO.vestimenta + '\n' +
     (r.acompanantes && r.acompanantes.length ? 'Con usted: ' + r.acompanantes.join(', ') + '\n' : '') +
     '\nAgregar al calendario: ' + cal + '\n\nNos vemos el sábado.\nEquipo ELECTI · Unión Estudiantil';
   try {
