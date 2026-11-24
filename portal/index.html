@@ -3477,7 +3477,7 @@ function esDueno() { return !!(state.user && state.user.role === 'dueno'); }
 // Permisos predeterminados por rol + excepciones explícitas creadas por dueño.
 // El acceso real a Firestore se valida en firestore.rules.
 const PERMISOS_DEFINIDOS = [
-  ['pagos','Pagos y cuotas'], ['postulaciones','Postulaciones web'],
+  ['alumnos','Crear y editar alumnos'], ['pagos','Pagos y cuotas'], ['postulaciones','Postulaciones web'],
   ['registro','Registro de cambios'], ['config','Configuración'],
   ['equipo','Gestión de equipo'], ['asistencia','Asistencia'],
   ['materiales','Materiales'], ['anuncios','Anuncios']
@@ -3517,9 +3517,13 @@ function soloAdmin() {
 // Crear, editar, suspender o eliminar alumnos escribe en 'usuarios', que las
 // reglas protegen con el permiso 'equipo'. Se avisa antes de editar para que
 // nadie llene un formulario que Firestore va a rechazar.
+// Crear y editar alumnos es su propio permiso: revocar «Gestión de equipo»
+// (cuentas del personal) ya no quita la gestión de alumnos. Quien gestiona el
+// equipo también puede gestionar alumnos, igual que en firestore.rules.
+function puedeGestionarAlumnos() { return tienePermiso('alumnos') || tienePermiso('equipo'); }
 function soloEditorAlumnos() {
   if (!soloAdmin()) return false;
-  if (tienePermiso('equipo')) return true;
+  if (puedeGestionarAlumnos()) return true;
   toast('Tu cuenta no tiene permiso para modificar alumnos');
   return false;
 }
@@ -4267,7 +4271,7 @@ function abrirPostulacion(id) {
 // Abre «Agregar alumno» con los datos de la postulación (nombre, modalidad,
 // beca conversada y WhatsApp). Los datos del Google Forms no se copian.
 let posCuentaPara = '';
-function posPuedeCrearCuenta() { return esAdmin() && tienePermiso('equipo'); }
+function posPuedeCrearCuenta() { return esAdmin() && puedeGestionarAlumnos(); }
 // ¿Este postulante ya tiene cuenta? Se cruza con TODAS las cuentas de alumno,
 // no solo con las creadas desde el botón: si el alumno se creó antes a mano y
 // después postuló, también aparece.
