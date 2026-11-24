@@ -121,38 +121,41 @@ function enviarCorreo(r) {
     encodeURIComponent('Inauguración ELECTI · 6.ª generación') + '&dates=' + EVENTO.inicioUTC + '/' + EVENTO.finUTC +
     '&location=' + encodeURIComponent(EVENTO.lugar) + '&details=' + encodeURIComponent(EVENTO.nombre);
   var acomp = r.acompanantes && r.acompanantes.length
-    ? '<tr><td style="padding:10px 0;color:#7C88A6;font-size:12px;letter-spacing:.12em;font-weight:700;vertical-align:top;width:130px">CON USTED</td>' +
-      '<td style="padding:10px 0;color:#0D2A6E;font-size:16px;font-weight:600">' + r.acompanantes.map(esc).join('<br>') + '</td></tr>'
+    ? '<tr><td style="padding:11px 0;color:#A47A35;font-size:11px;letter-spacing:3px;vertical-align:top;width:110px">CON USTED</td>' +
+      '<td style="padding:11px 0;color:#0E1C4E;font-size:17px">' + r.acompanantes.map(esc).join('<br>') + '</td></tr>'
     : '';
   var fila = function (k, v) {
-    return '<tr><td style="padding:10px 0;color:#7C88A6;font-size:12px;letter-spacing:.12em;font-weight:700;width:130px;border-bottom:1px solid #EEF1F7">' + k + '</td>' +
-           '<td style="padding:10px 0;color:#0D2A6E;font-size:16px;font-weight:700;border-bottom:1px solid #EEF1F7">' + v + '</td></tr>';
+    return '<tr><td style="padding:11px 0;color:#A47A35;font-size:11px;letter-spacing:3px;width:110px;border-bottom:1px solid #E2D4B6">' + k + '</td>' +
+           '<td style="padding:11px 0;color:#0E1C4E;font-size:17px;border-bottom:1px solid #E2D4B6">' + v + '</td></tr>';
   };
   var html =
-  '<div style="background:#F4F6FA;padding:32px 12px;font-family:Helvetica,Arial,sans-serif">' +
-  '<table role="presentation" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;margin:0 auto;background:#ffffff;border-radius:18px;overflow:hidden">' +
-    '<tr><td style="background:#0D2A6E;padding:28px 32px">' +
-      '<img src="' + SITIO + '/icon-192.png" width="40" height="40" alt="ELECTI" style="vertical-align:middle;border-radius:8px">' +
-      '<span style="color:#ffffff;font-size:22px;font-weight:800;letter-spacing:-.5px;vertical-align:middle;margin-left:10px">ELECTI</span>' +
-      '<div style="color:#EBBA55;font-size:12px;font-weight:700;letter-spacing:.2em;margin-top:22px">6.ª GENERACIÓN · CICLO 2027</div>' +
-      '<div style="color:#ffffff;font-size:30px;font-weight:800;letter-spacing:-.8px;line-height:1.15;margin-top:8px">Su lugar está confirmado</div>' +
+  '<div style="background:#0F2763;padding:40px 12px;font-family:Georgia,\'Times New Roman\',serif">' +
+  '<table role="presentation" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;margin:0 auto;background:#F5EFE4;border:1px solid #D9C49A">' +
+    '<tr><td style="padding:12px"><table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;border:1px solid #C9A86A">' +
+    '<tr><td style="padding:34px 34px 6px;text-align:center">' +
+      '<img src="' + SITIO + '/assets/inauguracion/sello.png" width="96" height="96" alt="ELECTI" style="display:block;margin:0 auto 14px">' +
+      '<div style="font-size:12px;letter-spacing:6px;color:#0E1C4E;font-weight:bold">E L E C T I</div>' +
+      '<div style="font-size:34px;font-style:italic;color:#0E1C4E;margin:14px 0 4px;line-height:1.15">Su lugar está confirmado</div>' +
+      '<div style="font-size:12px;letter-spacing:4px;color:#A47A35;text-transform:uppercase">Inauguración · Sexta generación</div>' +
+      '<div style="margin:22px auto 0;width:160px;border-top:1px solid #C9A86A"></div>' +
     '</td></tr>' +
-    '<tr><td style="padding:30px 32px 8px">' +
-      '<p style="margin:0 0 14px;font-size:17px;color:#08153A;font-weight:700">Hola, ' + esc(nombre) + ':</p>' +
-      '<p style="margin:0 0 14px;font-size:16px;line-height:1.6;color:#3D4A6B">Bienvenido a la inauguración de la nueva generación de ELECTI. Su reserva quedó registrada y le esperamos con mucho gusto.</p>' +
-      '<p style="margin:0 0 22px;font-size:16px;line-height:1.6;color:#3D4A6B">ELECTI es la escuela de liderazgo y gestión de proyectos de Unión Estudiantil: un espacio donde, durante 24 semanas, jóvenes de colegio y de los primeros semestres de universidad trabajan su desarrollo personal y, en equipo, planifican, financian y ejecutan un proyecto real. Este sábado empieza la 6.ª generación, y nos alegra que nos acompañe en ese primer paso.</p>' +
-      '<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;margin-bottom:24px">' +
+    '<tr><td style="padding:18px 38px 6px">' +
+      '<p style="margin:0 0 14px;font-size:18px;color:#0E1C4E">Hola, ' + esc(nombre) + ':</p>' +
+      '<p style="margin:0 0 14px;font-size:17px;line-height:1.6;color:#4A4236">Bienvenido a la inauguración de la nueva generación de ELECTI. Su reserva quedó registrada y le esperamos con mucho gusto.</p>' +
+      '<p style="margin:0 0 22px;font-size:17px;line-height:1.6;color:#4A4236">ELECTI es la escuela de liderazgo y gestión de proyectos de Unión Estudiantil: un espacio donde, durante 24 semanas, jóvenes de colegio y de los primeros semestres de universidad trabajan su desarrollo personal y, en equipo, planifican, financian y ejecutan un proyecto real. Este sábado empieza la sexta generación, y nos alegra que nos acompañe en ese primer paso.</p>' +
+      '<table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;margin-bottom:26px">' +
         fila('FECHA', EVENTO.fecha) + fila('HORA', EVENTO.hora) + fila('LUGAR', EVENTO.lugar) + acomp +
       '</table>' +
-      '<a href="' + cal + '" style="display:inline-block;background:#0D2A6E;color:#ffffff;text-decoration:none;font-weight:700;font-size:15px;padding:14px 24px;border-radius:999px">Agregar a mi calendario</a>' +
-      '<p style="margin:26px 0 0;font-size:14px;line-height:1.6;color:#7C88A6">Le recomendamos llegar 10 minutos antes. Si necesita cambiar su reserva o tiene alguna pregunta, responda a este correo o escríbanos por WhatsApp al 096 289 3857.</p>' +
+      '<div style="text-align:center"><a href="' + cal + '" style="display:inline-block;background:#0E1C4E;color:#E3C27E;text-decoration:none;font-family:Georgia,serif;font-size:13px;letter-spacing:3px;text-transform:uppercase;padding:16px 28px">Agregar a mi calendario</a></div>' +
+      '<p style="margin:26px 0 0;font-size:15px;line-height:1.6;color:#7A705F;text-align:center;font-style:italic">Le recomendamos llegar 10 minutos antes. Si necesita cambiar su reserva o tiene alguna pregunta, responda a este correo o escríbanos por WhatsApp al 096 289 3857.</p>' +
     '</td></tr>' +
-    '<tr><td style="padding:24px 32px 30px">' +
-      '<p style="margin:0;font-size:15px;color:#08153A;font-weight:700">Nos vemos el sábado.</p>' +
-      '<p style="margin:2px 0 0;font-size:14px;color:#7C88A6">Equipo ELECTI · Unión Estudiantil</p>' +
+    '<tr><td style="padding:24px 38px 34px;text-align:center">' +
+      '<p style="margin:0;font-size:20px;font-style:italic;color:#0E1C4E">Nos vemos el sábado.</p>' +
+      '<p style="margin:6px 0 0;font-size:11px;letter-spacing:3px;color:#A47A35;text-transform:uppercase">Equipo ELECTI · Unión Estudiantil</p>' +
     '</td></tr>' +
+    '</table></td></tr>' +
   '</table>' +
-  '<p style="text-align:center;font-size:12px;color:#9AA3BA;margin:18px 0 0"><a href="' + SITIO + '" style="color:#9AA3BA">electi.unionestudiantil.org</a></p>' +
+  '<p style="text-align:center;font-size:12px;color:#8FA0C9;margin:18px 0 0"><a href="' + SITIO + '" style="color:#8FA0C9">electi.unionestudiantil.org</a></p>' +
   '</div>';
 
   var texto = 'Hola, ' + nombre + ':\n\nSu lugar para la ' + EVENTO.nombre + ' está confirmado.\n\n' +
