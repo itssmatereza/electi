@@ -147,6 +147,8 @@ def main():
         pagina = pagina.replace('{{DESCRIPCION}}', escapar(datos['descripcion']))
         pagina = pagina.replace('{{COMPARTIR}}', escapar(datos['compartir']))
         pagina = pagina.replace('{{RUTA}}', datos['ruta'])
+        # imagen para compartir el enlace (WhatsApp, redes); por defecto la general
+        pagina = pagina.replace('{{IMAGEN}}', datos.get('imagen', '/compartir.jpg'))
         pagina = pagina.replace('{{ROBOTS}}',
                                 '<meta name="robots" content="noindex, nofollow">\n' if oculta else '')
         pagina = pagina.replace('{{NAV}}', nav)

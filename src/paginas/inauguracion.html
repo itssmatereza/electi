@@ -1,0 +1,201 @@
+<!--
+titulo: Estás invitado · Inauguración de la 6.ª generación de ELECTI
+descripcion: Sábado 28 de noviembre, 11:00, Auditorio Casa Patrimonial (Quito). Abierta a padres de familia, amigos, consejos estudiantiles e interesados. Reserva tu lugar.
+compartir: Estás invitado a la inauguración de ELECTI · 6.ª generación
+whatsapp: Hola, tengo una pregunta sobre la inauguración de ELECTI.
+ruta: /inauguracion/
+archivo: inauguracion/index.html
+imagen: /assets/inauguracion/compartir.jpg
+noindex: si
+-->
+<style>
+#pg-inaug .pos{background:linear-gradient(180deg,#FBFAF7 0%,#fff 70%)}
+#pg-inaug .inv-card{margin-top:30px;border-radius:22px;overflow:hidden;box-shadow:0 22px 60px rgba(8,21,58,.16);border:1px solid rgba(13,42,110,.08);max-width:500px}
+#pg-inaug .inv-card img{display:block;width:100%;height:auto}
+#pg-inaug .inv-tit{font-size:26px;font-weight:900;letter-spacing:-.035em;color:var(--ink);margin-bottom:4px}
+#pg-inaug .inv-sub{font-size:14px;color:var(--muted);margin-bottom:20px;line-height:1.5}
+#pg-inaug .ac-row{display:flex;align-items:center;gap:14px}
+#pg-inaug .ac-btn{width:44px;height:44px;border-radius:50%;border:1.5px solid var(--line);background:#fff;font-size:22px;font-weight:700;color:var(--navy);cursor:pointer;line-height:1}
+#pg-inaug .ac-btn:disabled{opacity:.35;cursor:default}
+#pg-inaug .ac-n{font-size:22px;font-weight:800;color:var(--navy);min-width:24px;text-align:center}
+#pg-inaug .ac-help{font-size:13px;color:var(--muted)}
+#pg-inaug .ac-nombres{display:grid;gap:10px;margin-top:12px}
+#pg-inaug .ok{display:none;text-align:center;padding:10px 4px}
+#pg-inaug .ok.on{display:block}
+#pg-inaug .ok-ic{width:64px;height:64px;border-radius:50%;background:#E8F7EE;color:#16A34A;display:grid;place-items:center;margin:0 auto 18px}
+#pg-inaug .ok h2{font-size:28px;font-weight:900;letter-spacing:-.035em;color:var(--ink);margin-bottom:10px}
+#pg-inaug .ok p{font-size:16px;line-height:1.55;color:var(--ink-2);margin-bottom:8px}
+#pg-inaug .ok-acc{display:flex;flex-direction:column;gap:10px;margin-top:22px}
+#pg-inaug .que{padding:clamp(50px,7vw,90px) 0;background:#F4F7FC}
+#pg-inaug .que .wrap{max-width:760px;text-align:center}
+#pg-inaug .que h2{font-size:clamp(26px,3.4vw,36px);font-weight:900;letter-spacing:-.04em;color:var(--ink);margin:10px 0 14px}
+#pg-inaug .que p{font-size:17px;line-height:1.6;color:var(--ink-2)}
+@media (max-width:900px){#pg-inaug .inv-card{display:none}#pg-inaug .pos-datos{display:grid;grid-template-columns:1fr 1fr}#pg-inaug .pos-datos li:last-child{grid-column:1/-1}}
+</style>
+<div class="pg" id="pg-inaug">
+  <section class="pos">
+    <div class="wrap pos-in">
+      <div class="pos-txt">
+        <p class="eyebrow">6.ª generación · ciclo 2027</p>
+        <h1>Estás invitado.<br><span>Inauguramos una nueva generación.</span></h1>
+        <p class="pos-lead">Este sábado arranca la 6.ª generación de ELECTI y queremos que estés ahí. La inauguración está abierta a padres de familia, amigos, consejos estudiantiles y a todos los que quieran conocer el programa.</p>
+        <ul class="pos-datos">
+          <li><b>Sábado 28 de noviembre</b><span>Fecha</span></li>
+          <li><b>11:00</b><span>Hora</span></li>
+          <li><b>Auditorio Casa Patrimonial</b><span>Quito</span></li>
+        </ul>
+        <div class="inv-card"><img src="/assets/inauguracion/invitacion.jpg" alt="Invitación a la inauguración de la 6.ª generación de ELECTI, sábado 28 de noviembre a las 11:00 en el Auditorio Casa Patrimonial" width="1080" height="1350" loading="lazy" data-sin-webp></div>
+      </div>
+
+      <div class="pos-form">
+        <form id="form-inaug" novalidate>
+          <p class="inv-tit">Reserva tu lugar</p>
+          <p class="inv-sub">Te llega la confirmación a tu correo. Si vienes con alguien, regístralo aquí mismo.</p>
+          <label class="pf"><span>Nombre y apellido</span>
+            <input name="nombre" autocomplete="name" required minlength="3" maxlength="80" placeholder="Ej.: Sofía Andrade"></label>
+          <label class="pf"><span>Correo electrónico</span>
+            <input name="correo" type="email" autocomplete="email" required maxlength="120" placeholder="tucorreo@ejemplo.com"></label>
+          <label class="pf"><span>WhatsApp</span>
+            <input name="whatsapp" type="tel" inputmode="tel" autocomplete="tel" required placeholder="09XXXXXXXX"></label>
+          <label class="pf"><span>¿Cómo te relacionas con ELECTI?</span>
+            <select name="perfil" required>
+              <option value="" disabled selected>Elige una opción</option>
+              <option>Estudiante de la 6.ª generación</option>
+              <option>Padre, madre o representante</option>
+              <option>Consejo estudiantil</option>
+              <option>Amigo o familiar</option>
+              <option>Me interesa conocer el programa</option>
+            </select></label>
+          <div class="pf"><span>¿Vienes con alguien más?</span>
+            <div class="ac-row">
+              <button type="button" class="ac-btn" id="ac-menos" aria-label="Quitar acompañante">−</button>
+              <span class="ac-n" id="ac-n" aria-live="polite">0</span>
+              <button type="button" class="ac-btn" id="ac-mas" aria-label="Agregar acompañante">+</button>
+              <span class="ac-help" id="ac-help">Solo yo</span>
+            </div>
+            <div class="ac-nombres" id="ac-nombres"></div>
+          </div>
+          <input class="pf-hp" name="hp_web" tabindex="-1" autocomplete="off" aria-hidden="true">
+          <p class="pf-err" id="pf-err" role="alert"></p>
+          <button class="btn btn-primary btn-lg pf-btn" type="submit" id="pf-btn">Confirmar mi lugar <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+          <p class="pf-fine">Usamos tus datos solo para gestionar tu asistencia y contarte sobre ELECTI (<a href="/privacidad.html">política de privacidad</a>).</p>
+        </form>
+
+        <div class="ok" id="ok" tabindex="-1">
+          <div class="ok-ic"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <h2 id="ok-tit">Tu lugar está confirmado</h2>
+          <p id="ok-txt"></p>
+          <p>Te esperamos el sábado 28 de noviembre a las 11:00 en el Auditorio Casa Patrimonial.</p>
+          <div class="ok-acc">
+            <a class="btn btn-primary btn-lg" id="ok-cal" target="_blank" rel="noopener">Agregar a mi calendario</a>
+            <a class="btn btn-lg" id="ok-wa" target="_blank" rel="noopener" style="border:1.5px solid var(--line)">Invitar a alguien por WhatsApp</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="que">
+    <div class="wrap">
+      <p class="eyebrow">Qué es ELECTI</p>
+      <h2>Seis meses para liderar algo real.</h2>
+      <p>ELECTI es la escuela de liderazgo y gestión de proyectos de Unión Estudiantil. Durante 24 semanas, jóvenes desde 10.º de básica hasta 3.er semestre de universidad trabajan su desarrollo personal y, en equipo, planifican, financian y ejecutan un proyecto real. La inauguración es el punto de partida de la nueva generación. <a href="/programa/">Conoce el programa</a>.</p>
+    </div>
+  </section>
+</div>
+<script>
+(function(){
+  'use strict';
+  // ── Configuración del evento ──
+  // ENDPOINT: URL de la aplicación web de Google Apps Script (ver herramientas/inauguracion.gs).
+  // Guarda cada reserva en la hoja de cálculo y envía el correo de confirmación.
+  var ENDPOINT = '';
+  var MAX_ACOMP = 4;
+  var EVENTO = { titulo:'Inauguración ELECTI · 6.ª generación', lugar:'Auditorio Casa Patrimonial, Quito',
+                 inicio:'20261128T160000Z', fin:'20261128T173000Z' }; // 11:00–12:30 hora de Ecuador
+
+  var f = document.getElementById('form-inaug'), err = document.getElementById('pf-err'), btn = document.getElementById('pf-btn');
+  var nEl = document.getElementById('ac-n'), help = document.getElementById('ac-help'), box = document.getElementById('ac-nombres');
+  var menos = document.getElementById('ac-menos'), mas = document.getElementById('ac-mas');
+  var n = 0;
+
+  function pintar(){
+    nEl.textContent = n;
+    help.textContent = n === 0 ? 'Solo yo' : (n === 1 ? '1 acompañante' : n + ' acompañantes');
+    menos.disabled = n === 0; mas.disabled = n >= MAX_ACOMP;
+    while (box.children.length < n) {
+      var i = box.children.length + 1, inp = document.createElement('input');
+      inp.name = 'acomp'; inp.maxLength = 80; inp.required = true; inp.autocomplete = 'off';
+      inp.placeholder = 'Nombre del acompañante ' + i; inp.setAttribute('aria-label', 'Nombre del acompañante ' + i);
+      box.appendChild(inp);
+    }
+    while (box.children.length > n) box.removeChild(box.lastChild);
+  }
+  menos.addEventListener('click', function(){ if (n > 0) { n--; pintar(); } });
+  mas.addEventListener('click', function(){ if (n < MAX_ACOMP) { n++; pintar(); box.lastChild.focus(); } });
+  pintar();
+
+  function tel(v){ v = String(v).replace(/[^\d+]/g, ''); if (/^\+?593/.test(v)) v = '0' + v.replace(/^\+?593/, ''); return v; }
+  function calendario(){
+    return 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=' + encodeURIComponent(EVENTO.titulo) +
+      '&dates=' + EVENTO.inicio + '/' + EVENTO.fin + '&location=' + encodeURIComponent(EVENTO.lugar) +
+      '&details=' + encodeURIComponent('Inauguración de la 6.ª generación de ELECTI. ' + location.origin + '/inauguracion/');
+  }
+  function invitarWA(){
+    return 'https://wa.me/?text=' + encodeURIComponent('Te invito a la inauguración de la nueva generación de ELECTI, este sábado 28 de noviembre a las 11:00. Reserva tu lugar aquí: ' + location.origin + '/inauguracion/');
+  }
+  function fallbackWA(d){
+    var t = 'Hola, quiero reservar mi lugar para la inauguración de ELECTI.\nNombre: ' + d.nombre + '\nCorreo: ' + d.correo +
+            '\nWhatsApp: ' + d.whatsapp + '\nPerfil: ' + d.perfil + (d.acompanantes.length ? '\nAcompañantes: ' + d.acompanantes.join(', ') : '');
+    return 'https://wa.me/593962893857?text=' + encodeURIComponent(t);
+  }
+  function fallar(msg, d){
+    err.replaceChildren(document.createTextNode(msg + ' '));
+    var a = document.createElement('a'); a.href = fallbackWA(d); a.target = '_blank'; a.rel = 'noopener';
+    a.textContent = 'Reservar por WhatsApp'; err.appendChild(a);
+  }
+  function exito(d, r){
+    f.style.display = 'none';
+    var ok = document.getElementById('ok'); ok.classList.add('on');
+    var nombre = d.nombre.split(' ')[0];
+    document.getElementById('ok-tit').textContent = (r && r.repetido) ? '¡' + nombre + ', ya tenías tu lugar!' : '¡Listo, ' + nombre + '! Tu lugar está confirmado';
+    var personas = 1 + d.acompanantes.length;
+    document.getElementById('ok-txt').textContent = (r && r.repetido ? 'Te volvimos a enviar la confirmación a ' : 'Te enviamos la confirmación a ') + d.correo +
+      (personas > 1 ? '. Reservamos ' + personas + ' lugares a tu nombre.' : '.') + ' Si no la ves, revisa la carpeta de spam o promociones.';
+    document.getElementById('ok-cal').href = calendario();
+    document.getElementById('ok-wa').href = invitarWA();
+    ok.focus(); ok.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  f.addEventListener('submit', function(e){
+    e.preventDefault(); err.textContent = '';
+    if (f.elements.hp_web.value) return;
+    var d = {
+      nombre: f.elements.nombre.value.replace(/\s+/g, ' ').trim().slice(0, 80),
+      correo: f.elements.correo.value.trim().toLowerCase().slice(0, 120),
+      whatsapp: tel(f.elements.whatsapp.value),
+      perfil: f.elements.perfil.value,
+      acompanantes: Array.from(box.querySelectorAll('input')).map(function(i){ return i.value.replace(/\s+/g, ' ').trim().slice(0, 80); })
+    };
+    if (d.nombre.length < 3) { err.textContent = 'Escribe tu nombre y apellido.'; f.elements.nombre.focus(); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(d.correo)) { err.textContent = 'Revisa tu correo: ahí te llega la confirmación.'; f.elements.correo.focus(); return; }
+    if (!/^0\d{8,9}$/.test(d.whatsapp)) { err.textContent = 'Escribe tu WhatsApp con el formato 09XXXXXXXX.'; f.elements.whatsapp.focus(); return; }
+    if (!d.perfil) { err.textContent = 'Cuéntanos cómo te relacionas con ELECTI.'; f.elements.perfil.focus(); return; }
+    var vacio = d.acompanantes.findIndex(function(x){ return x.length < 2; });
+    if (vacio >= 0) { err.textContent = 'Escribe el nombre de cada acompañante.'; box.children[vacio].focus(); return; }
+    if (!ENDPOINT) { fallar('Las reservas en línea se activan en unos minutos.', d); return; }
+
+    btn.disabled = true; var txt = btn.innerHTML; btn.textContent = 'Reservando…';
+    fetch(ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                      body: JSON.stringify(Object.assign({ origen: (location.search || '').slice(0, 90) }, d)) })
+      .then(function(res){ return res.json(); })
+      .then(function(r){
+        if (r && r.ok) { exito(d, r); return; }
+        btn.disabled = false; btn.innerHTML = txt;
+        if (r && r.lleno) { err.textContent = 'Ya no quedan lugares para ' + (1 + d.acompanantes.length) + (d.acompanantes.length ? ' personas' : ' persona') + '. Escríbenos por WhatsApp y vemos qué podemos hacer.'; return; }
+        fallar((r && r.error) || 'No pudimos guardar tu reserva.', d);
+      })
+      .catch(function(){ btn.disabled = false; btn.innerHTML = txt; fallar('No pudimos conectar. Intenta de nuevo o', d); });
+  });
+})();
+</script>
