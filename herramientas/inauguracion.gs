@@ -38,7 +38,7 @@ var HOJA = 'Reservas';
 var RESPONDER_A = 'electi@unionestudiantil.org';
 var SITIO = 'https://electi.unionestudiantil.org';
 
-var COLUMNAS = ['Fecha', 'Nombre', 'Correo', 'WhatsApp', 'Perfil', 'Acompañantes',
+var COLUMNAS = ['Fecha', 'Nombre', 'Correo', 'WhatsApp', 'Perfil', 'Colegio / institución', 'Acompañantes',
                 'Nombres de acompañantes', 'Total personas', 'Origen', 'Correo enviado'];
 
 function doPost(e) {
@@ -52,6 +52,7 @@ function doPost(e) {
       correo: limpio(d.correo, 120).toLowerCase(),
       whatsapp: limpio(d.whatsapp, 20),
       perfil: limpio(d.perfil, 60),
+      institucion: limpio(d.institucion, 100),
       acompanantes: (Array.isArray(d.acompanantes) ? d.acompanantes : []).slice(0, MAX_ACOMPANANTES)
         .map(function (x) { return limpio(x, 80); }).filter(function (x) { return x.length >= 2; }),
       origen: limpio(d.origen, 90)
@@ -66,21 +67,21 @@ function doPost(e) {
     // Misma persona otra vez: no se duplica, solo se reenvía la confirmación
     for (var i = 0; i < filas.length; i++) {
       if (String(filas[i][2]).toLowerCase() === r.correo) {
-        var previos = String(filas[i][6] || '').split(',').map(function (x) { return x.trim(); }).filter(String);
+        var previos = String(filas[i][7] || '').split(',').map(function (x) { return x.trim(); }).filter(String);
         enviarCorreo({ nombre: filas[i][1], correo: r.correo, acompanantes: previos });
         return json({ ok: true, repetido: true });
       }
     }
 
-    var ocupados = filas.reduce(function (s, f) { return s + (Number(f[7]) || 0); }, 0);
+    var ocupados = filas.reduce(function (s, f) { return s + (Number(f[8]) || 0); }, 0);
     var personas = 1 + r.acompanantes.length;
     if (ocupados + personas > CUPO_PERSONAS) return json({ ok: false, lleno: true, quedan: Math.max(0, CUPO_PERSONAS - ocupados) });
 
-    hoja.appendRow([new Date(), r.nombre, r.correo, r.whatsapp, r.perfil, r.acompanantes.length,
+    hoja.appendRow([new Date(), r.nombre, r.correo, r.whatsapp, r.perfil, r.institucion, r.acompanantes.length,
                     r.acompanantes.join(', '), personas, r.origen, '']);
     var fila = hoja.getLastRow();
     var enviado = enviarCorreo(r);
-    hoja.getRange(fila, 10).setValue(enviado ? 'Sí' : 'Error');
+    hoja.getRange(fila, 11).setValue(enviado ? 'Sí' : 'Error');
     return json({ ok: true });
   } catch (err) {
     return json({ ok: false, error: 'No pudimos guardar tu reserva.' });
@@ -92,7 +93,7 @@ function doPost(e) {
 // Para revisar rápido que la aplicación está publicada (abre la URL /exec en el navegador)
 function doGet() {
   var hoja = hojaReservas();
-  var filas = hoja.getLastRow() > 1 ? hoja.getRange(2, 8, hoja.getLastRow() - 1, 1).getValues() : [];
+  var filas = hoja.getLastRow() > 1 ? hoja.getRange(2, 9, hoja.getLastRow() - 1, 1).getValues() : [];
   var ocupados = filas.reduce(function (s, f) { return s + (Number(f[0]) || 0); }, 0);
   return json({ ok: true, reservas: filas.length, personas: ocupados, cupo: CUPO_PERSONAS });
 }
