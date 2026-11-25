@@ -73,11 +73,16 @@ html,body{background:#06122F}
 #inv .orn i{display:block;height:1px;width:80px;background:linear-gradient(90deg,rgba(164,122,53,0),var(--gd))}
 #inv .orn i:last-child{transform:scaleX(-1)}
 #inv .orn b{width:8px;height:8px;background:var(--gd);transform:rotate(45deg)}
-#inv .fecha{font-family:Cin;font-weight:600;font-size:clamp(17px,4.4vw,23px);letter-spacing:.1em;text-transform:uppercase}
-#inv .lugar{font-family:Cor;font-weight:600;font-size:clamp(22px,5.4vw,28px);margin-top:6px}
+#inv .fecha{font-family:Cin;font-weight:600;font-size:clamp(16px,4.2vw,23px);letter-spacing:.08em;text-transform:uppercase}
+#inv .hora{font-family:Cor;font-weight:600;font-size:clamp(24px,6vw,30px);margin-top:8px;line-height:1.1}
+#inv .lugar{font-family:Cor;font-weight:600;font-size:clamp(19px,5.2vw,28px);line-height:1.2}
+#inv .dress{margin-top:16px;letter-spacing:.18em;line-height:1.9}
+#inv .dress span{white-space:nowrap}
+#inv .dress i{font-style:normal;margin:0 .3em}
+#inv .fecha,#inv .k,#inv .marca{overflow-wrap:anywhere}
 #inv .ciudad{font-family:Cor;font-style:italic;font-size:22px;color:#5C5242}
 #inv .bienv{font-family:Cor;font-style:italic;font-weight:500;font-size:clamp(19px,4.6vw,23px);line-height:1.38;color:var(--tx);max-width:440px;margin:22px auto 0}
-#inv .bajar{display:inline-block;margin-top:30px;font-family:Cin;font-weight:600;font-size:13px;letter-spacing:.26em;text-transform:uppercase;color:var(--nv);text-decoration:none;background:linear-gradient(135deg,#F3D99B,#C9993F);padding:15px 26px}
+#inv .bajar{display:inline-block;margin-top:30px;font-family:Cin;font-weight:600;font-size:13px;letter-spacing:.26em;text-transform:uppercase;color:var(--nv);text-decoration:none;background:linear-gradient(135deg,#F3D99B,#C9993F);padding:15px clamp(16px,5vw,26px);white-space:nowrap}
 
 /* ── Formulario ── */
 #inv .rsvp{margin-top:56px}
@@ -123,6 +128,7 @@ html,body{background:#06122F}
 #inv .que p{font-family:Cor;font-size:20px;line-height:1.55;color:rgba(245,239,228,.85);margin-top:8px}
 #inv .que a{color:var(--gl)}
 #inv .firma{margin-top:40px;text-align:center;font-family:Cin;font-weight:500;font-size:11px;letter-spacing:.3em;color:rgba(245,239,228,.5);text-transform:uppercase}
+@media (max-width:359px){#inv .dress i{display:none}#inv .dress span{display:block}#inv .bajar{letter-spacing:.18em}#inv .papel{padding-left:22px;padding-right:22px}}
 @media (prefers-reduced-motion:reduce){#inv *{animation:none!important;transition:none!important}}
 </style>
 <div id="inv">
@@ -149,9 +155,10 @@ html,body{background:#06122F}
       <p class="k" style="letter-spacing:.3em">Ciclo 2027</p>
       <div class="orn"><i></i><b></b><i></i></div>
       <p class="fecha">Sábado 28 de noviembre</p>
-      <p class="lugar">11:00 · Auditorio Casa Patrimonial</p>
+      <p class="hora">11:00</p>
+      <p class="lugar">Auditorio Casa Patrimonial</p>
       <p class="ciudad">Quito</p>
-      <p class="k" style="margin-top:14px">Dress code · Business casual</p>
+      <p class="k dress"><span>Dress code</span> <i>·</i> <span>Business casual</span></p>
       <p class="bienv">Padres de familia, amigos, consejos estudiantiles e interesados en el programa son bienvenidos.</p>
       <a class="bajar" href="#rsvp">Reservar mi lugar</a>
     </article>
