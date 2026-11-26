@@ -349,7 +349,7 @@ html,body{background:#06122F}
     <section class="papel rsvp" id="rsvp">
       <form id="form-inaug" novalidate>
         <h2>Confirma tu asistencia</h2>
-        <p class="sub">Te llega la confirmación a tu correo.</p>
+        <p class="sub">Toma menos de un minuto.</p>
         <label class="campo"><span>Nombre y apellido</span>
           <input name="nombre" autocomplete="name" required minlength="3" maxlength="80" placeholder="Sofía Andrade"></label>
         <label class="campo"><span>Correo electrónico</span>
@@ -405,9 +405,11 @@ html,body{background:#06122F}
 (function(){
   'use strict';
   // ── Configuración del evento ──
-  // ENDPOINT: URL de la aplicación web de Google Apps Script (ver herramientas/inauguracion.gs).
-  // Guarda cada reserva en la hoja de cálculo y envía el correo de confirmación.
-  var ENDPOINT = '';
+  // Las reservas se guardan en Firestore (colección «inauguracion») y se ven en el
+  // portal, en la sección Inauguración. El id sale del correo: una misma persona
+  // no se duplica y, si vuelve a reservar, se le avisa que ya tenía su lugar.
+  var FS = 'https://firestore.googleapis.com/v1/projects/portal-electi/databases/(default)/documents/inauguracion';
+  var KEY = 'AIzaSyCeov2IPL6N_iT8qI3Eo_y2h1DKjWlATSg';
   var MAX_ACOMP = 4;
   var EVENTO = { titulo:'Inauguración ELECTI · 6.ª generación', lugar:'Auditorio Casa Patrimonial, Quito',
                  inicio:'20261128T160000Z', fin:'20261128T173000Z' }; // 11:00–12:30 hora de Ecuador
@@ -499,8 +501,8 @@ html,body{background:#06122F}
     var nombre = d.nombre.split(' ')[0];
     document.getElementById('ok-tit').textContent = (r && r.repetido) ? 'Ya tenías tu lugar, ' + nombre : 'Gracias, ' + nombre;
     var personas = 1 + d.acompanantes.length;
-    document.getElementById('ok-txt').textContent = (r && r.repetido ? 'Te volvimos a enviar la confirmación a ' : 'Tu lugar está confirmado. Te enviamos los detalles a ') + d.correo +
-      (personas > 1 ? '. Reservamos ' + personas + ' lugares a tu nombre.' : '.') + ' Si no la ves, revisa spam o promociones.';
+    document.getElementById('ok-txt').textContent = (r && r.repetido ? 'Tu reserva con ' + d.correo + ' ya estaba registrada' : 'Tu lugar está confirmado') +
+      (personas > 1 ? ', con ' + personas + ' lugares a tu nombre.' : '.') + ' Guarda esta pantalla o agrega el evento a tu calendario.';
     document.getElementById('ok-cal').href = calendario();
     document.getElementById('ok-wa').href = invitarWA();
     ok.focus(); ok.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -528,17 +530,23 @@ html,body{background:#06122F}
     if (vacio >= 0) { err.textContent = 'Escribe el nombre de cada acompañante.'; box.children[vacio].querySelector('input').focus(); return; }
     var sinRel = d.acompanantes.findIndex(function(x){ return !x.relacion; });
     if (sinRel >= 0) { err.textContent = 'Cuéntanos quién es cada acompañante.'; box.children[sinRel].querySelector('select').focus(); return; }
-    if (!ENDPOINT) { fallar('Las reservas en línea se activan en unos minutos.', d); return; }
+    var sv = function(v){ return { stringValue: String(v) }; };
+    var cuerpo = { fields: {
+      nombre: sv(d.nombre), correo: sv(d.correo), whatsapp: sv(d.whatsapp), perfil: sv(d.perfil), institucion: sv(d.institucion),
+      acompanantes: { arrayValue: { values: d.acompanantes.map(function(a){ return { mapValue: { fields: { nombre: sv(a.nombre), relacion: sv(a.relacion) } } }; }) } },
+      personas: { integerValue: String(1 + d.acompanantes.length) },
+      fecha: sv(new Date().toISOString()), origen: sv((location.search || '').slice(0, 120))
+    } };
+    var docId = d.correo.replace(/[^a-z0-9]/g, '_').slice(0, 120);
 
     btn.disabled = true; var txt = btn.innerHTML; btn.textContent = 'Confirmando…';
-    fetch(ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                      body: JSON.stringify(Object.assign({ origen: (location.search || '').slice(0, 90) }, d)) })
-      .then(function(res){ return res.json(); })
-      .then(function(r){
-        if (r && r.ok) { exito(d, r); return; }
+    fetch(FS + '?documentId=' + encodeURIComponent(docId) + '&key=' + KEY, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(cuerpo) })
+      .then(function(res){
+        if (res.ok) { exito(d, {}); return; }
+        if (res.status === 409) { exito(d, { repetido: true }); return; }
         btn.disabled = false; btn.innerHTML = txt;
-        if (r && r.lleno) { err.textContent = 'Ya no quedan lugares para ' + (1 + d.acompanantes.length) + (d.acompanantes.length ? ' personas' : ' persona') + '. Escríbenos por WhatsApp y vemos qué podemos hacer.'; return; }
-        fallar((r && r.error) || 'No pudimos guardar tu reserva.', d);
+        fallar('No pudimos guardar tu reserva.', d);
       })
       .catch(function(){ btn.disabled = false; btn.innerHTML = txt; fallar('No pudimos conectar. Intenta de nuevo o', d); });
   });
