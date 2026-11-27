@@ -1068,6 +1068,8 @@ tbody tr:hover td { background: var(--off); }
 .ina-sub { font-size: 12px; color: var(--gray); }
 .ina-chk { width: 20px; height: 20px; accent-color: #16A34A; cursor: pointer; }
 .ina-fila-llego td { background: #F0FAF3; }
+.ina-del { padding: 5px 10px; font-size: 12px; color: var(--red); border-color: #FECACA; white-space: nowrap; }
+.ina-del:hover { background: var(--red-bg); }
 .pos-et { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; min-width: 104px; padding: 10px 14px; border: 1px solid var(--border); border-radius: 12px; background: var(--white); cursor: pointer; font: inherit; color: var(--text); text-align: left; position: relative; }
 .pos-et i { position: absolute; top: 12px; right: 12px; width: 9px; height: 9px; border-radius: 50%; }
 .pos-et b { font-size: 22px; font-weight: 800; line-height: 1.1; }
@@ -1188,6 +1190,8 @@ tbody tr:hover td { background: var(--off); }
   #page-inauguracion tbody td { border: 0; padding: 3px 0; white-space: normal !important; }
   #page-inauguracion tbody td[data-l="Llegó"] { position: absolute; right: 14px; top: 14px; width: auto; }
   #page-inauguracion tbody td[data-l="Reservó"]:before { content: "Reservó: "; color: var(--gray); }
+  #page-inauguracion tbody td.ina-acc:empty { display: none; }
+  #page-inauguracion tbody td.ina-acc { padding-top: 8px; }
   #page-postulaciones table thead { display: none; }
   #page-postulaciones table, #page-postulaciones tbody, #page-postulaciones tr, #page-postulaciones td { display: block; width: 100%; }
   #page-postulaciones tbody tr { border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; margin-bottom: 10px; }
@@ -4292,11 +4296,11 @@ function pintarInauguracion() {
       '<td data-l="Acompañantes">' + ((r.acompanantes || []).length ? (r.acompanantes || []).map(a => escP(a.nombre) + ' <span class="ina-sub">· ' + escP(a.relacion) + '</span>').join('<br>') : '—') + '</td>' +
       '<td data-l="Contacto">' + wa(r.whatsapp) + '<br><span class="ina-sub">' + escP(r.correo || '') + '</span></td>' +
       '<td data-l="Fecha" class="ina-sub">' + escP(posFechaHora(r.fecha)) + '</td>' +
-      (editar ? '<td><button type="button" class="btn btn-ghost" style="padding:4px 10px;font-size:12px" onclick="borrarReservaIna(' + escP(JSON.stringify(r._id)).replace(/"/g, '&quot;') + ')">Borrar</button></td>' : '') +
+      (editar ? '<td class="ina-acc"><button type="button" class="btn btn-ghost ina-del" onclick="borrarReservaIna(' + escP(JSON.stringify(r._id)).replace(/"/g, '&quot;') + ')">🗑 Eliminar</button></td>' : '') +
       '</tr>').join('') : '<tr><td colspan="7" style="text-align:center;color:var(--gray);padding:24px">' + (inaReservas.length ? 'Ninguna reserva coincide.' : 'Aún no hay reservas.') + '</td></tr>';
     return;
   }
-  thead.innerHTML = '<tr><th>Llegó</th><th>Nombre</th><th>Asiste como / relación</th><th>Colegio / institución</th><th>Reservó</th></tr>';
+  thead.innerHTML = '<tr><th>Llegó</th><th>Nombre</th><th>Asiste como / relación</th><th>Colegio / institución</th><th>Reservó</th>' + (editar ? '<th></th>' : '') + '</tr>';
   const filas = personas.filter(p => {
     if (inaFiltro === '_llego' && !p.llego) return false;
     if (inaFiltro && inaFiltro !== '_llego' && p.cat !== inaFiltro) return false;
@@ -4310,7 +4314,8 @@ function pintarInauguracion() {
     '<td data-l="Asiste como">' + escP(p.cat) + '</td>' +
     '<td data-l="Colegio">' + escP(p.inst || (p.idx ? '' : '—')) + '</td>' +
     '<td data-l="Reservó">' + (p.idx ? escP(p.r.nombre) + '<br>' : '') + wa(p.r.whatsapp) + '</td>' +
-    '</tr>').join('') : '<tr><td colspan="5" style="text-align:center;color:var(--gray);padding:24px">' + (inaReservas.length ? 'Nadie coincide con el filtro.' : 'Aún no hay reservas.') + '</td></tr>';
+    (editar ? '<td class="ina-acc">' + (p.idx ? '' : '<button type="button" class="btn btn-ghost ina-del" onclick="borrarReservaIna(' + escP(JSON.stringify(p.r._id)).replace(/"/g, '&quot;') + ')" title="Eliminar esta reserva y sus acompañantes">🗑 Eliminar</button>') + '</td>' : '') +
+    '</tr>').join('') : '<tr><td colspan="6" style="text-align:center;color:var(--gray);padding:24px">' + (inaReservas.length ? 'Nadie coincide con el filtro.' : 'Aún no hay reservas.') + '</td></tr>';
 }
 async function marcarLlegadaIna(id, idx, si) {
   if (!posPuedeEditar()) { toast('Solo administración puede marcar llegadas'); return; }
@@ -4324,9 +4329,10 @@ async function marcarLlegadaIna(id, idx, si) {
 async function borrarReservaIna(id) {
   if (!posPuedeEditar()) return;
   const r = inaReservas.find(x => x._id === id); if (!r) return;
-  if (!confirm('¿Borrar la reserva de ' + (r.nombre || '') + ' (' + (r.personas || 1) + ' personas)? No se puede deshacer.')) return;
-  try { await window.fb.delDoc('inauguracion', id); inaReservas = inaReservas.filter(x => x._id !== id); pintarInauguracion(); toast('Reserva borrada'); }
-  catch (e) { console.error(e); toast('No se pudo borrar'); }
+  const n = r.personas || 1;
+  if (!confirm('¿Eliminar la reserva de ' + (r.nombre || '') + (n > 1 ? ' y sus ' + (n - 1) + ' acompañante' + (n > 2 ? 's' : '') : '') + '? No se puede deshacer.')) return;
+  try { await window.fb.delDoc('inauguracion', id); inaReservas = inaReservas.filter(x => x._id !== id); pintarInauguracion(); toast('Reserva eliminada'); }
+  catch (e) { console.error(e); toast('No se pudo eliminar'); }
 }
 function exportarInauguracion() {
   if (!tienePermiso('postulaciones')) return;
