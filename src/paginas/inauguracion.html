@@ -201,6 +201,8 @@ html,body{background:#06122F}
           </select></label>
         <label class="campo" id="campo-inst" hidden><span id="inst-lbl">Colegio o universidad</span>
           <input name="institucion" maxlength="100" autocomplete="organization" placeholder="Nombre de tu colegio o universidad"></label>
+        <label class="campo" id="campo-edad" hidden><span>Edad</span>
+          <input name="edad" type="number" inputmode="numeric" min="10" max="99" placeholder="Ej.: 16"></label>
         <div class="campo"><span>¿Vienes con alguien más?</span>
           <div class="ac-row">
             <button type="button" class="ac-btn" id="ac-menos" aria-label="Quitar acompañante">−</button>
@@ -330,7 +332,11 @@ html,body{background:#06122F}
     'Me interesa conocer el programa': ['Colegio, universidad o trabajo', 'Dónde estudias o trabajas', false]
   };
   var campoInst = document.getElementById('campo-inst');
+  // A quien le interesa el programa se le pide la edad, para saber si califica
+  var campoEdad = document.getElementById('campo-edad');
   f.elements.perfil.addEventListener('change', function(){
+    var interesa = f.elements.perfil.value === 'Me interesa conocer el programa';
+    campoEdad.hidden = !interesa; f.elements.edad.required = interesa;
     var c = INST[f.elements.perfil.value];
     campoInst.hidden = !c; if (!c) return;
     var lbl = document.getElementById('inst-lbl');
@@ -394,6 +400,7 @@ html,body{background:#06122F}
       whatsapp: tel(f.elements.whatsapp.value),
       perfil: f.elements.perfil.value,
       institucion: f.elements.institucion.value.replace(/\s+/g, ' ').trim().slice(0, 100),
+      edad: parseInt(f.elements.edad.value, 10),
       acompanantes: Array.from(box.querySelectorAll('.ac-item')).map(function(it){
         return { nombre: it.querySelector('input').value.replace(/\s+/g, ' ').trim().slice(0, 80), relacion: it.querySelector('select').value };
       })
@@ -402,6 +409,8 @@ html,body{background:#06122F}
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(d.correo)) { err.textContent = 'Revisa tu correo: ahí te llega la confirmación.'; f.elements.correo.focus(); return; }
     if (!/^0\d{8,9}$/.test(d.whatsapp)) { err.textContent = 'Escribe tu WhatsApp con el formato 09XXXXXXXX.'; f.elements.whatsapp.focus(); return; }
     if (!d.perfil) { err.textContent = 'Cuéntanos cómo te relacionas con ELECTI.'; f.elements.perfil.focus(); return; }
+    var pideEdad = d.perfil === 'Me interesa conocer el programa';
+    if (pideEdad && !(d.edad >= 10 && d.edad <= 99)) { err.textContent = 'Escribe tu edad.'; f.elements.edad.focus(); return; }
     if (INST[d.perfil] && INST[d.perfil][2] && d.institucion.length < 3) { err.textContent = 'Escribe el nombre de tu colegio o universidad.'; f.elements.institucion.focus(); return; }
     var vacio = d.acompanantes.findIndex(function(x){ return x.nombre.length < 2; });
     if (vacio >= 0) { err.textContent = 'Escribe el nombre de cada acompañante.'; box.children[vacio].querySelector('input').focus(); return; }
@@ -414,6 +423,7 @@ html,body{background:#06122F}
       personas: { integerValue: String(1 + d.acompanantes.length) },
       fecha: sv(new Date().toISOString()), origen: sv((location.search || '').slice(0, 120))
     } };
+    if (pideEdad) cuerpo.fields.edad = { integerValue: String(d.edad) };
     var docId = d.correo.replace(/[^a-z0-9]/g, '_').slice(0, 120);
 
     btn.disabled = true; var txt = btn.innerHTML; btn.textContent = 'Confirmando…';
