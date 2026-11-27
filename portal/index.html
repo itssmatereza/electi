@@ -4232,8 +4232,9 @@ const INA_CATEGORIAS = [
 function inaPersonas() {
   const out = [];
   inaReservas.forEach(r => {
+    if (!r.edad) { const m = /edad=(\d{1,2})/.exec(r.origen || ''); if (m) r.edad = Number(m[1]); }
     const lleg = Array.isArray(r.llegaron) ? r.llegaron : [];
-    out.push({ r, idx: 0, nombre: r.nombre || '', tipo: 'Reservó', cat: r.perfil || '', inst: r.institucion || '', llego: lleg.includes(0) });
+    out.push({ r, idx: 0, nombre: r.nombre || '', tipo: 'Reservó', cat: r.perfil || '', inst: r.institucion || '', edad: r.edad || '', llego: lleg.includes(0) });
     (Array.isArray(r.acompanantes) ? r.acompanantes : []).forEach((a, i) => {
       out.push({ r, idx: i + 1, nombre: (a && a.nombre) || '', tipo: 'Acompañante', cat: (a && a.relacion) || 'Otro', inst: '', llego: lleg.includes(i + 1) });
     });
@@ -4291,7 +4292,7 @@ function pintarInauguracion() {
     document.getElementById('ina-count').textContent = '(' + filas.length + ' reservas)';
     tbody.innerHTML = filas.length ? filas.map(r => '<tr>' +
       '<td data-l="Reservó"><b>' + escP(r.nombre) + '</b></td>' +
-      '<td data-l="Asiste como">' + escP(r.perfil) + '</td>' +
+      '<td data-l="Asiste como">' + escP(r.perfil) + (r.edad ? '<br><span class="ina-sub">' + escP(r.edad) + ' años</span>' : '') + '</td>' +
       '<td data-l="Colegio">' + escP(r.institucion || '—') + '</td>' +
       '<td data-l="Acompañantes">' + ((r.acompanantes || []).length ? (r.acompanantes || []).map(a => escP(a.nombre) + ' <span class="ina-sub">· ' + escP(a.relacion) + '</span>').join('<br>') : '—') + '</td>' +
       '<td data-l="Contacto">' + wa(r.whatsapp) + '<br><span class="ina-sub">' + escP(r.correo || '') + '</span></td>' +
@@ -4311,7 +4312,7 @@ function pintarInauguracion() {
     '<td data-l="Llegó"><input type="checkbox" class="ina-chk" aria-label="Llegó ' + escP(p.nombre) + '"' + (p.llego ? ' checked' : '') + (editar ? '' : ' disabled') +
       ' onchange="marcarLlegadaIna(' + escP(JSON.stringify(p.r._id)).replace(/"/g, '&quot;') + ',' + p.idx + ',this.checked)"></td>' +
     '<td data-l="Nombre"><b>' + escP(p.nombre) + '</b><br><span class="ina-tipo' + (p.idx ? ' acomp' : '') + '">' + p.tipo + '</span></td>' +
-    '<td data-l="Asiste como">' + escP(p.cat) + '</td>' +
+    '<td data-l="Asiste como">' + escP(p.cat) + (p.edad ? '<br><span class="ina-sub">' + escP(p.edad) + ' años</span>' : '') + '</td>' +
     '<td data-l="Colegio">' + escP(p.inst || (p.idx ? '' : '—')) + '</td>' +
     '<td data-l="Reservó">' + (p.idx ? escP(p.r.nombre) + '<br>' : '') + wa(p.r.whatsapp) + '</td>' +
     (editar ? '<td class="ina-acc">' + (p.idx ? '' : '<button type="button" class="btn btn-ghost ina-del" onclick="borrarReservaIna(' + escP(JSON.stringify(p.r._id)).replace(/"/g, '&quot;') + ')" title="Eliminar esta reserva y sus acompañantes">🗑 Eliminar</button>') + '</td>' : '') +
@@ -4336,11 +4337,11 @@ async function borrarReservaIna(id) {
 }
 function exportarInauguracion() {
   if (!tienePermiso('postulaciones')) return;
-  const reservas = [['Fecha', 'Nombre', 'Correo', 'WhatsApp', 'Asiste como', 'Colegio / institución', 'Acompañantes', 'Nombres de acompañantes', 'Total personas', 'Llegaron']];
-  inaReservas.forEach(r => reservas.push([posFechaHora(r.fecha), r.nombre || '', r.correo || '', r.whatsapp || '', r.perfil || '', r.institucion || '',
+  const reservas = [['Fecha', 'Nombre', 'Correo', 'WhatsApp', 'Asiste como', 'Edad', 'Colegio / institución', 'Acompañantes', 'Nombres de acompañantes', 'Total personas', 'Llegaron']];
+  inaReservas.forEach(r => reservas.push([posFechaHora(r.fecha), r.nombre || '', r.correo || '', r.whatsapp || '', r.perfil || '', r.edad || '', r.institucion || '',
     (r.acompanantes || []).length, (r.acompanantes || []).map(a => a.nombre + ' (' + a.relacion + ')').join(', '), r.personas || 1, (r.llegaron || []).length]));
-  const personas = [['Nombre', 'Tipo', 'Asiste como / relación', 'Colegio / institución', 'Reservó', 'WhatsApp de quien reservó', 'Correo de quien reservó', 'Llegó']];
-  inaPersonas().forEach(p => personas.push([p.nombre, p.tipo, p.cat, p.inst, p.r.nombre || '', p.r.whatsapp || '', p.r.correo || '', p.llego ? 'Sí' : '']));
+  const personas = [['Nombre', 'Tipo', 'Asiste como / relación', 'Edad', 'Colegio / institución', 'Reservó', 'WhatsApp de quien reservó', 'Correo de quien reservó', 'Llegó']];
+  inaPersonas().forEach(p => personas.push([p.nombre, p.tipo, p.cat, p.edad || '', p.inst, p.r.nombre || '', p.r.whatsapp || '', p.r.correo || '', p.llego ? 'Sí' : '']));
   descargarLibro([{ name: 'Asistentes', data: personas }, { name: 'Reservas', data: reservas }], 'ELECTI-inauguracion-' + hoyArchivo() + '.xlsx');
 }
 

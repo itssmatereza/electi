@@ -417,7 +417,7 @@ service cloud.firestore {
     // quién llegó el día del evento o la borra.
     match /inauguracion/{id} {
       allow create: if id.size() <= 120
-        && request.resource.data.keys().hasOnly(['nombre', 'correo', 'whatsapp', 'perfil', 'institucion', 'acompanantes', 'personas', 'fecha', 'origen'])
+        && request.resource.data.keys().hasOnly(['nombre', 'correo', 'whatsapp', 'perfil', 'institucion', 'edad', 'acompanantes', 'personas', 'fecha', 'origen'])
         && request.resource.data.keys().hasAll(['nombre', 'correo', 'whatsapp', 'perfil', 'acompanantes', 'personas'])
         && request.resource.data.nombre is string
         && request.resource.data.nombre.size() >= 3 && request.resource.data.nombre.size() <= 80
@@ -427,6 +427,7 @@ service cloud.firestore {
         && request.resource.data.whatsapp.matches('^0[0-9]{8,9}$')
         && request.resource.data.perfil in ['Estudiante de la 6.ª generación', 'Padre, madre o representante', 'Consejo estudiantil', 'Amigo o familiar', 'Me interesa conocer el programa']
         && request.resource.data.get('institucion', '') is string && request.resource.data.get('institucion', '').size() <= 100
+        && (!('edad' in request.resource.data) || (request.resource.data.edad is int && request.resource.data.edad >= 10 && request.resource.data.edad <= 99))
         && request.resource.data.acompanantes is list && request.resource.data.acompanantes.size() <= 4
         && request.resource.data.personas is int && request.resource.data.personas == request.resource.data.acompanantes.size() + 1
         && request.resource.data.get('fecha', '') is string && request.resource.data.get('fecha', '').size() <= 40
