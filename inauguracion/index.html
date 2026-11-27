@@ -311,6 +311,22 @@ html,body{background:#06122F}
 #inv .que p{font-family:Cor;font-size:20px;line-height:1.55;color:rgba(245,239,228,.85);margin-top:8px}
 #inv .que a{color:var(--gl)}
 #inv .firma{margin-top:40px;text-align:center;font-family:Cin;font-weight:500;font-size:11px;letter-spacing:.3em;color:rgba(245,239,228,.5);text-transform:uppercase}
+#inv .ver-ubi{display:inline-flex;align-items:center;gap:7px;margin-top:12px;background:none;border:0;border-bottom:1px solid rgba(164,122,53,.55);padding:2px 2px 3px;cursor:pointer;
+  font-family:Cin;font-weight:600;font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--gd)}
+#inv .ver-ubi:hover{color:var(--nv);border-bottom-color:var(--nv)}
+#inv .ubi{position:fixed;inset:0;z-index:200;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  background:radial-gradient(ellipse 90% 60% at 50% 30%,#1B3B87 0%,#0F2763 45%,#06122F 100%)}
+#inv .ubi[hidden]{display:none}
+#inv .ubi.on .ubi-in{animation:inv-in .6s ease both}
+#inv .ubi-in{position:relative;max-width:600px;margin:0 auto;padding:46px 18px 40px}
+#inv .ubi-x{position:absolute;top:8px;right:14px;width:42px;height:42px;border-radius:50%;border:1px solid rgba(227,194,126,.5);background:rgba(6,18,47,.4);color:var(--gl);font-size:26px;line-height:1;cursor:pointer;z-index:3}
+#inv .ubi-papel{padding-top:clamp(46px,9vw,64px)}
+#inv .ubi-h{font-size:clamp(54px,14vw,82px);line-height:1.15;margin:0;color:var(--nv)}
+#inv .ubi-dir{font-family:Cor;font-style:italic;font-size:18px;line-height:1.4;color:#5C5242;margin-top:10px}
+#inv .ubi-mapa{position:relative;margin:22px auto 0;border:1.5px solid rgba(164,122,53,.55);padding:6px;background:#EFE7D8}
+#inv .ubi-mapa iframe{display:block;width:100%;height:clamp(220px,58vw,300px);border:0;filter:saturate(.75) sepia(.12)}
+#inv .ubi-maps{margin-top:18px}
+#inv .ubi-volver{display:block;margin:18px auto 0;background:none;border:0;font-family:Cor;font-style:italic;font-size:18px;color:var(--tx);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
 @media (max-width:359px){#inv .dress i{display:none}#inv .dress span{display:block}#inv .bajar{letter-spacing:.18em}#inv .papel{padding-left:22px;padding-right:22px}}
 @media (prefers-reduced-motion:reduce){#inv *{animation:none!important;transition:none!important}}
 </style>
@@ -339,8 +355,9 @@ html,body{background:#06122F}
       <div class="orn"><i></i><b></b><i></i></div>
       <p class="fecha">Sábado 28 de noviembre</p>
       <p class="hora">11:00</p>
-      <p class="lugar">Auditorio Casa Patrimonial</p>
-      <p class="ciudad">Quito</p>
+      <p class="lugar">Auditorio · Campus Casa Patrimonial</p>
+      <p class="ciudad">Universidad Metropolitana · Quito</p>
+      <button type="button" class="ver-ubi" id="ver-ubi"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>Ver ubicación</button>
       <p class="k dress"><span>Dress code</span> <i>·</i> <span>Business casual</span></p>
       <p class="bienv">Padres de familia, amigos, consejos estudiantiles e interesados en el programa son bienvenidos.</p>
       <a class="bajar" href="#rsvp">Reservar mi lugar</a>
@@ -386,7 +403,7 @@ html,body{background:#06122F}
         <img class="sello-ok" src="/assets/inauguracion/sello.png" alt="" width="360" height="360" data-sin-webp>
         <h2 id="ok-tit">Tu lugar está confirmado</h2>
         <p id="ok-txt"></p>
-        <p>Te esperamos el sábado 28 de noviembre a las 11:00 en el Auditorio Casa Patrimonial. Dress code: business casual.</p>
+        <p>Te esperamos el sábado 28 de noviembre a las 11:00 en el auditorio del Campus Casa Patrimonial de la Universidad Metropolitana. Dress code: business casual.</p>
         <div class="acc">
           <a class="a1" id="ok-cal" target="_blank" rel="noopener">Agregar a mi calendario</a>
           <a class="a2" id="ok-wa" target="_blank" rel="noopener">Invitar a alguien</a>
@@ -400,6 +417,26 @@ html,body{background:#06122F}
     </section>
     <p class="firma">ELECTI · Unión Estudiantil · Quito</p>
   </div>
+
+  <div class="ubi" id="ubi" role="dialog" aria-modal="true" aria-labelledby="ubi-tit" hidden>
+    <div class="ubi-in">
+      <button type="button" class="ubi-x" id="ubi-x" aria-label="Volver a la invitación">×</button>
+      <article class="papel ubi-papel">
+        <p class="marca cin">E L E C T I</p>
+        <h2 class="pin ubi-h" id="ubi-tit">Cómo llegar</h2>
+        <p class="k">Inauguración · Sexta generación</p>
+        <div class="orn"><i></i><b></b><i></i></div>
+        <p class="lugar">Auditorio · Campus Casa Patrimonial</p>
+        <p class="ciudad">Universidad Metropolitana del Ecuador</p>
+        <p class="ubi-dir">Pedro de Valdivia N-145, entre Jorge Washington y Gral. Francisco Robles · Quito</p>
+        <div class="ubi-mapa"><iframe id="ubi-iframe" title="Mapa del Campus Casa Patrimonial" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe></div>
+        <p class="fecha" style="margin-top:22px">Sábado 28 de noviembre</p>
+        <p class="hora">11:00</p>
+        <a class="bajar ubi-maps" href="https://maps.app.goo.gl/vXG6zqLVesNQ6vpL9" target="_blank" rel="noopener">Abrir en Google Maps</a>
+        <button type="button" class="ubi-volver" id="ubi-volver">Volver a la invitación</button>
+      </article>
+    </div>
+  </div>
 </div>
 <script>
 (function(){
@@ -411,7 +448,7 @@ html,body{background:#06122F}
   var FS = 'https://firestore.googleapis.com/v1/projects/portal-electi/databases/(default)/documents/inauguracion';
   var KEY = 'AIzaSyCeov2IPL6N_iT8qI3Eo_y2h1DKjWlATSg';
   var MAX_ACOMP = 4;
-  var EVENTO = { titulo:'Inauguración ELECTI · 6.ª generación', lugar:'Auditorio Casa Patrimonial, Quito',
+  var EVENTO = { titulo:'Inauguración ELECTI · 6.ª generación', lugar:'Auditorio, Campus Casa Patrimonial, Universidad Metropolitana, Quito',
                  inicio:'20261128T160000Z', fin:'20261128T173000Z' }; // 11:00–12:30 hora de Ecuador
 
   var f = document.getElementById('form-inaug'), err = document.getElementById('pf-err'), btn = document.getElementById('pf-btn');
@@ -441,6 +478,29 @@ html,body{background:#06122F}
   menos.addEventListener('click', function(){ if (n > 0) { n--; pintar(); } });
   mas.addEventListener('click', function(){ if (n < MAX_ACOMP) { n++; pintar(); box.lastChild.focus(); } });
   pintar();
+
+  // ── Ubicación: pantalla aparte, para no recargar la tarjeta ──
+  var ubi = document.getElementById('ubi');
+  var MAPA = 'https://www.google.com/maps?q=' + encodeURIComponent('Universidad Metropolitana Campus Patrimonial, Pedro de Valdivia, Quito') + '&z=16&output=embed';
+  function abrirUbi(desdeHistoria){
+    var fr = document.getElementById('ubi-iframe'); if (!fr.src) fr.src = MAPA;
+    ubi.hidden = false; ubi.classList.add('on'); ubi.scrollTop = 0; document.body.style.overflow = 'hidden';
+    if (!desdeHistoria) { try { history.pushState({ ubi: 1 }, '', '#ubicacion'); } catch (e) {} }
+    document.getElementById('ubi-x').focus();
+  }
+  function cerrarUbi(desdeHistoria){
+    if (ubi.hidden) return;
+    ubi.hidden = true; ubi.classList.remove('on'); document.body.style.overflow = '';
+    if (!desdeHistoria && location.hash === '#ubicacion') { try { history.back(); } catch (e) {} }
+    document.getElementById('ver-ubi').focus();
+  }
+  document.getElementById('ver-ubi').addEventListener('click', function(){ abrirUbi(false); });
+  document.getElementById('ubi-x').addEventListener('click', function(){ cerrarUbi(false); });
+  document.getElementById('ubi-volver').addEventListener('click', function(){ cerrarUbi(false); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') cerrarUbi(false); });
+  // El botón «atrás» del celular cierra la ubicación en vez de salir de la página
+  window.addEventListener('popstate', function(){ if (location.hash === '#ubicacion') abrirUbi(true); else cerrarUbi(true); });
+  if (location.hash === '#ubicacion') abrirUbi(true);
 
   // ── Colegio o institución, según quién asiste ──
   // [etiqueta, ejemplo, obligatorio]. A los estudiantes y consejos se les pide
@@ -473,7 +533,7 @@ html,body{background:#06122F}
   }
   document.getElementById('abrir').addEventListener('click', function(){ mostrar(matchMedia('(prefers-reduced-motion: reduce)').matches); });
   // Si llegan con #rsvp o ya la abrieron antes en esta sesión, se salta el sobre
-  try { if (location.hash === '#rsvp' || sessionStorage.getItem('inv_abierta')) mostrar(true); } catch (e) {}
+  try { if (location.hash === '#rsvp' || location.hash === '#ubicacion' || sessionStorage.getItem('inv_abierta')) mostrar(true); } catch (e) {}
   document.getElementById('abrir').addEventListener('click', function(){ try { sessionStorage.setItem('inv_abierta', '1'); } catch (e) {} });
 
   function tel(v){ v = String(v).replace(/[^\d+]/g, ''); if (/^\+?593/.test(v)) v = '0' + v.replace(/^\+?593/, ''); return v; }
