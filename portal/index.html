@@ -1797,6 +1797,7 @@ tbody tr:hover td { background: var(--off); }
           <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
             <input type="text" id="search-alumno" placeholder="Buscar alumno..." onkeyup="filterAlumnos()"
               style="padding:8px 14px;border:1px solid var(--border);border-radius:8px;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;width:190px;">
+            <button class="btn btn-ghost" id="btn-historial-completo" onclick="verHistorialCompleto()" title="Por defecto solo se carga el ciclo actual">Incluir ciclos anteriores</button>
             <button class="btn btn-ghost" onclick="exportAsistenciaExcel()">⬇ Excel asistencia</button>
           </div>
         </div>
@@ -3404,6 +3405,68 @@ async function asistenciaDelCiclo(cfg) {
   return [].concat.apply([], partes);
 }
 
+// El equipo antes leia la coleccion 'asistencia' completa en cada ingreso:
+// todas las sesiones de todas las generaciones, y cada sesion trae la lista
+// entera de alumnos. Era la lectura mas pesada del portal y crecia cada semana.
+// Ahora se pide solo el ciclo configurado y cualquier sesion de los ultimos
+// 60 dias (por si la configuracion del ciclo aun no se actualizo). Las
+// sesiones futuras entran solas porque el rango no tiene tope.
+let _historialAsistencia = false;
+async function asistenciaEquipo(cfg) {
+  const r = rangoCiclo(cfg);
+  const reciente = fechaISO(new Date(Date.now() - 60 * 864e5));
+  const desde = reciente < r.desde ? reciente : r.desde;
+  const partes = await Promise.all(TIPOS_SESION.map(function(t){
+    return window.fb.getDocsRango('asistencia', t + '_' + desde, t + '_9999');
+  }));
+  return [].concat.apply([], partes);
+}
+
+function incorporarSesiones(lista) {
+  (lista || []).forEach(s => {
+    if (state.asistencia[s._id]) return;   // lo que ya esta en pantalla manda
+    state.asistencia[s._id] = s.registros || {};
+    const m = {};
+    ['porNombre', 'actualizado', 'creadoPorNombre', 'creadoT'].forEach(function(k){ if (s[k]) m[k] = s[k]; });
+    if (Object.keys(m).length) state.asistenciaMeta[s._id] = m;
+    _escrito['asistencia/' + s._id] = JSON.stringify(docAsistencia(s._id));
+  });
+}
+
+// Sesiones de ciclos anteriores: solo se leen cuando algo las necesita
+// (respaldo, limpieza de asistencias o el boton del historial), una vez por sesion.
+async function asegurarHistorialAsistencia() {
+  if (_historialAsistencia) return true;
+  try {
+    incorporarSesiones(await window.fb.getDocs('asistencia'));
+    _historialAsistencia = true;
+    return true;
+  } catch (e) {
+    console.error('No se pudo leer el historial de asistencia', e);
+    toast('⚠ No se pudo cargar el historial de asistencia');
+    return false;
+  }
+}
+
+// Vuelve a pintar la pagina abierta cuando cambian las sesiones cargadas.
+// (purgarAsistencias ya llamaba a render(), que no existia: tras borrar
+// saltaba un error y no quedaba registro en la bitacora ni aviso.)
+function render() {
+  const pg = document.querySelector('.page.active');
+  const id = pg ? pg.id.replace('page-', '') : '';
+  if (id === 'historial') renderHistorial();
+  else if (id === 'dashboard') renderDashboard();
+  else if (id === 'calendario' && typeof renderCalendario === 'function') renderCalendario();
+}
+
+async function verHistorialCompleto() {
+  const b = document.getElementById('btn-historial-completo');
+  if (b) { b.disabled = true; b.textContent = 'Cargando…'; }
+  const ok = await asegurarHistorialAsistencia();
+  if (b) { b.style.display = ok ? 'none' : ''; b.disabled = false; b.textContent = 'Incluir ciclos anteriores'; }
+  if (ok) { render(); toast('✓ Historial completo cargado'); }
+}
+
 async function cargarDatosAlumno(uid, previa) {
   const p = previa || precargaComun();
   // La configuracion define el ciclo, y el ciclo define que sesiones pedir.
@@ -3438,6 +3501,9 @@ async function cargarDatos(rol, previa) {
   const esAdministrador = esAdmin(rol);
   const leerPagos=tienePermiso('pagos');
   _cargaCompleta = false;
+  _historialAsistencia = false;
+  Object.keys(_leidoEn).forEach(function(k){ delete _leidoEn[k]; });
+  const bh = document.getElementById('btn-historial-completo'); if (bh) bh.style.display = '';
   _erroresCarga = [];
   // Cada lectura registra su fallo. Las colecciones que se guardan como documento
   // único (multas, anuncios, materiales) son las críticas: si no cargan y luego
@@ -3457,7 +3523,7 @@ async function cargarDatos(rol, previa) {
     critico(window.fb.getDocs('usuarios'), 'alumnos y equipo'),
     // Los profesores no tienen permiso de lectura sobre pagos (por reglas de seguridad)
     leerPagos ? critico(window.fb.getDocs('pagos'), 'pagos') : Promise.resolve([]),
-    critico(window.fb.getDocs('asistencia'), 'asistencia'),
+    p.config.then(valorPrecargado).then(asistenciaEquipo).then(null, function(e){ _erroresCarga.push('asistencia'); console.error('Fallo al cargar asistencia', e); return null; }),
     esAdministrador ? critico(window.fb.getDoc('colecciones', 'multas'), 'multas') : Promise.resolve(null),
     criticoPre(p.anuncios, 'anuncios'),
     criticoPre(p.materiales, 'materiales'),
@@ -3747,11 +3813,11 @@ function precargaComun() {
   };
 }
 
-async function entrarConPerfil(uid, email, err, esGoogle) {
+async function entrarConPerfil(uid, email, err, esGoogle, perfilLeido, previaLanzada) {
   faseLogin('Verificando tu cuenta...');
-  const previa = precargaComun();
+  const previa = previaLanzada || precargaComun();
   let perfil = null, errLectura = null;
-  try { perfil = await window.fb.getDoc('usuarios', uid); }
+  try { perfil = perfilLeido || await window.fb.getDoc('usuarios', uid); }
   catch (e) { perfil = null; errLectura = (e && e.code) || 'error'; console.error('Error leyendo perfil:', e); }
   if (!perfil && errLectura) {
     await window.fb.signOut();
@@ -4035,7 +4101,9 @@ function navigate(page) {
   if (page === 'registro') renderRegistro();
   if (page === 'mensaje') renderMensaje();
   if (page === 'alumnos') renderAlumnos();
-  if (page === 'postulaciones') cargarPostulaciones();
+  // Las postulaciones se releen solo si pasaron mas de 5 minutos; ↻ Actualizar fuerza la lectura.
+  if (page === 'postulaciones') { if (fresco('pos')) { pintarEmbudo(); filtrarPostulaciones(); } else cargarPostulaciones(); }
+  // La inauguracion se relee siempre: el dia del evento varias personas marcan llegadas a la vez.
   if (page === 'inauguracion') cargarInauguracion();
   if (page === 'materiales') renderMateriales('admin');
   if (page === 'anuncios') renderAnuncios();
@@ -4241,6 +4309,9 @@ function inaPersonas() {
   });
   return out;
 }
+const _leidoEn = {};
+function fresco(k) { return _leidoEn[k] && (Date.now() - _leidoEn[k] < 5 * 60 * 1000); }
+
 async function cargarInauguracion() {
   if (!tienePermiso('postulaciones')) { toast('No tienes acceso a esta sección'); return; }
   const estado = document.getElementById('ina-estado');
@@ -4355,6 +4426,7 @@ async function cargarPostulaciones() {
     const resultados = await window.fb.getDocs('postulaciones');
     if (version !== postulacionesSolicitud || !tienePermiso('postulaciones')) return;
     postulacionesWeb = resultados.slice().sort((a, b) => textoPostulacion(b.fecha).localeCompare(textoPostulacion(a.fecha)));
+    _leidoEn.pos = Date.now();
     _admCargado = true;
     const existentes = new Set(postulacionesWeb.map(p => p._id));
     Array.from(posSel).forEach(id => { if (!existentes.has(id)) posSel.delete(id); });
@@ -4857,6 +4929,7 @@ async function cargarAdmisionesDash() {
     const r = await window.fb.getDocs('postulaciones');
     postulacionesWeb = r.slice().sort((a, b) => textoPostulacion(b.fecha).localeCompare(textoPostulacion(a.fecha)));
     _admCargado = true;
+    _leidoEn.pos = Date.now();   // la pagina de postulaciones reusa esta lectura
   } catch (e) { console.error('Dashboard: no se pudieron leer las postulaciones', e); }
   _admCargando = false;
   pintarAdmisiones();
@@ -6676,6 +6749,7 @@ function deleteMaterial(i) {
 
 // ─── BACKUP ───
 async function exportData() {
+  if (!(await asegurarHistorialAsistencia())) return;
   let postulaciones = null;
   if (tienePermiso('postulaciones')) {
     try { postulaciones = await window.fb.getDocs('postulaciones'); }
@@ -7067,6 +7141,11 @@ function previewPurga() {
   const info = document.getElementById('cfg-purga-info');
   if (!info) return;
   if (!iso) { info.textContent = 'Elige una fecha para ver cuántas sesiones se borrarían.'; return; }
+  if (!_historialAsistencia) {
+    info.textContent = 'Contando sesiones…';
+    asegurarHistorialAsistencia().then(function(ok){ if (ok) previewPurga(); });
+    return;
+  }
   const n = sesionesAntesDe(iso).length;
   info.innerHTML = n === 0
     ? 'No hay sesiones registradas antes de esa fecha.'
@@ -7077,6 +7156,7 @@ async function purgarAsistencias() {
   if (!soloAdmin()) return;
   const iso = document.getElementById('cfg-purga-fecha').value;
   if (!iso) { toast('Elige una fecha'); return; }
+  if (!(await asegurarHistorialAsistencia())) return;
   const claves = sesionesAntesDe(iso);
   if (claves.length === 0) { toast('No hay sesiones anteriores a esa fecha'); return; }
   if (!confirm('Se borrarán ' + claves.length + ' sesiones de asistencia anteriores al ' + iso +
@@ -9269,8 +9349,12 @@ async function iniciarPortal() {
   // Recargar en mitad de la activacion deja el flujo sin la contrasena temporal,
   // que hace falta para reautenticar. Mas honesto pedir que vuelva a entrar.
   const err = document.getElementById('login-err');
+  // Anuncios, materiales y configuracion arrancan junto con el perfil en vez
+  // de esperar a que termine, y el perfil leido aqui se reusa al entrar.
+  const previa = precargaComun();
+  let perfil = null;
   try {
-    const perfil = await window.fb.getDoc('usuarios', u.uid);
+    perfil = await window.fb.getDoc('usuarios', u.uid);
     if (perfil && (onboardingPendiente(perfil) || clavePendiente(perfil))) {
       await window.fb.signOut();
       faseLogin('');
@@ -9280,7 +9364,7 @@ async function iniciarPortal() {
     }
   } catch (e) {}
 
-  const ok = await entrarConPerfil(u.uid, u.email, err);
+  const ok = await entrarConPerfil(u.uid, u.email, err, false, perfil, previa);
   if (!ok) faseLogin('');
 }
 if (window.fb) iniciarPortal();
