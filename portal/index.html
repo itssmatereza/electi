@@ -4232,6 +4232,7 @@ const INA_CATEGORIAS = [
 function inaPersonas() {
   const out = [];
   inaReservas.forEach(r => {
+    if (!r.edad) { const m = /edad=(\d{1,2})/.exec(r.origen || ''); if (m) r.edad = Number(m[1]); }
     const lleg = Array.isArray(r.llegaron) ? r.llegaron : [];
     out.push({ r, idx: 0, nombre: r.nombre || '', tipo: 'Reservó', cat: r.perfil || '', inst: r.institucion || '', edad: r.edad || '', llego: lleg.includes(0) });
     (Array.isArray(r.acompanantes) ? r.acompanantes : []).forEach((a, i) => {

@@ -427,8 +427,20 @@ html,body{background:#06122F}
     var docId = d.correo.replace(/[^a-z0-9]/g, '_').slice(0, 120);
 
     btn.disabled = true; var txt = btn.innerHTML; btn.textContent = 'Confirmando…';
-    fetch(FS + '?documentId=' + encodeURIComponent(docId) + '&key=' + KEY, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(cuerpo) })
+    var url = FS + '?documentId=' + encodeURIComponent(docId) + '&key=' + KEY;
+    var enviar = function(c){ return fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(c) }); };
+    enviar(cuerpo)
+      .then(function(res){
+        // Respaldo: si las reglas aún no aceptan el campo «edad», se reintenta
+        // guardándola dentro de «origen» para no perder la reserva.
+        if (res.status === 403 && cuerpo.fields.edad) {
+          var c2 = JSON.parse(JSON.stringify(cuerpo));
+          delete c2.fields.edad;
+          c2.fields.origen = sv(('edad=' + d.edad + ' ' + c2.fields.origen.stringValue).trim().slice(0, 120));
+          return enviar(c2);
+        }
+        return res;
+      })
       .then(function(res){
         if (res.ok) { exito(d, {}); return; }
         if (res.status === 409) { exito(d, { repetido: true }); return; }
